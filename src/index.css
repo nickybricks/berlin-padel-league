@@ -139,15 +139,14 @@
 }
 
 @layer components {
-  /* Playoff qualification indicator */
-  .playoff-qualified {
+  /* Playoff qualification indicator - applies to first cell */
+  .playoff-qualified td:first-child {
     @apply relative;
   }
 
-  .playoff-qualified::before {
+  .playoff-qualified td:first-child::before {
     content: '';
-    @apply absolute left-0 top-0 bottom-0 w-1 rounded-l-md;
-    background: var(--gradient-accent);
+    @apply absolute left-0 top-1 bottom-1 w-1 rounded-full bg-accent;
   }
 
   /* Table row animations */

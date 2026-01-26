@@ -40,9 +40,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
             return (
               <tr
                 key={standing.team.id}
-                className={`table-row-animate border-b last:border-0 ${
-                  isPlayoff ? 'playoff-qualified' : ''
-                }`}
+                className={`table-row-animate border-b last:border-0 ${isPlayoff ? 'playoff-qualified' : ''}`}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 <td className="py-4 pl-4">
