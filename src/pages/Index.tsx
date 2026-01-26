@@ -17,7 +17,7 @@ export default function Index() {
   }, [teams, matches, results]);
 
   const playedCount = results?.length ?? 0;
-  const totalMatches = 55;
+  const totalMatches = matches?.length ?? 0;
   const progress = Math.round((playedCount / totalMatches) * 100);
 
   const isLoading = teamsLoading || matchesLoading || resultsLoading;
