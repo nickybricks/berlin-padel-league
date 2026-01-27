@@ -1,5 +1,6 @@
+import { Link } from 'react-router-dom';
 import { TeamStanding } from '@/types/database';
-import { Trophy, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Trophy } from 'lucide-react';
 
 interface StandingsTableProps {
   standings: TeamStanding[];
@@ -56,7 +57,12 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                 </td>
                 <td className="py-4">
                   <div className="flex items-center gap-3">
-                    <span className="font-semibold">{standing.team.name}</span>
+                    <Link 
+                      to={`/teams/${standing.team.id}`}
+                      className="font-semibold hover:text-primary transition-colors"
+                    >
+                      {standing.team.name}
+                    </Link>
                     {isTop3 && (
                       <Trophy className={`h-4 w-4 ${
                         standing.rank === 1 ? 'text-yellow-500' :
