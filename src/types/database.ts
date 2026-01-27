@@ -4,6 +4,11 @@ export interface Team {
   id: string;
   name: string;
   created_at: string;
+  logo_url: string | null;
+  captain_name: string | null;
+  captain_phone: string | null;
+  player2_name: string | null;
+  player2_phone: string | null;
 }
 
 export interface Match {
