@@ -12,6 +12,7 @@ import {
 
 const navItems = [
   { label: 'Tabelle', path: '/' },
+  { label: 'Teams', path: '/teams' },
   { label: 'Spielplan', path: '/schedule' },
   { label: 'Playoffs', path: '/playoffs' },
   { label: 'Ergebnis eintragen', path: '/enter-result', requiresAuth: true },
