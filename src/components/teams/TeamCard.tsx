@@ -1,6 +1,8 @@
 import { Team } from '@/types/database';
 import { Card } from '@/components/ui/card';
 import { Users } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
+import { TeamLogoUpload } from './TeamLogoUpload';
 
 interface TeamCardProps {
   team: Team;
@@ -8,28 +10,50 @@ interface TeamCardProps {
 }
 
 export function TeamCard({ team, onClick }: TeamCardProps) {
+  const { isAdmin } = useAuth();
+  
   const logoUrl = team.logo_url 
     ? `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${team.logo_url}`
     : null;
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking the upload area
+    if ((e.target as HTMLElement).closest('.logo-upload-area')) {
+      e.stopPropagation();
+      return;
+    }
+    onClick();
+  };
+
   return (
     <Card
       className="group cursor-pointer overflow-hidden transition-all hover:shadow-lg hover:border-primary/50"
-      onClick={onClick}
+      onClick={handleCardClick}
     >
       <div className="flex items-center gap-4 p-4">
-        {/* Team Logo */}
-        <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted overflow-hidden">
-          {logoUrl ? (
-            <img
-              src={logoUrl}
-              alt={`${team.name} Logo`}
-              className="h-full w-full object-cover"
+        {/* Team Logo - Editable for Admins */}
+        {isAdmin ? (
+          <div className="logo-upload-area" onClick={(e) => e.stopPropagation()}>
+            <TeamLogoUpload
+              teamId={team.id}
+              currentLogoUrl={team.logo_url}
+              teamName={team.name}
+              size="sm"
             />
-          ) : (
-            <Users className="h-8 w-8 text-muted-foreground" />
-          )}
-        </div>
+          </div>
+        ) : (
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-lg bg-muted overflow-hidden">
+            {logoUrl ? (
+              <img
+                src={logoUrl}
+                alt={`${team.name} Logo`}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <Users className="h-8 w-8 text-muted-foreground" />
+            )}
+          </div>
+        )}
 
         {/* Team Info */}
         <div className="min-w-0 flex-1">

@@ -3,15 +3,18 @@ import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { useTeams } from '@/hooks/useTeams';
 import { useMatches, useMatchResults } from '@/hooks/useMatches';
+import { useAuth } from '@/hooks/useAuth';
 import { calculateStandings } from '@/lib/standings';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Phone, Users, Crown, Calendar, Trophy, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MatchWithTeams, MatchResult } from '@/types/database';
+import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
 
 export default function TeamPage() {
   const { teamId } = useParams<{ teamId: string }>();
+  const { isAdmin } = useAuth();
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
@@ -87,18 +90,27 @@ export default function TeamPage() {
         {/* Team Header */}
         <Card className="p-6">
           <div className="flex flex-col sm:flex-row items-start gap-6">
-            {/* Team Logo */}
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-muted overflow-hidden">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={`${team.name} Logo`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Users className="h-12 w-12 text-muted-foreground" />
-              )}
-            </div>
+            {/* Team Logo - Editable for Admins */}
+            {isAdmin ? (
+              <TeamLogoUpload
+                teamId={team.id}
+                currentLogoUrl={team.logo_url}
+                teamName={team.name}
+                size="lg"
+              />
+            ) : (
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-muted overflow-hidden">
+                {logoUrl ? (
+                  <img
+                    src={logoUrl}
+                    alt={`${team.name} Logo`}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Users className="h-12 w-12 text-muted-foreground" />
+                )}
+              </div>
+            )}
 
             {/* Team Info */}
             <div className="flex-1 space-y-4">
