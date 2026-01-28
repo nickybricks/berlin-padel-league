@@ -1,14 +1,12 @@
-import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { useTeams } from '@/hooks/useTeams';
 import { TeamCard } from '@/components/teams/TeamCard';
-import { TeamDetail } from '@/components/teams/TeamDetail';
-import { Team } from '@/types/database';
 import { Users } from 'lucide-react';
 
 export default function Teams() {
   const { data: teams, isLoading } = useTeams();
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
+  const navigate = useNavigate();
 
   return (
     <Layout>
@@ -42,18 +40,11 @@ export default function Teams() {
               <TeamCard
                 key={team.id}
                 team={team}
-                onClick={() => setSelectedTeam(team)}
+                onClick={() => navigate(`/teams/${team.id}`)}
               />
             ))}
           </div>
         )}
-
-        {/* Team Detail Modal */}
-        <TeamDetail
-          team={selectedTeam}
-          open={!!selectedTeam}
-          onClose={() => setSelectedTeam(null)}
-        />
       </div>
     </Layout>
   );
