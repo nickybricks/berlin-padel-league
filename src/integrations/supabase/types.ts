@@ -148,32 +148,38 @@ export type Database = {
       }
       teams: {
         Row: {
+          captain_email: string | null
           captain_name: string | null
           captain_phone: string | null
           created_at: string
           id: string
           logo_url: string | null
           name: string
+          player2_email: string | null
           player2_name: string | null
           player2_phone: string | null
         }
         Insert: {
+          captain_email?: string | null
           captain_name?: string | null
           captain_phone?: string | null
           created_at?: string
           id?: string
           logo_url?: string | null
           name: string
+          player2_email?: string | null
           player2_name?: string | null
           player2_phone?: string | null
         }
         Update: {
+          captain_email?: string | null
           captain_name?: string | null
           captain_phone?: string | null
           created_at?: string
           id?: string
           logo_url?: string | null
           name?: string
+          player2_email?: string | null
           player2_name?: string | null
           player2_phone?: string | null
         }
