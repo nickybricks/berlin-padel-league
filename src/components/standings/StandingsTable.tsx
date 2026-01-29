@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TeamStanding } from '@/types/database';
-import { Trophy } from 'lucide-react';
+import { Trophy, Users } from 'lucide-react';
 
 interface StandingsTableProps {
   standings: TeamStanding[];
@@ -18,12 +18,18 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
     );
   }
 
+  const getLogoUrl = (logoPath: string | null) => {
+    if (!logoPath) return null;
+    return `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${logoPath}`;
+  };
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
           <tr className="border-b text-left text-sm text-muted-foreground">
             <th className="pb-3 pl-4 w-12">#</th>
+            <th className="pb-3 w-12"></th>
             <th className="pb-3">Team</th>
             <th className="pb-3 text-center hidden sm:table-cell">Sp</th>
             <th className="pb-3 text-center hidden sm:table-cell">S</th>
@@ -37,26 +43,38 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
           {standings.map((standing, index) => {
             const isPlayoff = standing.rank <= 8;
             const isTop3 = standing.rank <= 3;
+            const logoUrl = getLogoUrl(standing.team.logo_url);
             
             return (
               <tr
                 key={standing.team.id}
-                className={`table-row-animate border-b last:border-0 ${isPlayoff ? 'playoff-qualified' : ''}`}
+                className="table-row-animate border-b last:border-0"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <td className="py-4 pl-4">
-                  <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                    isTop3
-                      ? 'bg-accent text-accent-foreground'
-                      : isPlayoff
-                      ? 'bg-primary/10 text-primary'
-                      : 'bg-muted text-muted-foreground'
-                  }`}>
-                    {standing.rank}
+                <td className="py-4 pl-0">
+                  <div className="flex items-center">
+                    {/* Green stripe for playoff teams */}
+                    <div className={`w-1 h-10 rounded-full mr-3 ${isPlayoff ? 'bg-success' : 'bg-transparent'}`} />
+                    <span className="text-sm font-medium text-muted-foreground w-6 text-center">
+                      {standing.rank}
+                    </span>
                   </div>
                 </td>
                 <td className="py-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted overflow-hidden">
+                    {logoUrl ? (
+                      <img
+                        src={logoUrl}
+                        alt={`${standing.team.name} Logo`}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    )}
+                  </div>
+                </td>
+                <td className="py-4">
+                  <div className="flex items-center gap-2">
                     <Link 
                       to={`/teams/${standing.team.id}`}
                       className="font-semibold hover:text-primary transition-colors"
@@ -119,7 +137,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
       {/* Legend */}
       <div className="mt-4 pt-4 border-t flex flex-wrap gap-4 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-sm bg-accent" />
+          <div className="w-1 h-4 rounded-full bg-success" />
           <span>Playoff-Qualifikation (Top 8)</span>
         </div>
         <div className="flex items-center gap-2">
