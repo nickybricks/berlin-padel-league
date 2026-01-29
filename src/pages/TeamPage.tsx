@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { calculateStandings } from '@/lib/standings';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Phone, Users, Crown, Calendar, Trophy, ArrowLeft } from 'lucide-react';
+import { Phone, Users, Crown, Calendar, Trophy, ArrowLeft, Mail } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MatchWithTeams, MatchResult } from '@/types/database';
 import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
@@ -132,6 +132,15 @@ export default function TeamPage() {
                         <span className="font-medium">{team.captain_name}</span>
                         <Badge variant="secondary" className="text-xs">Captain</Badge>
                       </div>
+                      {team.captain_email && (
+                        <a 
+                          href={`mailto:${team.captain_email}`}
+                          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          {team.captain_email}
+                        </a>
+                      )}
                       {team.captain_phone && (
                         <a 
                           href={`tel:${team.captain_phone}`}
@@ -153,6 +162,15 @@ export default function TeamPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="font-medium">{team.player2_name}</span>
+                      {team.player2_email && (
+                        <a 
+                          href={`mailto:${team.player2_email}`}
+                          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
+                        >
+                          <Mail className="h-3.5 w-3.5" />
+                          {team.player2_email}
+                        </a>
+                      )}
                       {team.player2_phone && (
                         <a 
                           href={`tel:${team.player2_phone}`}

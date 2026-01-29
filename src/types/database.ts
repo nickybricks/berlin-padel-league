@@ -7,8 +7,10 @@ export interface Team {
   logo_url: string | null;
   captain_name: string | null;
   captain_phone: string | null;
+  captain_email: string | null;
   player2_name: string | null;
   player2_phone: string | null;
+  player2_email: string | null;
 }
 
 export interface Match {
