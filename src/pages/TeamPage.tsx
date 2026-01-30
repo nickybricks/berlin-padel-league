@@ -14,7 +14,8 @@ import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
 
 export default function TeamPage() {
   const { teamId } = useParams<{ teamId: string }>();
-  const { isAdmin } = useAuth();
+  const { isAdmin, isCaptain, teamId: userTeamId } = useAuth();
+  const canEditTeam = isAdmin || (isCaptain && userTeamId === teamId);
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
@@ -91,7 +92,7 @@ export default function TeamPage() {
         <Card className="p-6">
           <div className="flex flex-col sm:flex-row items-start gap-6">
             {/* Team Logo - Editable for Admins */}
-            {isAdmin ? (
+            {canEditTeam ? (
               <TeamLogoUpload
                 teamId={team.id}
                 currentLogoUrl={team.logo_url}
