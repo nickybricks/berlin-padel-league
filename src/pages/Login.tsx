@@ -40,10 +40,9 @@ export default function Login() {
         setIsLogin(true);
       }
     } catch (error: any) {
-      console.error('Auth error:', error);
       toast({
         title: 'Fehler',
-        description: 'Anmeldung fehlgeschlagen. Bitte überprüfe deine Zugangsdaten.',
+        description: error.message,
         variant: 'destructive',
       });
     } finally {

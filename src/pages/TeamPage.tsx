@@ -11,27 +11,17 @@ import { Phone, Users, Crown, Calendar, Trophy, ArrowLeft, Mail } from 'lucide-r
 import { Button } from '@/components/ui/button';
 import { MatchWithTeams, MatchResult } from '@/types/database';
 import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
-import { TeamEditDialog } from '@/components/teams/TeamEditDialog';
 
 export default function TeamPage() {
   const { teamId } = useParams<{ teamId: string }>();
-  const { user, isAdmin, isCaptain, teamId: userTeamId } = useAuth();
+  const { isAdmin, isCaptain, teamId: userTeamId } = useAuth();
+  const canEditTeam = isAdmin || (isCaptain && userTeamId === teamId);
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
 
   const team = teams?.find(t => t.id === teamId);
-
-  // Check if current user's email is associated with this team
-  const userEmail = user?.email?.toLowerCase();
-  const isTeamMember = userEmail && team && (
-    team.captain_email?.toLowerCase() === userEmail ||
-    team.player2_email?.toLowerCase() === userEmail
-  );
   
-  // Can edit if admin, captain of this team, or email matches team
-  const canEditTeam = isAdmin || (isCaptain && userTeamId === teamId) || isTeamMember;
-
   const teamMatches = useMemo(() => {
     if (!matches || !teamId) return [];
     return matches.filter(m => m.team_a_id === teamId || m.team_b_id === teamId);
@@ -99,16 +89,9 @@ export default function TeamPage() {
         </Link>
 
         {/* Team Header */}
-        <Card className="p-6 relative">
-          {/* Edit Button - Top Right */}
-          {canEditTeam && (
-            <div className="absolute top-4 right-4">
-              <TeamEditDialog team={team} />
-            </div>
-          )}
-
+        <Card className="p-6">
           <div className="flex flex-col sm:flex-row items-start gap-6">
-            {/* Team Logo */}
+            {/* Team Logo - Editable for Admins */}
             {canEditTeam ? (
               <TeamLogoUpload
                 teamId={team.id}

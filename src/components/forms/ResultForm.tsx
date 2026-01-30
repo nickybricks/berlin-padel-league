@@ -140,10 +140,9 @@ export function ResultForm({ matches, playedMatchIds }: ResultFormProps) {
       setSelectedMatchId('');
       setNeedsThirdSet(false);
     } catch (error: any) {
-      console.error('Result submission error:', error);
       toast({
         title: 'Fehler',
-        description: 'Das Ergebnis konnte nicht gespeichert werden. Bitte versuche es erneut.',
+        description: error.message,
         variant: 'destructive',
       });
     }

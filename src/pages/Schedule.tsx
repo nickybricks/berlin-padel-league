@@ -88,10 +88,9 @@ export default function Schedule() {
         description: `${schedule.length} Spiele wurden generiert.`,
       });
     } catch (error: any) {
-      console.error('Schedule generation error:', error);
       toast({
         title: 'Fehler',
-        description: 'Der Spielplan konnte nicht erstellt werden. Bitte versuche es erneut.',
+        description: error.message,
         variant: 'destructive',
       });
     }
