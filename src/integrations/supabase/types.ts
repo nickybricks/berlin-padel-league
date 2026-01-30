@@ -76,6 +76,13 @@ export type Database = {
             foreignKeyName: "match_results_winner_id_fkey"
             columns: ["winner_id"]
             isOneToOne: false
+            referencedRelation: "teams_authenticated"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "match_results_winner_id_fkey"
+            columns: ["winner_id"]
+            isOneToOne: false
             referencedRelation: "teams_public"
             referencedColumns: ["id"]
           },
@@ -121,6 +128,13 @@ export type Database = {
             foreignKeyName: "matches_team_a_id_fkey"
             columns: ["team_a_id"]
             isOneToOne: false
+            referencedRelation: "teams_authenticated"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_team_a_id_fkey"
+            columns: ["team_a_id"]
+            isOneToOne: false
             referencedRelation: "teams_public"
             referencedColumns: ["id"]
           },
@@ -129,6 +143,13 @@ export type Database = {
             columns: ["team_b_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_team_b_id_fkey"
+            columns: ["team_b_id"]
+            isOneToOne: false
+            referencedRelation: "teams_authenticated"
             referencedColumns: ["id"]
           },
           {
@@ -240,6 +261,13 @@ export type Database = {
             foreignKeyName: "user_roles_team_id_fkey"
             columns: ["team_id"]
             isOneToOne: false
+            referencedRelation: "teams_authenticated"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
             referencedRelation: "teams_public"
             referencedColumns: ["id"]
           },
@@ -247,6 +275,45 @@ export type Database = {
       }
     }
     Views: {
+      teams_authenticated: {
+        Row: {
+          captain_email: string | null
+          captain_name: string | null
+          captain_phone: string | null
+          created_at: string | null
+          id: string | null
+          logo_url: string | null
+          name: string | null
+          player2_email: string | null
+          player2_name: string | null
+          player2_phone: string | null
+        }
+        Insert: {
+          captain_email?: never
+          captain_name?: string | null
+          captain_phone?: never
+          created_at?: string | null
+          id?: string | null
+          logo_url?: string | null
+          name?: string | null
+          player2_email?: never
+          player2_name?: string | null
+          player2_phone?: never
+        }
+        Update: {
+          captain_email?: never
+          captain_name?: string | null
+          captain_phone?: never
+          created_at?: string | null
+          id?: string | null
+          logo_url?: string | null
+          name?: string | null
+          player2_email?: never
+          player2_name?: string | null
+          player2_phone?: never
+        }
+        Relationships: []
+      }
       teams_public: {
         Row: {
           created_at: string | null
@@ -270,6 +337,10 @@ export type Database = {
       }
     }
     Functions: {
+      can_view_team_contacts: {
+        Args: { _team_id: string; _user_id: string }
+        Returns: boolean
+      }
       get_user_team: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
