@@ -29,17 +29,32 @@ export function useAuth() {
         if (session?.user) {
           // Fetch user role
           setTimeout(async () => {
-            const { data: roleData } = await supabase
+            // Fetch user roles - handle multiple roles by taking the highest privilege
+            const { data: roleData, error } = await supabase
               .from('user_roles')
               .select('role, team_id')
               .eq('user_id', session.user.id)
-              .single();
+              .order('role', { ascending: true }); // admin < captain < viewer alphabetically
 
-            if (roleData) {
+            if (error) {
+              console.error('Error fetching user roles:', error);
+              setAuthState(prev => ({ ...prev, loading: false }));
+              return;
+            }
+
+            if (roleData && roleData.length > 0) {
+              // Use role hierarchy: admin > captain > viewer
+              const roleHierarchy: Record<string, number> = { admin: 3, captain: 2, viewer: 1 };
+              const bestRole = roleData.reduce((best, current) => {
+                const bestScore = roleHierarchy[best.role] || 0;
+                const currentScore = roleHierarchy[current.role] || 0;
+                return currentScore > bestScore ? current : best;
+              }, roleData[0]);
+
               setAuthState(prev => ({
                 ...prev,
-                role: roleData.role as AppRole,
-                teamId: roleData.team_id,
+                role: bestRole.role as AppRole,
+                teamId: bestRole.team_id,
                 loading: false,
               }));
             } else {
