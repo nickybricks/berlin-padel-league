@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, List } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, List, X } from 'lucide-react';
 import { CourtSlotWithDetails } from '@/types/bookings';
 import { formatTimeRange } from '@/lib/bookingUtils';
 import {
@@ -15,11 +15,16 @@ import {
   addMonths,
   addWeeks,
   isSameMonth,
-  isSameDay,
   isToday,
 } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 type ViewMode = 'month' | 'week';
 
@@ -32,6 +37,7 @@ interface BookingCalendarViewProps {
 export function BookingCalendarView({ slots, onSlotClick, isLoggedIn }: BookingCalendarViewProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<ViewMode>('month');
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
   // Get all days to display based on view mode
   const days = useMemo(() => {
@@ -156,11 +162,13 @@ export function BookingCalendarView({ slots, onSlotClick, isLoggedIn }: BookingC
           return (
             <div
               key={dateKey}
+              onClick={() => daySlots.length > 0 && setSelectedDay(day)}
               className={cn(
                 'border rounded-lg p-1 min-h-[80px] transition-colors',
                 viewMode === 'week' ? 'min-h-[400px]' : '',
                 !isCurrentMonth && viewMode === 'month' && 'bg-muted/30 opacity-50',
                 isCurrentDay && 'ring-2 ring-primary',
+                daySlots.length > 0 && viewMode === 'month' && 'cursor-pointer hover:bg-muted/50',
               )}
             >
               {/* Day Number */}
@@ -193,7 +201,10 @@ export function BookingCalendarView({ slots, onSlotClick, isLoggedIn }: BookingC
                   {daySlots.map((slot) => (
                     <button
                       key={slot.id}
-                      onClick={() => isLoggedIn && !slot.booking && onSlotClick(slot)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (isLoggedIn && !slot.booking) onSlotClick(slot);
+                      }}
                       disabled={!isLoggedIn || !!slot.booking}
                       className={cn(
                         'w-full text-left p-2 rounded text-xs transition-colors',
@@ -238,6 +249,58 @@ export function BookingCalendarView({ slots, onSlotClick, isLoggedIn }: BookingC
           <span>Heute</span>
         </div>
       </div>
+
+      {/* Day Detail Modal */}
+      <Dialog open={!!selectedDay} onOpenChange={(open) => !open && setSelectedDay(null)}>
+        <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedDay && format(selectedDay, 'EEEE, dd. MMMM yyyy', { locale: de })}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="overflow-y-auto flex-1 space-y-2 pr-2">
+            {selectedDay && (slotsByDate[format(selectedDay, 'yyyy-MM-dd')] || []).map((slot) => (
+              <div
+                key={slot.id}
+                className={cn(
+                  'p-3 rounded-lg border transition-colors',
+                  slot.booking
+                    ? 'bg-muted/50'
+                    : 'bg-primary/5 hover:bg-primary/10',
+                  !slot.booking && isLoggedIn && 'cursor-pointer'
+                )}
+                onClick={() => {
+                  if (isLoggedIn && !slot.booking) {
+                    setSelectedDay(null);
+                    onSlotClick(slot);
+                  }
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="font-medium">
+                      {formatTimeRange(slot.start_time, slot.end_time)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {slot.venue?.name} – {slot.court_name}
+                    </div>
+                  </div>
+                  <Badge variant={slot.booking ? 'secondary' : 'default'}>
+                    {slot.booking ? 'Gebucht' : 'Frei'}
+                  </Badge>
+                </div>
+                {slot.booking?.match && (
+                  <div className="mt-2 pt-2 border-t text-sm">
+                    <span className="font-medium">{slot.booking.match.team_a.name}</span>
+                    <span className="text-muted-foreground mx-2">vs</span>
+                    <span className="font-medium">{slot.booking.match.team_b.name}</span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }
