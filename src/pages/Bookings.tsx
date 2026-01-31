@@ -10,13 +10,12 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarDays, Settings, Loader2, Calendar, List } from 'lucide-react';
+import { CalendarDays, Settings, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useVenues } from '@/hooks/useVenues';
 import { useCourtSlots, useDeleteCourtSlot, useDeleteBooking } from '@/hooks/useBookings';
 import { BookingSlotCard } from '@/components/bookings/BookingSlotCard';
 import { BookingDialog } from '@/components/bookings/BookingDialog';
-import { BookingCalendarView } from '@/components/bookings/BookingCalendarView';
 import { AdminVenueManager } from '@/components/bookings/AdminVenueManager';
 import { AdminSlotCreator } from '@/components/bookings/AdminSlotCreator';
 import { AdminBookingExport } from '@/components/bookings/AdminBookingExport';
@@ -25,19 +24,16 @@ import { format, addDays } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
 
-type DisplayMode = 'list' | 'calendar';
-
 export default function Bookings() {
   const { isAdmin, user } = useAuth();
   const { data: venues } = useVenues();
   
   const [selectedVenueId, setSelectedVenueId] = useState<string>('all');
   const [bookingSlot, setBookingSlot] = useState<CourtSlotWithDetails | null>(null);
-  const [displayMode, setDisplayMode] = useState<DisplayMode>('calendar');
   
-  // Fetch slots for the next 90 days (extended for calendar view)
+  // Fetch slots for the next 60 days
   const startDate = format(new Date(), 'yyyy-MM-dd');
-  const endDate = format(addDays(new Date(), 90), 'yyyy-MM-dd');
+  const endDate = format(addDays(new Date(), 60), 'yyyy-MM-dd');
   
   const { data: slots, isLoading } = useCourtSlots(
     selectedVenueId !== 'all' ? selectedVenueId : undefined,
@@ -107,15 +103,12 @@ export default function Bookings() {
                 venues={venues}
                 selectedVenueId={selectedVenueId}
                 setSelectedVenueId={setSelectedVenueId}
-                slots={slots || []}
                 slotsByDate={slotsByDate}
                 isLoading={isLoading}
                 onBook={setBookingSlot}
                 onCancelBooking={handleCancelBooking}
                 onDeleteSlot={handleDeleteSlot}
                 isLoggedIn={!!user}
-                displayMode={displayMode}
-                setDisplayMode={setDisplayMode}
               />
             </TabsContent>
 
@@ -134,15 +127,12 @@ export default function Bookings() {
             venues={venues}
             selectedVenueId={selectedVenueId}
             setSelectedVenueId={setSelectedVenueId}
-            slots={slots || []}
             slotsByDate={slotsByDate}
             isLoading={isLoading}
             onBook={setBookingSlot}
             onCancelBooking={handleCancelBooking}
             onDeleteSlot={handleDeleteSlot}
             isLoggedIn={!!user}
-            displayMode={displayMode}
-            setDisplayMode={setDisplayMode}
           />
         )}
 
@@ -160,84 +150,55 @@ interface BookingsViewProps {
   venues: any[] | undefined;
   selectedVenueId: string;
   setSelectedVenueId: (id: string) => void;
-  slots: CourtSlotWithDetails[];
   slotsByDate: Record<string, CourtSlotWithDetails[]>;
   isLoading: boolean;
   onBook: (slot: CourtSlotWithDetails) => void;
   onCancelBooking: (id: string) => void;
   onDeleteSlot: (id: string) => void;
   isLoggedIn: boolean;
-  displayMode: DisplayMode;
-  setDisplayMode: (mode: DisplayMode) => void;
 }
 
 function BookingsView({
   venues,
   selectedVenueId,
   setSelectedVenueId,
-  slots,
   slotsByDate,
   isLoading,
   onBook,
   onCancelBooking,
   onDeleteSlot,
   isLoggedIn,
-  displayMode,
-  setDisplayMode,
 }: BookingsViewProps) {
   const dates = Object.keys(slotsByDate).sort();
 
   return (
     <div className="space-y-4">
-      {/* Filter & View Toggle */}
+      {/* Filter */}
       <Card className="p-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-muted-foreground">Verein:</span>
-            <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Alle Vereine" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Alle Vereine</SelectItem>
-                {venues?.map((venue) => (
-                  <SelectItem key={venue.id} value={venue.id}>
-                    {venue.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex rounded-lg border overflow-hidden">
-            <Button
-              variant={displayMode === 'calendar' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="rounded-none"
-              onClick={() => setDisplayMode('calendar')}
-            >
-              <Calendar className="h-4 w-4 mr-1" />
-              Kalender
-            </Button>
-            <Button
-              variant={displayMode === 'list' ? 'secondary' : 'ghost'}
-              size="sm"
-              className="rounded-none"
-              onClick={() => setDisplayMode('list')}
-            >
-              <List className="h-4 w-4 mr-1" />
-              Liste
-            </Button>
-          </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm font-medium text-muted-foreground">Verein:</span>
+          <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Alle Vereine" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Alle Vereine</SelectItem>
+              {venues?.map((venue) => (
+                <SelectItem key={venue.id} value={venue.id}>
+                  {venue.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </Card>
 
-      {/* Content */}
+      {/* Slots by Date */}
       {isLoading ? (
         <div className="flex items-center justify-center py-12">
           <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
         </div>
-      ) : slots.length === 0 ? (
+      ) : dates.length === 0 ? (
         <Card className="p-8 text-center">
           <p className="text-muted-foreground">Keine Plätze verfügbar</p>
           {!isLoggedIn && (
@@ -246,12 +207,6 @@ function BookingsView({
             </p>
           )}
         </Card>
-      ) : displayMode === 'calendar' ? (
-        <BookingCalendarView
-          slots={slots}
-          onSlotClick={onBook}
-          isLoggedIn={isLoggedIn}
-        />
       ) : (
         <div className="space-y-6">
           {dates.map((date) => (
