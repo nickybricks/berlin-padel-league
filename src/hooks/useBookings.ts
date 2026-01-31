@@ -130,6 +130,7 @@ export function useDeleteBooking() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['court-slots'] });
+      queryClient.invalidateQueries({ queryKey: ['team-unbooked-matches'] });
     },
   });
 }
