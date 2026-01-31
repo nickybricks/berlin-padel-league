@@ -37,10 +37,12 @@ export function useCourtSlots(venueId?: string, startDate?: string, endDate?: st
       const { data, error } = await query;
       if (error) throw error;
       
-      // Transform the data - booking comes as an array, take first item
+      // Transform the data - booking is a single object (1:1 relationship) or array
       return (data || []).map(slot => ({
         ...slot,
-        booking: slot.booking?.[0] || undefined,
+        booking: Array.isArray(slot.booking) 
+          ? slot.booking[0] || undefined 
+          : slot.booking || undefined,
       })) as CourtSlotWithDetails[];
     },
   });
