@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Teams from "./pages/Teams";
 import TeamPage from "./pages/TeamPage";
 import Schedule from "./pages/Schedule";
+import Bookings from "./pages/Bookings";
 import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
 import Login from "./pages/Login";
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/teams" element={<Teams />} />
           <Route path="/teams/:teamId" element={<TeamPage />} />
           <Route path="/schedule" element={<Schedule />} />
+          <Route path="/bookings" element={<Bookings />} />
           <Route path="/playoffs" element={<Playoffs />} />
           <Route path="/enter-result" element={<EnterResult />} />
           <Route path="/login" element={<Login />} />

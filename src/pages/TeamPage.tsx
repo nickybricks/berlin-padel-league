@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { useTeams } from '@/hooks/useTeams';
@@ -7,19 +7,23 @@ import { useAuth } from '@/hooks/useAuth';
 import { calculateStandings } from '@/lib/standings';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Phone, Users, Crown, Calendar, Trophy, ArrowLeft, Mail } from 'lucide-react';
+import { Phone, Users, Crown, Calendar, Trophy, ArrowLeft, Mail, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { MatchWithTeams, MatchResult } from '@/types/database';
 import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
-
+import { TeamEditDialog } from '@/components/teams/TeamEditDialog';
 export default function TeamPage() {
   const { teamId } = useParams<{ teamId: string }>();
-  const { isAdmin } = useAuth();
+  const { isAdmin, teamId: userTeamId } = useAuth();
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const team = teams?.find(t => t.id === teamId);
+  
+  // User can edit if they are admin or if this is their team
+  const canEdit = isAdmin || userTeamId === teamId;
   
   const teamMatches = useMemo(() => {
     if (!matches || !teamId) return [];
@@ -114,10 +118,20 @@ export default function TeamPage() {
 
             {/* Team Info */}
             <div className="flex-1 space-y-4">
-              <div>
+              <div className="flex items-center gap-2">
                 <h1 className="text-2xl font-bold">{team.name}</h1>
-                <p className="text-sm text-muted-foreground">Saison 2025</p>
+                {canEdit && (
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => setEditDialogOpen(true)}
+                    className="h-8 w-8"
+                  >
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                )}
               </div>
+              <p className="text-sm text-muted-foreground">Saison 2025</p>
 
               {/* Players */}
               <div className="grid gap-3 sm:grid-cols-2">
@@ -340,6 +354,15 @@ export default function TeamPage() {
             </table>
           </div>
         </Card>
+
+        {/* Edit Dialog */}
+        {team && (
+          <TeamEditDialog
+            team={team}
+            open={editDialogOpen}
+            onOpenChange={setEditDialogOpen}
+          />
+        )}
       </div>
     </Layout>
   );
