@@ -14,6 +14,110 @@ export type Database = {
   }
   public: {
     Tables: {
+      court_bookings: {
+        Row: {
+          booked_at: string
+          booked_by_team_id: string
+          booked_by_user_id: string | null
+          court_slot_id: string
+          id: string
+          match_id: string
+        }
+        Insert: {
+          booked_at?: string
+          booked_by_team_id: string
+          booked_by_user_id?: string | null
+          court_slot_id: string
+          id?: string
+          match_id: string
+        }
+        Update: {
+          booked_at?: string
+          booked_by_team_id?: string
+          booked_by_user_id?: string | null
+          court_slot_id?: string
+          id?: string
+          match_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "court_bookings_booked_by_team_id_fkey"
+            columns: ["booked_by_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "court_bookings_booked_by_team_id_fkey"
+            columns: ["booked_by_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams_authenticated"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "court_bookings_booked_by_team_id_fkey"
+            columns: ["booked_by_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "court_bookings_court_slot_id_fkey"
+            columns: ["court_slot_id"]
+            isOneToOne: true
+            referencedRelation: "court_slots"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "court_bookings_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      court_slots: {
+        Row: {
+          court_name: string
+          created_at: string
+          created_by: string | null
+          end_time: string
+          id: string
+          slot_date: string
+          start_time: string
+          venue_id: string
+        }
+        Insert: {
+          court_name: string
+          created_at?: string
+          created_by?: string | null
+          end_time: string
+          id?: string
+          slot_date: string
+          start_time: string
+          venue_id: string
+        }
+        Update: {
+          court_name?: string
+          created_at?: string
+          created_by?: string | null
+          end_time?: string
+          id?: string
+          slot_date?: string
+          start_time?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "court_slots_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "padel_venues"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       match_results: {
         Row: {
           comment: string | null
@@ -160,6 +264,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      padel_venues: {
+        Row: {
+          address: string | null
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          address?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
