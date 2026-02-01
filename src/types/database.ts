@@ -1,4 +1,4 @@
-export type AppRole = 'admin' | 'captain' | 'viewer';
+export type AppRole = 'admin' | 'player' | 'viewer';
 
 export interface Team {
   id: string;

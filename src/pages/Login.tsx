@@ -124,9 +124,9 @@ export default function Login() {
         <div className="mt-6 bg-muted/50 rounded-xl p-4 text-sm text-muted-foreground">
           <p className="font-medium text-foreground mb-2">Hinweis</p>
           <p>
-            Nach der Registrierung erhältst du die Rolle "Viewer". 
-            Ein Admin kann dir die Rolle "Captain" zuweisen, damit du 
-            Ergebnisse für dein Team eintragen kannst.
+            Registriere dich mit der E-Mail-Adresse, die bei deinem Team 
+            hinterlegt ist. Du wirst dann automatisch als Spieler erkannt 
+            und kannst Ergebnisse für dein Team eintragen.
           </p>
         </div>
       </div>
