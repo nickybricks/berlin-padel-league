@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_export_settings: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          recipient_emails: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          recipient_emails?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          recipient_emails?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       court_bookings: {
         Row: {
           booked_at: string
@@ -394,6 +418,38 @@ export type Database = {
             columns: ["team_id"]
             isOneToOne: false
             referencedRelation: "teams_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      venue_courts: {
+        Row: {
+          created_at: string
+          display_order: number
+          id: string
+          name: string
+          venue_id: string
+        }
+        Insert: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name: string
+          venue_id: string
+        }
+        Update: {
+          created_at?: string
+          display_order?: number
+          id?: string
+          name?: string
+          venue_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "venue_courts_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "padel_venues"
             referencedColumns: ["id"]
           },
         ]

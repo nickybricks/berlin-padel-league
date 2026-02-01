@@ -1,19 +1,16 @@
-import { startOfWeek, addDays, setHours, setMinutes, setSeconds, isBefore, isAfter, subDays } from 'date-fns';
+import { startOfWeek, addDays, setHours, setMinutes, setSeconds, isAfter } from 'date-fns';
 
 /**
  * Calculate the booking window for a slot date.
  * 
- * Booking opens: 14 days before the slot date
+ * Booking opens: immediately (no 14-day restriction)
  * Booking closes: Thursday 23:59:59 of the week before the slot
  * 
  * Example: Slot on Monday Feb 9, 2026
- * - Booking opens: Sunday Jan 26, 2026 00:00
+ * - Booking opens: immediately
  * - Booking closes: Thursday Feb 5, 2026 23:59:59
  */
-export function getBookingWindow(slotDate: Date): { start: Date; end: Date } {
-  // Booking opens 14 days before
-  const start = subDays(slotDate, 14);
-  
+export function getBookingWindow(slotDate: Date): { end: Date } {
   // Get Monday of the slot's week (week starts on Monday in Germany)
   const slotWeekMonday = startOfWeek(slotDate, { weekStartsOn: 1 });
   
@@ -26,22 +23,16 @@ export function getBookingWindow(slotDate: Date): { start: Date; end: Date } {
   // Set time to 23:59:59
   const end = setSeconds(setMinutes(setHours(previousThursday, 23), 59), 59);
   
-  return { start, end };
+  return { end };
 }
 
 /**
  * Check if booking is currently allowed for a slot date.
+ * Booking is open until Thursday 23:59:59 of the week before the slot.
  */
 export function isBookingOpen(slotDate: Date): { isOpen: boolean; reason?: string } {
   const now = new Date();
-  const { start, end } = getBookingWindow(slotDate);
-  
-  if (isBefore(now, start)) {
-    return { 
-      isOpen: false, 
-      reason: `Buchung öffnet am ${formatDateDE(start)}` 
-    };
-  }
+  const { end } = getBookingWindow(slotDate);
   
   if (isAfter(now, end)) {
     return { 

@@ -3,6 +3,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
 import { 
   Dialog,
   DialogContent,
@@ -10,10 +11,22 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, MapPin, Loader2 } from 'lucide-react';
-import { useVenues, useCreateVenue, useUpdateVenue, useDeleteVenue } from '@/hooks/useVenues';
+import { Plus, Pencil, Trash2, MapPin, Loader2, LayoutGrid } from 'lucide-react';
+import { useVenues, useCreateVenue, useUpdateVenue, useDeleteVenue, useVenueCourts } from '@/hooks/useVenues';
 import { Venue } from '@/types/bookings';
 import { toast } from '@/hooks/use-toast';
+import { VenueCourtManager } from './VenueCourtManager';
+
+function VenueCourtsBadge({ venueId }: { venueId: string }) {
+  const { data: courts } = useVenueCourts(venueId);
+  const count = courts?.length || 0;
+  
+  return (
+    <Badge variant="secondary" className="ml-2 text-xs">
+      {count} {count === 1 ? 'Platz' : 'Plätze'}
+    </Badge>
+  );
+}
 
 export function AdminVenueManager() {
   const { data: venues, isLoading } = useVenues();
@@ -25,6 +38,9 @@ export function AdminVenueManager() {
   const [editingVenue, setEditingVenue] = useState<Venue | null>(null);
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
+  
+  // Court management
+  const [courtsDialogVenue, setCourtsDialogVenue] = useState<Venue | null>(null);
 
   const openCreateDialog = () => {
     setEditingVenue(null);
@@ -115,12 +131,23 @@ export function AdminVenueManager() {
               className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
             >
               <div>
-                <div className="font-medium">{venue.name}</div>
+                <div className="flex items-center">
+                  <span className="font-medium">{venue.name}</span>
+                  <VenueCourtsBadge venueId={venue.id} />
+                </div>
                 {venue.address && (
                   <div className="text-sm text-muted-foreground">{venue.address}</div>
                 )}
               </div>
               <div className="flex items-center gap-1">
+                <Button 
+                  size="icon" 
+                  variant="ghost"
+                  onClick={() => setCourtsDialogVenue(venue)}
+                  title="Plätze verwalten"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </Button>
                 <Button 
                   size="icon" 
                   variant="ghost"
@@ -147,7 +174,7 @@ export function AdminVenueManager() {
         </p>
       )}
 
-      {/* Create/Edit Dialog */}
+      {/* Create/Edit Venue Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -188,6 +215,15 @@ export function AdminVenueManager() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Court Management Dialog */}
+      {courtsDialogVenue && (
+        <VenueCourtManager
+          venue={courtsDialogVenue}
+          open={!!courtsDialogVenue}
+          onOpenChange={(open) => !open && setCourtsDialogVenue(null)}
+        />
+      )}
     </Card>
   );
 }

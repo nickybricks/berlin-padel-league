@@ -13,6 +13,7 @@ import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { AutoExportSettings } from './AutoExportSettings';
 
 export function AdminBookingExport() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
@@ -144,58 +145,66 @@ export function AdminBookingExport() {
       </h2>
 
       <div className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Von</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start">
-                  <CalendarIcon className="h-4 w-4 mr-2" />
-                  {startDate ? format(startDate, 'dd.MM.yyyy', { locale: de }) : 'Auswählen...'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={startDate}
-                  onSelect={setStartDate}
-                  locale={de}
-                />
-              </PopoverContent>
-            </Popover>
+        {/* Manual Export Section */}
+        <div className="space-y-4">
+          <h3 className="text-md font-medium">Manueller Export</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Von</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start">
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    {startDate ? format(startDate, 'dd.MM.yyyy', { locale: de }) : 'Auswählen...'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    locale={de}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Bis</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="w-full justify-start">
+                    <CalendarIcon className="h-4 w-4 mr-2" />
+                    {endDate ? format(endDate, 'dd.MM.yyyy', { locale: de }) : 'Auswählen...'}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    locale={de}
+                    disabled={(date) => startDate ? date < startDate : false}
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label>Bis</Label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="w-full justify-start">
-                  <CalendarIcon className="h-4 w-4 mr-2" />
-                  {endDate ? format(endDate, 'dd.MM.yyyy', { locale: de }) : 'Auswählen...'}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
-                  mode="single"
-                  selected={endDate}
-                  onSelect={setEndDate}
-                  locale={de}
-                  disabled={(date) => startDate ? date < startDate : false}
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
+          <Button 
+            className="w-full" 
+            onClick={handleExport}
+            disabled={isExporting || !startDate || !endDate}
+          >
+            {isExporting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            <Download className="h-4 w-4 mr-2" />
+            Als CSV exportieren
+          </Button>
         </div>
 
-        <Button 
-          className="w-full" 
-          onClick={handleExport}
-          disabled={isExporting || !startDate || !endDate}
-        >
-          {isExporting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-          <Download className="h-4 w-4 mr-2" />
-          Als CSV exportieren
-        </Button>
+        {/* Auto Export Settings */}
+        <AutoExportSettings />
       </div>
     </Card>
   );
