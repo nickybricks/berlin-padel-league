@@ -88,8 +88,8 @@ export function useAuth() {
   };
 
   const isAdmin = authState.role === 'admin';
-  const isCaptain = authState.role === 'captain';
-  const canEnterResults = isAdmin || isCaptain;
+  const isPlayer = authState.role === 'player';
+  const canEnterResults = isAdmin || isPlayer;
 
   return {
     ...authState,
@@ -97,7 +97,7 @@ export function useAuth() {
     signUp,
     signOut,
     isAdmin,
-    isCaptain,
+    isPlayer,
     canEnterResults,
   };
 }

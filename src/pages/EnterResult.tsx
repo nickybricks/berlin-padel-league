@@ -7,7 +7,7 @@ import { useMatches, useMatchResults } from '@/hooks/useMatches';
 import { ClipboardEdit, Shield } from 'lucide-react';
 
 export default function EnterResult() {
-  const { user, loading, canEnterResults, isAdmin, isCaptain, role } = useAuth();
+  const { user, loading, canEnterResults, isAdmin, isPlayer, role } = useAuth();
   const { data: matches } = useMatches();
   const { data: results } = useMatchResults();
 
@@ -41,7 +41,7 @@ export default function EnterResult() {
           <h1 className="text-2xl font-bold mb-2">Zugriff verweigert</h1>
           <p className="text-muted-foreground">
             Du hast keine Berechtigung, Ergebnisse einzutragen.
-            Nur Admins und Team-Captains können Ergebnisse erfassen.
+            Nur Admins und registrierte Spieler können Ergebnisse erfassen.
           </p>
         </div>
       </Layout>
@@ -60,14 +60,14 @@ export default function EnterResult() {
           <p className="text-muted-foreground mt-1">
             {isAdmin 
               ? 'Als Admin kannst du alle Spiele eintragen.' 
-              : 'Als Captain kannst du die Spiele deines Teams eintragen.'}
+              : 'Als Spieler kannst du die Spiele deines Teams eintragen.'}
           </p>
         </div>
 
         {/* Role Badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium">
           <Shield className="h-4 w-4" />
-          {role === 'admin' ? 'Administrator' : 'Team-Captain'}
+          {role === 'admin' ? 'Administrator' : 'Spieler'}
         </div>
 
         {/* Result Form */}

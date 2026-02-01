@@ -39,7 +39,7 @@ interface ResultFormProps {
 export function ResultForm({ matches, playedMatchIds }: ResultFormProps) {
   const [selectedMatchId, setSelectedMatchId] = useState<string>('');
   const [needsThirdSet, setNeedsThirdSet] = useState(false);
-  const { user, teamId, isAdmin, isCaptain } = useAuth();
+  const { user, teamId, isAdmin, isPlayer } = useAuth();
   const submitResult = useSubmitResult();
 
   const {
@@ -77,8 +77,8 @@ export function ResultForm({ matches, playedMatchIds }: ResultFormProps) {
     // Admins can enter any result
     if (isAdmin) return true;
     
-    // Captains can only enter their team's matches
-    if (isCaptain && teamId) {
+    // Players can only enter their team's matches
+    if (isPlayer && teamId) {
       return match.team_a_id === teamId || match.team_b_id === teamId;
     }
     
