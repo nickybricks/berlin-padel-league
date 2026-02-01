@@ -1,188 +1,175 @@
 
-# Plan: Login, Team-Bearbeitung, Ergebnismeldung und Platzbuchungssystem
+
+# Plan: Erweitertes Buchungssystem mit festen Plätzen und Auto-Export
 
 ## Zusammenfassung
 
-Dieses Feature-Paket erweitert die Padel Liga App um ein vollständiges Buchungssystem für Plätze sowie verbesserte Bearbeitungsfunktionen für Teams. Benutzer können sich mit ihrer E-Mail anmelden, eigene Teamdaten bearbeiten und Spielergebnisse melden. Admins erhalten Zugriff auf die Platzverwaltung und Export-Funktionen.
-
-## Benutzer-Funktionen
-
-**Für alle angemeldeten Benutzer:**
-- Eigene Teamdaten (Name, Logo, Kontaktdaten) bearbeiten - sofern die E-Mail mit einem Team verknüpft ist
-- Ergebnisse für Spiele des eigenen Teams melden
-
-**Für Admins:**
-- Alle Team- und Spieldaten bearbeiten
-- Plätze bei Padelvereinen erstellen mit Datum und Uhrzeit
-- Mehrfachauswahl bei Platzerstellung (mehrere Plätze, Daten, Uhrzeiten)
-- Platzbuchungen als CSV/Excel exportieren
-
-**Platzbuchung durch Teams:**
-- Teams buchen sich auf verfügbare Plätze
-- Bei Buchung wird ein offenes Spiel aus dem Spielplan ausgewählt
-- Der Gegner wird automatisch mit eingetragen
-- Buchungsfenster: 14 Tage vorher bis Donnerstag 23:59 Uhr der Vorwoche
+Dieses Update erweitert das Buchungssystem um:
+1. Entfernung der 14-Tage-Vorlaufbeschränkung
+2. Feste Plätze pro Verein (statt globaler Liste)
+3. Duplikat-Prüfung bei Slot-Erstellung
+4. Automatischer wöchentlicher Export per E-Mail
 
 ## Umsetzungsschritte
 
-### 1. Datenbank-Erweiterungen
+### 1. Buchungsbeschränkung aufheben
 
-Neue Tabellen für das Buchungssystem:
+Die aktuelle Logik in `bookingUtils.ts` prüft, ob die Buchung mindestens 14 Tage vorher erfolgt. Diese Beschränkung wird entfernt - nur das Buchungsende (Donnerstag 23:59 der Vorwoche) bleibt bestehen.
 
-**Tabelle: `padel_venues`** (Padelvereine)
-- id, name, address, created_at
+**Änderung in `src/lib/bookingUtils.ts`:**
+- `getBookingWindow()`: Start-Datum entfällt oder wird auf "sofort" gesetzt
+- `isBookingOpen()`: Prüfung auf zu frühe Buchung entfernen
 
-**Tabelle: `court_slots`** (Verfügbare Plätze)
-- id, venue_id, court_name, slot_date, start_time, end_time, created_by, created_at
+### 2. Feste Plätze pro Verein
 
-**Tabelle: `court_bookings`** (Buchungen)
-- id, court_slot_id, match_id, booked_by_team_id, booked_by_user_id, booked_at
+Neue Tabelle `venue_courts` speichert die definierten Plätze je Verein.
 
-RLS-Policies:
-- Jeder kann Venues und Slots lesen
-- Nur Admins können Venues/Slots erstellen/bearbeiten/löschen
-- Teams können Buchungen für ihre eigenen Spiele erstellen
-- Admins können alle Buchungen verwalten
-
-### 2. Team-Bearbeitungsfunktion erweitern
-
-Neuer Button auf der TeamPage für berechtigte Benutzer:
-- Zahnrad-Icon neben dem Teamnamen
-- Dialog zum Bearbeiten von: Teamname, Captain-Name/E-Mail/Telefon, Spieler2-Name/E-Mail/Telefon
-- Logo-Upload bleibt wie bisher
-
-Die bestehende RLS-Policy "Captains can update their own team" erlaubt bereits die Bearbeitung durch Team-Mitglieder.
-
-### 3. Neue Seite: Platzbuchungen (/bookings)
-
-**Navigation:**
-- Neuer Menüpunkt "Platzbuchungen" im Header
-- Sichtbar für alle Benutzer
-
-**Ansicht für alle:**
-- Liste verfügbarer Plätze nach Datum gruppiert
-- Status: Frei / Gebucht (mit Teamnamen)
-- Filter nach Datum und Verein
-
-**Buchungs-Flow für Teams:**
-1. Platz auswählen
-2. Offenes Spiel aus Dropdown wählen (nur eigene Spiele, noch ohne Buchung)
-3. Bestätigen - Gegner wird automatisch eingetragen
-4. Validierung des Buchungszeitfensters (14 Tage vorher bis Do. 23:59)
-
-### 4. Admin-Bereich: Platzverwaltung
-
-**Venue-Verwaltung:**
-- CRUD für Padelvereine (Name, Adresse)
-
-**Slot-Erstellung:**
-- Formular mit Mehrfachauswahl:
-  - Venue auswählen
-  - Mehrere Platznummern (z.B. Platz 1, Platz 2)
-  - Mehrere Daten (Kalender mit Mehrfachauswahl)
-  - Mehrere Zeitfenster (z.B. 18:00-19:30, 20:00-21:30)
-- Beim Speichern werden alle Kombinationen als einzelne Slots erstellt
-
-**Export-Funktion:**
-- Button "Buchungen exportieren"
-- Datumsbereich wählbar
-- CSV-Download mit: Datum, Platz, Uhrzeit, Teilnehmername, Teilnehmer-E-Mails, Teamnamen
-
-### 5. Komponenten-Übersicht
+**Datenbank-Migration:**
 
 ```text
-src/
-  pages/
-    Bookings.tsx              # Hauptseite Platzbuchungen
-  components/
-    bookings/
-      BookingCalendar.tsx     # Kalenderansicht der Slots
-      BookingSlotCard.tsx     # Einzelner Slot mit Buchungsoption
-      BookingDialog.tsx       # Buchungsdialog mit Spielauswahl
-      AdminVenueManager.tsx   # Admin: Vereine verwalten
-      AdminSlotCreator.tsx    # Admin: Plätze erstellen
-      AdminBookingExport.tsx  # Admin: Export-Funktion
-    teams/
-      TeamEditDialog.tsx      # Dialog zum Bearbeiten von Teamdaten
-  hooks/
-    useBookings.ts            # React Query Hooks für Buchungen
-    useVenues.ts              # React Query Hooks für Vereine/Slots
+Neue Tabelle: venue_courts
+├── id (uuid, primary key)
+├── venue_id (uuid, foreign key -> padel_venues)
+├── name (text, z.B. "Platz 1", "Centre Court")
+├── display_order (integer, für Sortierung)
+└── created_at (timestamp)
+
+Unique Constraint: (venue_id, name)
 ```
 
-## Technische Details
+**RLS-Policies:**
+- Alle können lesen
+- Nur Admins können erstellen/bearbeiten/löschen
 
-### Buchungszeitfenster-Logik
+**UI-Änderungen in `AdminVenueManager.tsx`:**
+- Neuer Bereich zum Verwalten der Plätze eines Vereins
+- Button "Plätze bearbeiten" bei jedem Verein
+- Dialog zum Hinzufügen/Entfernen von Platznamen
+
+**UI-Änderungen in `AdminSlotCreator.tsx`:**
+- Nach Venue-Auswahl: Plätze aus `venue_courts` laden
+- Nur die konfigurierten Plätze des gewählten Vereins anzeigen
+- Deaktiviert wenn kein Verein ausgewählt
+
+### 3. Duplikat-Prüfung bei Slot-Erstellung
+
+Bevor Slots erstellt werden, wird geprüft ob bereits ein Slot mit gleicher Kombination existiert:
+- Verein + Platzname + Datum + Startzeit
+
+**Umsetzung:**
+- Vor dem Insert: Bestehende Slots für den Zeitraum laden
+- Konfliktierende Slots herausfiltern
+- Benutzer informieren welche Slots übersprungen wurden
+
+**Alternative (strenger):** Unique Constraint in der Datenbank auf `(venue_id, court_name, slot_date, start_time)` - dann schlägt der Insert fehl bei Duplikaten.
+
+### 4. Automatischer wöchentlicher Export
+
+**Neue Edge Function: `send-booking-export`**
+
+Diese Funktion:
+1. Lädt alle Buchungen für die kommende Woche
+2. Erstellt CSV wie bei manuellem Export
+3. Sendet E-Mail an konfigurierte Empfänger
+
+**Neue Tabelle: `booking_export_settings`**
 
 ```text
-Beispiel: Platz am Mo. 09.02.2026
+Neue Tabelle: booking_export_settings
+├── id (uuid, primary key)
+├── recipient_emails (text[], Liste der E-Mail-Adressen)
+├── is_active (boolean, Export aktiviert)
+├── created_at (timestamp)
+└── updated_at (timestamp)
 
-Buchungsstart:  So. 26.01.2026 00:00 (14 Tage vorher)
-Buchungsende:   Do. 05.02.2026 23:59 (Donnerstag der Vorwoche)
-
-Berechnung Buchungsende:
-1. Vom Slot-Datum: Mo. 09.02.
-2. Finde den Montag dieser Woche: Mo. 09.02.
-3. Gehe zur Vorwoche: Mo. 02.02.
-4. Finde den Donnerstag: Do. 05.02.
-5. Setze Uhrzeit: 23:59:59
+Nur eine Zeile (Singleton-Pattern)
 ```
 
-### Export-Format (CSV)
+**UI-Erweiterung in `AdminBookingExport.tsx`:**
+- Neuer Abschnitt "Automatischer Export"
+- Toggle zum Aktivieren/Deaktivieren
+- Eingabefeld für E-Mail-Adressen (kommasepariert oder Liste)
+- Info-Text: "Export wird jeden Freitag um 00:05 Uhr gesendet"
+
+**Cron-Job Setup:**
+- pg_cron führt die Edge Function jeden Freitag um 00:05 Uhr aus
+- Freitag ist nach Buchungsschluss (Donnerstag 23:59)
+
+**E-Mail-Versand:**
+- Resend API für E-Mail-Versand
+- RESEND_API_KEY als Secret erforderlich
+- Verifizierte Absender-Domain benötigt
+
+## Komponenten-Übersicht
 
 ```text
-Datum,Platz,Uhrzeit,Team A,Team B,Captain A,Email A,Captain B,Email B
-09.02.2026,Platz 1,20:00-21:30,Los Hermanos,Fairpointers,Paul,paul@...,Frederik,frederik@...
+Änderungen:
+├── src/lib/bookingUtils.ts
+│   └── 14-Tage-Beschränkung entfernen
+├── src/components/bookings/AdminVenueManager.tsx
+│   └── Platzverwaltung pro Verein hinzufügen
+├── src/components/bookings/AdminSlotCreator.tsx
+│   └── Dynamische Plätze basierend auf Venue laden
+├── src/components/bookings/AdminBookingExport.tsx
+│   └── Auto-Export Konfiguration UI
+├── src/hooks/useVenues.ts
+│   └── useVenueCourts Hook hinzufügen
+
+Neue Dateien:
+├── supabase/functions/send-booking-export/index.ts
+│   └── Edge Function für E-Mail-Versand
+└── supabase/migrations/...
+    └── venue_courts + booking_export_settings Tabellen
 ```
 
-### Datenbankschema
+## Datenbankschema-Erweiterung
 
 ```text
-┌─────────────────┐
-│  padel_venues   │
-├─────────────────┤
-│ id (uuid)       │
-│ name (text)     │
-│ address (text)  │
-│ created_at      │
-└────────┬────────┘
-         │
+┌─────────────────┐       ┌──────────────────────┐
+│  padel_venues   │       │  booking_export_     │
+├─────────────────┤       │  settings (Singleton)│
+│ id              │       ├──────────────────────┤
+│ name            │       │ id                   │
+│ address         │       │ recipient_emails[]   │
+└────────┬────────┘       │ is_active            │
+         │                └──────────────────────┘
          │ 1:n
          ▼
 ┌─────────────────┐
+│  venue_courts   │ (NEU)
+├─────────────────┤
+│ id              │
+│ venue_id        │───┐
+│ name            │   │ Wird referenziert bei
+│ display_order   │   │ Slot-Erstellung
+└─────────────────┘   │
+                      ▼
+┌─────────────────┐
 │  court_slots    │
 ├─────────────────┤
-│ id (uuid)       │
-│ venue_id (fk)   │
-│ court_name      │
+│ venue_id        │
+│ court_name      │ ← Muss einem venue_courts.name entsprechen
 │ slot_date       │
 │ start_time      │
-│ end_time        │
-│ created_by (fk) │
-│ created_at      │
-└────────┬────────┘
-         │
-         │ 1:1
-         ▼
-┌─────────────────────┐
-│   court_bookings    │
-├─────────────────────┤
-│ id (uuid)           │
-│ court_slot_id (fk)  │
-│ match_id (fk)       │
-│ booked_by_team_id   │
-│ booked_by_user_id   │
-│ booked_at           │
-└─────────────────────┘
+│ ...             │
+└─────────────────┘
 ```
 
-## Berechtigungsmatrix
+## Voraussetzungen für E-Mail-Versand
+
+Der automatische Export benötigt:
+1. **Resend Account** mit API-Key
+2. **Verifizierte Domain** für den E-Mail-Absender
+3. **RESEND_API_KEY** als Secret in Lovable Cloud
+
+Ohne diese Konfiguration kann der manuelle Export weiterhin genutzt werden, aber der automatische Versand ist deaktiviert.
+
+## Berechtigungen
 
 | Aktion | Viewer | Captain | Admin |
 |--------|--------|---------|-------|
-| Plätze ansehen | Ja | Ja | Ja |
-| Eigenes Team bearbeiten | - | Ja | Ja |
-| Eigene Spiele buchen | - | Ja | Ja |
-| Alle Teams bearbeiten | - | - | Ja |
-| Plätze erstellen | - | - | Ja |
-| Buchungen exportieren | - | - | Ja |
-| Venues verwalten | - | - | Ja |
+| Sofortige Buchung (ohne 14-Tage-Vorlauf) | - | Ja | Ja |
+| Plätze eines Vereins sehen | Ja | Ja | Ja |
+| Plätze eines Vereins verwalten | - | - | Ja |
+| Auto-Export konfigurieren | - | - | Ja |
+
