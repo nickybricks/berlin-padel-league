@@ -5,6 +5,14 @@ export interface Venue {
   created_at: string;
 }
 
+export interface VenueCourt {
+  id: string;
+  venue_id: string;
+  name: string;
+  display_order: number;
+  created_at: string;
+}
+
 export interface CourtSlot {
   id: string;
   venue_id: string;
@@ -37,4 +45,12 @@ export interface CourtSlotWithDetails extends CourtSlot {
     };
     booked_by_team?: { id: string; name: string };
   };
+}
+
+export interface BookingExportSettings {
+  id: string;
+  recipient_emails: string[];
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
 }

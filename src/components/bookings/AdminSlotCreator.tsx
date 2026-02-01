@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,9 +17,9 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Badge } from '@/components/ui/badge';
-import { Plus, CalendarIcon, Clock, X, Loader2 } from 'lucide-react';
-import { useVenues } from '@/hooks/useVenues';
-import { useCreateCourtSlots } from '@/hooks/useBookings';
+import { Plus, CalendarIcon, Clock, X, Loader2, AlertCircle } from 'lucide-react';
+import { useVenues, useVenueCourts } from '@/hooks/useVenues';
+import { useCreateCourtSlots, useCourtSlots } from '@/hooks/useBookings';
 import { format } from 'date-fns';
 import { de } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
@@ -31,8 +31,6 @@ const TIME_SLOTS = [
   { start: '21:00', end: '22:30' },
 ];
 
-const COURT_NAMES = ['Platz 1', 'Platz 2', 'Platz 3', 'Platz 4'];
-
 export function AdminSlotCreator() {
   const { data: venues } = useVenues();
   const createSlots = useCreateCourtSlots();
@@ -43,6 +41,18 @@ export function AdminSlotCreator() {
   const [selectedTimes, setSelectedTimes] = useState<{ start: string; end: string }[]>([]);
   const [customStartTime, setCustomStartTime] = useState('');
   const [customEndTime, setCustomEndTime] = useState('');
+
+  // Fetch courts for selected venue
+  const { data: venueCourts, isLoading: courtsLoading } = useVenueCourts(venueId);
+  
+  // Fetch existing slots to check for duplicates
+  const { data: existingSlots } = useCourtSlots();
+
+  // Reset court selection when venue changes
+  const handleVenueChange = (newVenueId: string) => {
+    setVenueId(newVenueId);
+    setSelectedCourts([]);
+  };
 
   const toggleCourt = (court: string) => {
     setSelectedCourts(prev =>
@@ -88,37 +98,71 @@ export function AdminSlotCreator() {
     setCustomEndTime('');
   };
 
+  // Calculate slots and check for duplicates
+  const { newSlots, duplicateCount } = useMemo(() => {
+    if (!venueId || selectedCourts.length === 0 || selectedDates.length === 0 || selectedTimes.length === 0) {
+      return { newSlots: [], duplicateCount: 0 };
+    }
+
+    const allSlots = [];
+    let duplicates = 0;
+
+    for (const court of selectedCourts) {
+      for (const date of selectedDates) {
+        for (const time of selectedTimes) {
+          const dateStr = format(date, 'yyyy-MM-dd');
+          const startTimeStr = time.start + ':00';
+          
+          // Check if this slot already exists
+          const isDuplicate = existingSlots?.some(
+            slot => 
+              slot.venue_id === venueId &&
+              slot.court_name === court &&
+              slot.slot_date === dateStr &&
+              slot.start_time === startTimeStr
+          );
+
+          if (isDuplicate) {
+            duplicates++;
+          } else {
+            allSlots.push({
+              venue_id: venueId,
+              court_name: court,
+              slot_date: dateStr,
+              start_time: startTimeStr,
+              end_time: time.end + ':00',
+            });
+          }
+        }
+      }
+    }
+
+    return { newSlots: allSlots, duplicateCount: duplicates };
+  }, [venueId, selectedCourts, selectedDates, selectedTimes, existingSlots]);
+
   const totalSlots = selectedCourts.length * selectedDates.length * selectedTimes.length;
 
   const handleCreate = async () => {
-    if (!venueId || selectedCourts.length === 0 || selectedDates.length === 0 || selectedTimes.length === 0) {
+    if (newSlots.length === 0) {
       toast({ 
-        title: 'Bitte alle Felder ausfüllen', 
-        description: 'Verein, Plätze, Daten und Zeiten sind erforderlich.',
+        title: duplicateCount > 0 
+          ? 'Alle Plätze existieren bereits' 
+          : 'Bitte alle Felder ausfüllen',
         variant: 'destructive' 
       });
       return;
     }
 
-    const slots = [];
-    for (const court of selectedCourts) {
-      for (const date of selectedDates) {
-        for (const time of selectedTimes) {
-          slots.push({
-            venue_id: venueId,
-            court_name: court,
-            slot_date: format(date, 'yyyy-MM-dd'),
-            start_time: time.start + ':00',
-            end_time: time.end + ':00',
-          });
-        }
-      }
-    }
-
     try {
-      await createSlots.mutateAsync(slots);
+      await createSlots.mutateAsync(newSlots);
+      
+      let message = `${newSlots.length} Plätze erstellt`;
+      if (duplicateCount > 0) {
+        message += `, ${duplicateCount} Duplikate übersprungen`;
+      }
+      
       toast({ 
-        title: `${slots.length} Plätze erstellt`,
+        title: message,
         description: 'Die Plätze können jetzt gebucht werden.',
       });
       
@@ -127,13 +171,23 @@ export function AdminSlotCreator() {
       setSelectedDates([]);
       setSelectedTimes([]);
     } catch (error: any) {
-      toast({ 
-        title: 'Fehler beim Erstellen', 
-        description: error.message,
-        variant: 'destructive' 
-      });
+      if (error.message?.includes('unique_court_slot')) {
+        toast({ 
+          title: 'Einige Plätze existieren bereits', 
+          description: 'Bitte prüfen Sie die Auswahl.',
+          variant: 'destructive' 
+        });
+      } else {
+        toast({ 
+          title: 'Fehler beim Erstellen', 
+          description: error.message,
+          variant: 'destructive' 
+        });
+      }
     }
   };
+
+  const courtNames = venueCourts?.map(c => c.name) || [];
 
   return (
     <Card className="p-6">
@@ -146,7 +200,7 @@ export function AdminSlotCreator() {
         {/* Venue Selection */}
         <div className="space-y-2">
           <Label>Verein *</Label>
-          <Select value={venueId} onValueChange={setVenueId}>
+          <Select value={venueId} onValueChange={handleVenueChange}>
             <SelectTrigger>
               <SelectValue placeholder="Verein auswählen..." />
             </SelectTrigger>
@@ -160,21 +214,38 @@ export function AdminSlotCreator() {
           </Select>
         </div>
 
-        {/* Court Selection */}
+        {/* Court Selection - Dynamic based on venue */}
         <div className="space-y-2">
           <Label>Plätze *</Label>
-          <div className="flex flex-wrap gap-2">
-            {COURT_NAMES.map((court) => (
-              <Badge
-                key={court}
-                variant={selectedCourts.includes(court) ? 'default' : 'outline'}
-                className="cursor-pointer"
-                onClick={() => toggleCourt(court)}
-              >
-                {court}
-              </Badge>
-            ))}
-          </div>
+          {!venueId ? (
+            <p className="text-sm text-muted-foreground">
+              Bitte zuerst einen Verein auswählen
+            </p>
+          ) : courtsLoading ? (
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Lade Plätze...
+            </div>
+          ) : courtNames.length === 0 ? (
+            <p className="text-sm text-muted-foreground flex items-center gap-2">
+              <AlertCircle className="h-4 w-4" />
+              Keine Plätze für diesen Verein konfiguriert. 
+              Bitte zuerst Plätze in der Vereinsverwaltung anlegen.
+            </p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {courtNames.map((court) => (
+                <Badge
+                  key={court}
+                  variant={selectedCourts.includes(court) ? 'default' : 'outline'}
+                  className="cursor-pointer"
+                  onClick={() => toggleCourt(court)}
+                >
+                  {court}
+                </Badge>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Date Selection */}
@@ -286,18 +357,26 @@ export function AdminSlotCreator() {
         {/* Summary & Create Button */}
         <div className="pt-4 border-t">
           {totalSlots > 0 && (
-            <p className="text-sm text-muted-foreground mb-3">
-              Es werden <strong>{totalSlots}</strong> Plätze erstellt
-              ({selectedCourts.length} Plätze × {selectedDates.length} Tage × {selectedTimes.length} Zeiten)
-            </p>
+            <div className="space-y-1 mb-3">
+              <p className="text-sm text-muted-foreground">
+                Es werden <strong>{newSlots.length}</strong> Plätze erstellt
+                ({selectedCourts.length} Plätze × {selectedDates.length} Tage × {selectedTimes.length} Zeiten)
+              </p>
+              {duplicateCount > 0 && (
+                <p className="text-sm text-warning flex items-center gap-1">
+                  <AlertCircle className="h-4 w-4" />
+                  {duplicateCount} Duplikate werden übersprungen
+                </p>
+              )}
+            </div>
           )}
           <Button 
             className="w-full" 
             onClick={handleCreate}
-            disabled={totalSlots === 0 || createSlots.isPending}
+            disabled={newSlots.length === 0 || createSlots.isPending}
           >
             {createSlots.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-            {totalSlots > 0 ? `${totalSlots} Plätze erstellen` : 'Plätze erstellen'}
+            {newSlots.length > 0 ? `${newSlots.length} Plätze erstellen` : 'Plätze erstellen'}
           </Button>
         </div>
       </div>
