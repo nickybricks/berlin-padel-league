@@ -39,27 +39,27 @@ export function Header({ leagueId }: HeaderProps) {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/30 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
       <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 font-semibold text-lg">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-            <Trophy className="h-4 w-4 text-primary-foreground" />
+        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+            <Trophy className="h-5 w-5 text-primary-foreground" />
           </div>
           <span className="hidden sm:inline">Padel Liga</span>
         </Link>
 
-        {/* Desktop Navigation - Segmented Control Style */}
+        {/* Desktop Navigation - only show when in league context */}
         {filteredNavItems.length > 0 && (
-          <nav className="hidden md:flex items-center bg-muted/60 rounded-full p-1">
+          <nav className="hidden md:flex items-center gap-1">
             {filteredNavItems.map(item => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   isActive(item.path)
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 {item.label}

@@ -27,16 +27,16 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="text-left text-[11px] uppercase tracking-wider text-muted-foreground/70">
-            <th className="pb-4 pl-4 w-12 font-medium">#</th>
-            <th className="pb-4 w-12"></th>
-            <th className="pb-4 font-medium">Team</th>
-            <th className="pb-4 text-center hidden sm:table-cell font-medium">Sp</th>
-            <th className="pb-4 text-center hidden sm:table-cell font-medium">S</th>
-            <th className="pb-4 text-center hidden sm:table-cell font-medium">N</th>
-            <th className="pb-4 text-center hidden md:table-cell font-medium">Sätze</th>
-            <th className="pb-4 text-center hidden lg:table-cell font-medium">Spiele</th>
-            <th className="pb-4 text-center pr-4 font-medium">Pkt</th>
+          <tr className="border-b text-left text-sm text-muted-foreground">
+            <th className="pb-3 pl-4 w-12">#</th>
+            <th className="pb-3 w-12"></th>
+            <th className="pb-3">Team</th>
+            <th className="pb-3 text-center hidden sm:table-cell">Sp</th>
+            <th className="pb-3 text-center hidden sm:table-cell">S</th>
+            <th className="pb-3 text-center hidden sm:table-cell">N</th>
+            <th className="pb-3 text-center hidden md:table-cell">Sätze</th>
+            <th className="pb-3 text-center hidden lg:table-cell">Spiele</th>
+            <th className="pb-3 text-center pr-4 font-semibold">Pkt</th>
           </tr>
         </thead>
         <tbody>
@@ -48,20 +48,20 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
             return (
               <tr
                 key={standing.team.id}
-                className={`transition-colors ${index % 2 === 1 ? 'bg-muted/30' : ''}`}
+                className="table-row-animate border-b last:border-0"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <td className="py-5 pl-0">
+                <td className="py-4 pl-0">
                   <div className="flex items-center">
-                    {/* Subtle indicator for playoff teams */}
-                    <div className={`w-0.5 h-8 rounded-full mr-3 ${isPlayoff ? 'bg-accent/60' : 'bg-transparent'}`} />
-                    <span className="text-sm tabular-nums text-muted-foreground w-6 text-center">
+                    {/* Green stripe for playoff teams */}
+                    <div className={`w-1 h-10 rounded-full mr-3 ${isPlayoff ? 'bg-success' : 'bg-transparent'}`} />
+                    <span className="text-sm font-medium text-muted-foreground w-6 text-center">
                       {standing.rank}
                     </span>
                   </div>
                 </td>
-                <td className="py-5">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full ring-1 ring-border/40 bg-muted/50 overflow-hidden">
+                <td className="py-4">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted overflow-hidden">
                     {logoUrl ? (
                       <img
                         src={logoUrl}
@@ -69,62 +69,62 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <Users className="h-4 w-4 text-muted-foreground/60" />
+                      <Users className="h-4 w-4 text-muted-foreground" />
                     )}
                   </div>
                 </td>
-                <td className="py-5">
+                <td className="py-4">
                   <div className="flex items-center gap-2">
                     <Link 
                       to={`/teams/${standing.team.id}`}
-                      className="font-medium hover:text-accent transition-colors"
+                      className="font-semibold hover:text-primary transition-colors"
                     >
                       {standing.team.name}
                     </Link>
                     {isTop3 && (
-                      <Trophy className={`h-3.5 w-3.5 ${
+                      <Trophy className={`h-4 w-4 ${
                         standing.rank === 1 ? 'text-yellow-500' :
-                        standing.rank === 2 ? 'text-muted-foreground/60' :
-                        'text-amber-600/70'
+                        standing.rank === 2 ? 'text-gray-400' :
+                        'text-amber-600'
                       }`} />
                     )}
                   </div>
                 </td>
-                <td className="py-5 text-center hidden sm:table-cell text-muted-foreground tabular-nums">
+                <td className="py-4 text-center hidden sm:table-cell text-muted-foreground">
                   {standing.played}
                 </td>
-                <td className="py-5 text-center hidden sm:table-cell text-foreground/80 tabular-nums">
+                <td className="py-4 text-center hidden sm:table-cell text-success font-medium">
                   {standing.wins}
                 </td>
-                <td className="py-5 text-center hidden sm:table-cell text-muted-foreground tabular-nums">
+                <td className="py-4 text-center hidden sm:table-cell text-destructive font-medium">
                   {standing.losses}
                 </td>
-                <td className="py-5 text-center hidden md:table-cell tabular-nums">
+                <td className="py-4 text-center hidden md:table-cell">
                   <span className="text-muted-foreground">
                     {standing.setsWon}:{standing.setsLost}
                   </span>
-                  <span className={`ml-1.5 text-xs ${
-                    standing.setDiff > 0 ? 'text-foreground/60' :
-                    standing.setDiff < 0 ? 'text-muted-foreground' :
+                  <span className={`ml-2 text-xs font-medium ${
+                    standing.setDiff > 0 ? 'text-success' :
+                    standing.setDiff < 0 ? 'text-destructive' :
                     'text-muted-foreground'
                   }`}>
                     ({standing.setDiff > 0 ? '+' : ''}{standing.setDiff})
                   </span>
                 </td>
-                <td className="py-5 text-center hidden lg:table-cell tabular-nums">
+                <td className="py-4 text-center hidden lg:table-cell">
                   <span className="text-muted-foreground">
                     {standing.gamesWon}:{standing.gamesLost}
                   </span>
-                  <span className={`ml-1.5 text-xs ${
-                    standing.gameDiff > 0 ? 'text-foreground/60' :
-                    standing.gameDiff < 0 ? 'text-muted-foreground' :
+                  <span className={`ml-2 text-xs font-medium ${
+                    standing.gameDiff > 0 ? 'text-success' :
+                    standing.gameDiff < 0 ? 'text-destructive' :
                     'text-muted-foreground'
                   }`}>
                     ({standing.gameDiff > 0 ? '+' : ''}{standing.gameDiff})
                   </span>
                 </td>
-                <td className="py-5 text-center pr-4">
-                  <span className="text-lg font-semibold tabular-nums text-foreground">
+                <td className="py-4 text-center pr-4">
+                  <span className="inline-flex items-center justify-center min-w-[2.5rem] px-3 py-1 rounded-full bg-primary text-primary-foreground font-bold text-lg">
                     {standing.points}
                   </span>
                 </td>
@@ -134,23 +134,20 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
         </tbody>
       </table>
       
-      {/* Legend - More subtle */}
-      <div className="mt-6 pt-4 flex flex-wrap gap-6 text-xs text-muted-foreground/60">
-        <div className="flex items-center gap-1.5">
-          <div className="w-0.5 h-3 rounded-full bg-accent/60" />
-          <span>Playoff (Top 8)</span>
+      {/* Legend */}
+      <div className="mt-4 pt-4 border-t flex flex-wrap gap-4 text-sm text-muted-foreground">
+        <div className="flex items-center gap-2">
+          <div className="w-1 h-4 rounded-full bg-success" />
+          <span>Playoff-Qualifikation (Top 8)</span>
         </div>
-        <div className="flex items-center gap-1">
-          <span className="font-medium">Sp</span>
-          <span>Spiele</span>
+        <div className="flex items-center gap-2">
+          <span className="font-medium">Sp</span> = Spiele
         </div>
-        <div className="flex items-center gap-1">
-          <span className="font-medium">S</span>
-          <span>Siege</span>
+        <div className="flex items-center gap-2">
+          <span className="font-medium">S</span> = Siege
         </div>
-        <div className="flex items-center gap-1">
-          <span className="font-medium">N</span>
-          <span>Niederlagen</span>
+        <div className="flex items-center gap-2">
+          <span className="font-medium">N</span> = Niederlagen
         </div>
       </div>
     </div>
