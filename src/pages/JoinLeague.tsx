@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAuth } from '@/hooks/useAuth';
-import { useLeagueByCode, useLeagueTeams, useCheckEmailInLeagueTeam, useJoinLeague, useUserLeagues, getAvailablePlayerSlot } from '@/hooks/useLeagues';
+import { useLeagueByCode, useLeagueTeams, useCheckEmailInLeagueTeam, useUserLeagues, getAvailablePlayerSlot } from '@/hooks/useLeagues';
 import { toast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -38,7 +38,6 @@ export default function JoinLeague() {
   const { data: leagueTeams, isLoading: teamsLoading } = useLeagueTeams(league?.id);
   const { data: matchedTeam, isLoading: matchLoading } = useCheckEmailInLeagueTeam(league?.id, user?.email || undefined);
   const { data: userLeagues } = useUserLeagues(user?.id);
-  const joinLeague = useJoinLeague();
 
   // Determine current step based on state
   useEffect(() => {
@@ -69,9 +68,11 @@ export default function JoinLeague() {
       return;
     }
 
-    // If email matches a team, auto-join
+    // If email matches a team, go to details step (auto-select team + slot)
     if (matchedTeam) {
-      handleAutoJoin(matchedTeam.id, matchedTeam.name);
+      if (playerSlotInfo?.teamId !== matchedTeam.id) {
+        handleAutoJoin(matchedTeam);
+      }
       return;
     }
 
@@ -79,27 +80,31 @@ export default function JoinLeague() {
     if (step !== 'player-details' && step !== 'joining' && step !== 'success') {
       setStep('team-select');
     }
-  }, [league, leagueLoading, leagueError, user, authLoading, matchedTeam, matchLoading, teamsLoading, userLeagues]);
+  }, [league, leagueLoading, leagueError, user, authLoading, matchedTeam, matchLoading, teamsLoading, userLeagues, playerSlotInfo, step]);
 
-  const handleAutoJoin = async (teamId: string, teamName: string) => {
+  const handleAutoJoin = (team: any) => {
     if (!league || !user) return;
-    setStep('joining');
-    try {
-      await joinLeague.mutateAsync({
-        leagueId: league.id,
-        userId: user.id,
-        teamId: teamId,
-      });
-      setStep('success');
-      toast({ title: `Willkommen bei ${league.name}!` });
-    } catch (error: any) {
-      toast({ 
-        title: 'Fehler beim Beitreten', 
-        description: error.message,
-        variant: 'destructive',
-      });
-      setStep('team-select');
+    const email = user.email || '';
+
+    const slotFromEmail = team.player1_email === email
+      ? 'player1'
+      : team.player2_email === email
+        ? 'player2'
+        : null;
+
+    const slot = slotFromEmail || getAvailablePlayerSlot(team);
+
+    if (!slot) {
+      setStep('team-full');
+      return;
     }
+
+    setPlayerSlotInfo({
+      teamId: team.id,
+      teamName: team.name,
+      slot,
+    });
+    setStep('player-details');
   };
 
   const handleAuthSubmit = async (e: React.FormEvent) => {
@@ -159,43 +164,27 @@ export default function JoinLeague() {
     }
     
     setSavingDetails(true);
-    
+    setStep('joining');
+
     try {
-      // Update team with player details
-      const updateData = playerSlotInfo.slot === 'player1' 
-        ? {
-            player1_name: playerName.trim(),
-            player1_email: user.email,
-            player1_phone: playerPhone.trim() || null,
-          }
-        : {
-            player2_name: playerName.trim(),
-            player2_email: user.email,
-            player2_phone: playerPhone.trim() || null,
-          };
-      
-      const { error: updateError } = await supabase
-        .from('teams')
-        .update(updateData)
-        .eq('id', playerSlotInfo.teamId);
-      
-      if (updateError) throw updateError;
-      
-      // Join the league
-      await joinLeague.mutateAsync({
-        leagueId: league.id,
-        userId: user.id,
-        teamId: playerSlotInfo.teamId,
+      const { error } = await supabase.rpc('join_league_team', {
+        _league_id: league.id,
+        _team_id: playerSlotInfo.teamId,
+        _player_name: playerName.trim(),
+        _player_phone: playerPhone.trim() || null,
       });
-      
+
+      if (error) throw error;
+
       setStep('success');
       toast({ title: `Willkommen bei ${league.name}!` });
     } catch (error: any) {
-      toast({ 
-        title: 'Fehler beim Speichern', 
+      toast({
+        title: 'Fehler beim Beitreten',
         description: error.message,
         variant: 'destructive',
       });
+      setStep('player-details');
     } finally {
       setSavingDetails(false);
     }
