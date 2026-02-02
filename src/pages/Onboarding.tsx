@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Trophy, Users, Plus, ArrowRight, Loader2 } from 'lucide-react';
+import { Trophy, Users, Plus, ArrowRight, Loader2, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserLeagues, useLeagueByCode } from '@/hooks/useLeagues';
+import { useUserLeagues } from '@/hooks/useLeagues';
 import { toast } from '@/hooks/use-toast';
 
 type Step = 'choose' | 'enter-code';
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const { data: userLeagues, isLoading: leaguesLoading } = useUserLeagues(user?.id);
   
   const [step, setStep] = useState<Step>('choose');
@@ -56,6 +56,22 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      {/* Header with Logout */}
+      <header className="border-b bg-card/95 backdrop-blur">
+        <div className="container flex h-14 items-center justify-between">
+          <div className="flex items-center gap-2 font-semibold">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Trophy className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span>Padel Liga</span>
+          </div>
+          <Button variant="ghost" size="sm" onClick={signOut}>
+            <LogOut className="mr-2 h-4 w-4" />
+            Abmelden
+          </Button>
+        </div>
+      </header>
+
       <main className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-md space-y-6">
           {/* Header */}
