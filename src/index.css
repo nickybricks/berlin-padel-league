@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -17,7 +18,7 @@
     --popover-foreground: 220 40% 13%;
 
     /* Primary - Deep Navy Blue */
-    --primary: 220 60% 20%;
+    --primary: 228 71% 15%;
     --primary-foreground: 0 0% 100%;
 
     /* Secondary - Light blue-gray */
@@ -41,7 +42,7 @@
     --input: 220 20% 88%;
     --ring: 160 70% 40%;
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
     /* Custom tokens */
     --playoff: 45 90% 55%;
@@ -57,9 +58,9 @@
     --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 30% 98%) 100%);
 
     /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-sm: 0px 1px 5.75px 0px hsla(0, 0%, 0%, 0.17);
+    --shadow-md: 0px 1px 17.25px 0px hsla(0, 0%, 0%, 0.17);
+    --shadow-lg: 0px 1px 28.75px 0px hsla(0, 0%, 0%, 0.17);
     --shadow-glow: 0 0 20px hsl(160 70% 40% / 0.3);
 
     /* Sidebar */
@@ -71,6 +72,9 @@
     --sidebar-accent-foreground: 210 40% 95%;
     --sidebar-border: 220 40% 30%;
     --sidebar-ring: 160 70% 50%;
+    --shadow: 0px 1px 11.5px 0px hsla(0, 0%, 0%, 0.17);
+    --font-serif: "Crimson Pro", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+    --font-mono: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   }
 
   .dark {
@@ -110,6 +114,13 @@
     --sidebar-accent-foreground: 210 40% 90%;
     --sidebar-border: 220 25% 18%;
     --sidebar-ring: 160 70% 50%;
+    --radius: 1.25rem;
+    --shadow-sm: 0px 1px 5.75px 0px hsla(0, 0%, 0%, 0.17);
+    --shadow: 0px 1px 11.5px 0px hsla(0, 0%, 0%, 0.17);
+    --shadow-md: 0px 1px 17.25px 0px hsla(0, 0%, 0%, 0.17);
+    --shadow-lg: 0px 1px 28.75px 0px hsla(0, 0%, 0%, 0.17);
+    --font-serif: "Crimson Pro", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+    --font-mono: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   }
 }
 
