@@ -1,15 +1,26 @@
 import { useMemo } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { ResultForm } from '@/components/forms/ResultForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useMatches, useMatchResults } from '@/hooks/useMatches';
+import { useLeagueTeams } from '@/hooks/useLeagues';
 import { ClipboardEdit, Shield } from 'lucide-react';
 
 export default function EnterResult() {
+  const { leagueId } = useParams<{ leagueId: string }>();
   const { user, loading, canEnterResults, isAdmin, isPlayer, role } = useAuth();
   const { data: matches } = useMatches();
   const { data: results } = useMatchResults();
+  const { data: teams } = useLeagueTeams(leagueId);
+
+  // Filter matches to only include teams from this league
+  const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
+  
+  const leagueMatches = useMemo(() => {
+    if (!matches) return [];
+    return matches.filter(m => leagueTeamIds.has(m.team_a_id) && leagueTeamIds.has(m.team_b_id));
+  }, [matches, leagueTeamIds]);
 
   // Create set of played match IDs
   const playedMatchIds = useMemo(() => {
@@ -19,7 +30,7 @@ export default function EnterResult() {
   // Show loading state
   if (loading) {
     return (
-      <Layout>
+      <Layout leagueId={leagueId}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-accent" />
         </div>
@@ -35,7 +46,7 @@ export default function EnterResult() {
   // Show access denied if not authorized
   if (!canEnterResults) {
     return (
-      <Layout>
+      <Layout leagueId={leagueId}>
         <div className="max-w-md mx-auto text-center py-12">
           <Shield className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
           <h1 className="text-2xl font-bold mb-2">Zugriff verweigert</h1>
@@ -49,7 +60,7 @@ export default function EnterResult() {
   }
 
   return (
-    <Layout>
+    <Layout leagueId={leagueId}>
       <div className="max-w-xl mx-auto space-y-6">
         {/* Header */}
         <div>
@@ -72,9 +83,9 @@ export default function EnterResult() {
 
         {/* Result Form */}
         <div className="bg-card rounded-xl border p-4 md:p-6">
-          {matches && (
+          {leagueMatches.length > 0 && (
             <ResultForm 
-              matches={matches} 
+              matches={leagueMatches} 
               playedMatchIds={playedMatchIds}
             />
           )}

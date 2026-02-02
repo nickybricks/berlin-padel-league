@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,6 +26,7 @@ import { de } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
 
 export default function Bookings() {
+  const { leagueId } = useParams<{ leagueId: string }>();
   const { isAdmin, user } = useAuth();
   const { data: venues } = useVenues();
   
@@ -79,7 +81,7 @@ export default function Bookings() {
   };
 
   return (
-    <Layout>
+    <Layout leagueId={leagueId}>
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-bold flex items-center gap-2">

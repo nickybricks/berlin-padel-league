@@ -2,8 +2,10 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Landing from "./pages/Landing";
+import JoinLeague from "./pages/JoinLeague";
+import LeagueDashboard from "./pages/LeagueDashboard";
 import Teams from "./pages/Teams";
 import TeamPage from "./pages/TeamPage";
 import Schedule from "./pages/Schedule";
@@ -22,14 +24,28 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/teams" element={<Teams />} />
-          <Route path="/teams/:teamId" element={<TeamPage />} />
-          <Route path="/schedule" element={<Schedule />} />
-          <Route path="/bookings" element={<Bookings />} />
-          <Route path="/playoffs" element={<Playoffs />} />
-          <Route path="/enter-result" element={<EnterResult />} />
+          {/* Public routes */}
+          <Route path="/" element={<Landing />} />
+          <Route path="/join/:code" element={<JoinLeague />} />
           <Route path="/login" element={<Login />} />
+          
+          {/* League-specific routes */}
+          <Route path="/league/:leagueId" element={<LeagueDashboard />} />
+          <Route path="/league/:leagueId/teams" element={<Teams />} />
+          <Route path="/league/:leagueId/teams/:teamId" element={<TeamPage />} />
+          <Route path="/league/:leagueId/schedule" element={<Schedule />} />
+          <Route path="/league/:leagueId/bookings" element={<Bookings />} />
+          <Route path="/league/:leagueId/playoffs" element={<Playoffs />} />
+          <Route path="/league/:leagueId/enter-result" element={<EnterResult />} />
+          
+          {/* Legacy routes redirect to default league */}
+          <Route path="/teams" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/teams" replace />} />
+          <Route path="/teams/:teamId" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/teams" replace />} />
+          <Route path="/schedule" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/schedule" replace />} />
+          <Route path="/bookings" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/bookings" replace />} />
+          <Route path="/playoffs" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/playoffs" replace />} />
+          <Route path="/enter-result" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/enter-result" replace />} />
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
