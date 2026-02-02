@@ -81,36 +81,41 @@ export default {
   		},
   		fontFamily: {
   			sans: [
-  				'Inter',
-  				'ui-sans-serif',
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'SF Pro Display',
+  				'SF Pro Text',
   				'system-ui',
+  				'Segoe UI',
+  				'Roboto',
+  				'Helvetica Neue',
+  				'Arial',
   				'sans-serif',
   				'Apple Color Emoji',
-  				'Segoe UI Emoji',
-  				'Segoe UI Symbol',
-  				'Noto Color Emoji'
+  				'Segoe UI Emoji'
   			],
   			display: [
-  				'Inter',
+  				'-apple-system',
+  				'BlinkMacSystemFont',
+  				'SF Pro Display',
   				'system-ui',
   				'sans-serif'
   			],
   			serif: [
+  				'New York',
   				'ui-serif',
   				'Georgia',
   				'Cambria',
   				'Times New Roman',
-  				'Times',
   				'serif'
   			],
   			mono: [
+  				'SF Mono',
   				'ui-monospace',
   				'SFMono-Regular',
   				'Menlo',
   				'Monaco',
   				'Consolas',
-  				'Liberation Mono',
-  				'Courier New',
   				'monospace'
   			]
   		},

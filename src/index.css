@@ -1,126 +1,133 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Padel Liga Design System - Sporty Modern Theme */
+/* Padel Liga Design System - Apple-Inspired Clean Theme */
 
 @layer base {
   :root {
-    /* Core brand colors - Deep Navy & Vibrant Green */
-    --background: 220 25% 97%;
-    --foreground: 220 40% 13%;
+    /* Core brand colors - Subtle & Clean */
+    --background: 0 0% 98%;
+    --foreground: 0 0% 9%;
 
     --card: 0 0% 100%;
-    --card-foreground: 220 40% 13%;
+    --card-foreground: 0 0% 9%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 220 40% 13%;
+    --popover-foreground: 0 0% 9%;
 
     /* Primary - Deep Navy Blue */
     --primary: 228 71% 15%;
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Light blue-gray */
-    --secondary: 210 30% 94%;
-    --secondary-foreground: 220 40% 20%;
+    /* Secondary - Very light gray */
+    --secondary: 0 0% 96%;
+    --secondary-foreground: 0 0% 20%;
 
-    /* Muted tones */
-    --muted: 210 25% 92%;
-    --muted-foreground: 220 15% 45%;
+    /* Muted tones - Softer grays */
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
 
-    /* Accent - Vibrant Green (Padel court color) */
-    --accent: 160 70% 40%;
+    /* Accent - Subtle Blue (for interactions) */
+    --accent: 228 71% 45%;
     --accent-foreground: 0 0% 100%;
 
-    /* Destructive */
-    --destructive: 0 72% 51%;
+    /* Destructive - Desaturated red */
+    --destructive: 0 30% 55%;
     --destructive-foreground: 0 0% 100%;
 
     /* UI elements */
-    --border: 220 20% 88%;
-    --input: 220 20% 88%;
-    --ring: 160 70% 40%;
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: 228 71% 45%;
 
-    --radius: 1.25rem;
+    --radius: 0.75rem;
 
     /* Custom tokens */
     --playoff: 45 90% 55%;
     --playoff-foreground: 30 60% 20%;
-    --success: 160 70% 40%;
+    --success: 160 25% 50%;
     --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
+    --warning: 38 50% 55%;
     --warning-foreground: 30 60% 15%;
+    
+    /* Zebra stripe for tables */
+    --zebra: 0 0% 97%;
 
-    /* Gradients */
-    --gradient-hero: linear-gradient(135deg, hsl(220 60% 20%) 0%, hsl(220 50% 35%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(160 70% 40%) 0%, hsl(160 60% 50%) 100%);
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 30% 98%) 100%);
+    /* Glassmorphism */
+    --glass-bg: 0 0% 100% / 0.8;
+    --glass-border: 0 0% 0% / 0.05;
 
-    /* Shadows */
-    --shadow-sm: 0px 1px 5.75px 0px hsla(0, 0%, 0%, 0.17);
-    --shadow-md: 0px 1px 17.25px 0px hsla(0, 0%, 0%, 0.17);
-    --shadow-lg: 0px 1px 28.75px 0px hsla(0, 0%, 0%, 0.17);
-    --shadow-glow: 0 0 20px hsl(160 70% 40% / 0.3);
+    /* Shadows - Softer, Apple-style */
+    --shadow-xs: 0 1px 2px 0 hsla(0, 0%, 0%, 0.03);
+    --shadow-sm: 0 1px 3px 0 hsla(0, 0%, 0%, 0.05);
+    --shadow-md: 0 4px 6px -1px hsla(0, 0%, 0%, 0.05);
+    --shadow-lg: 0 10px 15px -3px hsla(0, 0%, 0%, 0.05);
+    --shadow: 0 1px 3px 0 hsla(0, 0%, 0%, 0.05);
 
     /* Sidebar */
-    --sidebar-background: 220 60% 20%;
-    --sidebar-foreground: 210 40% 95%;
-    --sidebar-primary: 160 70% 50%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 20%;
+    --sidebar-primary: 228 71% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 50% 28%;
-    --sidebar-accent-foreground: 210 40% 95%;
-    --sidebar-border: 220 40% 30%;
-    --sidebar-ring: 160 70% 50%;
-    --shadow: 0px 1px 11.5px 0px hsla(0, 0%, 0%, 0.17);
-    --font-serif: "Crimson Pro", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
-    --font-mono: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --sidebar-accent: 0 0% 94%;
+    --sidebar-accent-foreground: 0 0% 20%;
+    --sidebar-border: 0 0% 90%;
+    --sidebar-ring: 228 71% 45%;
+    --font-serif: ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   }
 
   .dark {
-    --background: 220 35% 8%;
-    --foreground: 210 40% 95%;
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
 
-    --card: 220 30% 12%;
-    --card-foreground: 210 40% 95%;
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 220 30% 12%;
-    --popover-foreground: 210 40% 95%;
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 160 70% 50%;
-    --primary-foreground: 220 40% 10%;
+    --primary: 228 60% 60%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 220 30% 18%;
-    --secondary-foreground: 210 30% 90%;
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 220 25% 16%;
-    --muted-foreground: 215 20% 60%;
+    --muted: 0 0% 16%;
+    --muted-foreground: 0 0% 60%;
 
-    --accent: 160 70% 45%;
-    --accent-foreground: 220 40% 10%;
+    --accent: 228 60% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62% 45%;
+    --destructive: 0 30% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 25% 20%;
-    --input: 220 25% 20%;
-    --ring: 160 70% 50%;
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 228 60% 55%;
 
-    --sidebar-background: 220 40% 6%;
-    --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 160 70% 50%;
-    --sidebar-primary-foreground: 220 40% 10%;
-    --sidebar-accent: 220 30% 14%;
-    --sidebar-accent-foreground: 210 40% 90%;
-    --sidebar-border: 220 25% 18%;
-    --sidebar-ring: 160 70% 50%;
-    --radius: 1.25rem;
-    --shadow-sm: 0px 1px 5.75px 0px hsla(0, 0%, 0%, 0.17);
-    --shadow: 0px 1px 11.5px 0px hsla(0, 0%, 0%, 0.17);
-    --shadow-md: 0px 1px 17.25px 0px hsla(0, 0%, 0%, 0.17);
-    --shadow-lg: 0px 1px 28.75px 0px hsla(0, 0%, 0%, 0.17);
-    --font-serif: "Crimson Pro", ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
-    --font-mono: "Cascadia Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+    --success: 160 20% 55%;
+    --zebra: 0 0% 10%;
+    --glass-bg: 0 0% 12% / 0.8;
+    --glass-border: 0 0% 100% / 0.05;
+
+    --sidebar-background: 0 0% 6%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 228 60% 55%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 14%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 228 60% 55%;
+    --radius: 0.75rem;
+    --shadow-xs: 0 1px 2px 0 hsla(0, 0%, 0%, 0.2);
+    --shadow-sm: 0 1px 3px 0 hsla(0, 0%, 0%, 0.2);
+    --shadow: 0 1px 3px 0 hsla(0, 0%, 0%, 0.2);
+    --shadow-md: 0 4px 6px -1px hsla(0, 0%, 0%, 0.2);
+    --shadow-lg: 0 10px 15px -3px hsla(0, 0%, 0%, 0.2);
+    --font-serif: ui-serif, Georgia, Cambria, Times New Roman, Times, serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
   }
 }
 

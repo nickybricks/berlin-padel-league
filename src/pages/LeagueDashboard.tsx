@@ -58,60 +58,60 @@ export default function LeagueDashboard() {
 
   return (
     <Layout leagueId={leagueId}>
-      <div className="space-y-8">
-        {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-2xl bg-primary p-6 md:p-8 text-primary-foreground">
+      <div className="space-y-6">
+        {/* Hero Section - Subtle gradient */}
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-muted/80 to-muted/40 p-6 md:p-8">
           <div className="relative z-10">
-            <h1 className="text-2xl md:text-4xl font-bold mb-2">
+            <h1 className="text-2xl md:text-3xl font-semibold text-foreground mb-1">
               {league?.name || 'Liga'}
             </h1>
-            <p className="text-primary-foreground/80 max-w-xl">
+            <p className="text-muted-foreground text-sm">
               Saison 2025 • Gruppenphase • {teams?.length ?? 0} Teams
             </p>
           </div>
           
-          {/* Stats Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-            <div className="bg-primary-foreground/10 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-                <Users className="h-4 w-4" />
+          {/* Stats Grid - Cleaner cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+            <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wide mb-1">
+                <Users className="h-3.5 w-3.5" />
                 Teams
               </div>
-              <div className="text-2xl font-bold">{teams?.length ?? 0}</div>
+              <div className="text-2xl font-semibold tabular-nums">{teams?.length ?? 0}</div>
             </div>
-            <div className="bg-primary-foreground/10 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-                <Calendar className="h-4 w-4" />
+            <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wide mb-1">
+                <Calendar className="h-3.5 w-3.5" />
                 Gespielt
               </div>
-              <div className="text-2xl font-bold">{playedCount}/{totalMatches}</div>
+              <div className="text-2xl font-semibold tabular-nums">{playedCount}/{totalMatches}</div>
             </div>
-            <div className="bg-primary-foreground/10 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-                <Target className="h-4 w-4" />
+            <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wide mb-1">
+                <Target className="h-3.5 w-3.5" />
                 Fortschritt
               </div>
-              <div className="text-2xl font-bold">{progress}%</div>
+              <div className="text-2xl font-semibold tabular-nums">{progress}%</div>
             </div>
-            <div className="bg-primary-foreground/10 rounded-xl p-4">
-              <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-                <Trophy className="h-4 w-4" />
+            <div className="bg-background/80 backdrop-blur-sm rounded-xl p-4 shadow-sm">
+              <div className="flex items-center gap-2 text-muted-foreground text-xs uppercase tracking-wide mb-1">
+                <Trophy className="h-3.5 w-3.5" />
                 Playoffs
               </div>
-              <div className="text-2xl font-bold">Top 8</div>
+              <div className="text-2xl font-semibold">Top 8</div>
             </div>
           </div>
 
-          {/* Background decoration */}
-          <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
-            <Trophy className="w-full h-full" />
+          {/* Background decoration - More subtle */}
+          <div className="absolute top-0 right-0 w-48 h-48 opacity-[0.03]">
+            <Trophy className="w-full h-full text-foreground" />
           </div>
         </div>
 
-        {/* Standings Table */}
-        <div className="bg-card rounded-xl border p-4 md:p-6">
-          <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-            <Trophy className="h-5 w-5 text-accent" />
+        {/* Standings Table - Cleaner container */}
+        <div className="bg-card rounded-xl border border-border/50 p-4 md:p-6 shadow-sm">
+          <h2 className="text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
+            <Trophy className="h-4 w-4 text-accent" />
             Aktuelle Tabelle
           </h2>
           <StandingsTable standings={standings} loading={isLoading} />
