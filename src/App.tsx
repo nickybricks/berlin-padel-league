@@ -38,14 +38,6 @@ const App = () => (
           <Route path="/league/:leagueId/playoffs" element={<Playoffs />} />
           <Route path="/league/:leagueId/enter-result" element={<EnterResult />} />
           
-          {/* Legacy routes redirect to default league */}
-          <Route path="/teams" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/teams" replace />} />
-          <Route path="/teams/:teamId" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/teams" replace />} />
-          <Route path="/schedule" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/schedule" replace />} />
-          <Route path="/bookings" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/bookings" replace />} />
-          <Route path="/playoffs" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/playoffs" replace />} />
-          <Route path="/enter-result" element={<Navigate to="/league/a1b2c3d4-e5f6-7890-abcd-ef1234567890/enter-result" replace />} />
-          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
