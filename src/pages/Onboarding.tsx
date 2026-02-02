@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Trophy, Users, Plus, ArrowRight, Loader2, LogOut } from 'lucide-react';
+import { Trophy, Users, Plus, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserLeagues } from '@/hooks/useLeagues';
 import { toast } from '@/hooks/use-toast';
 
 type Step = 'choose' | 'enter-code';
@@ -12,7 +11,6 @@ type Step = 'choose' | 'enter-code';
 export default function Onboarding() {
   const navigate = useNavigate();
   const { user, signOut, loading: authLoading } = useAuth();
-  const { data: userLeagues, isLoading: leaguesLoading } = useUserLeagues(user?.id);
   
   const [step, setStep] = useState<Step>('choose');
   const [code, setCode] = useState('');
@@ -40,7 +38,7 @@ export default function Onboarding() {
   };
 
   // Show loading state
-  if (authLoading || leaguesLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -50,35 +48,28 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header with Logout */}
-      <header className="border-b bg-card/95 backdrop-blur">
-        <div className="container flex h-14 items-center justify-between">
-          <div className="flex items-center gap-2 font-semibold">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Trophy className="h-4 w-4 text-primary-foreground" />
+      {/* Header */}
+      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
+          <Link to="/leagues" className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
+              <Trophy className="h-5 w-5 text-primary-foreground" />
             </div>
-            <span>Padel Liga</span>
-          </div>
+            <span className="font-semibold text-lg">Padel Liga</span>
+          </Link>
           <Button variant="ghost" size="sm" onClick={signOut}>
-            <LogOut className="mr-2 h-4 w-4" />
             Abmelden
           </Button>
         </div>
       </header>
 
-      <main className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md space-y-6">
-          {/* Header */}
-          <div className="text-center space-y-2">
-            <div className="flex justify-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-primary shadow-md">
-                <Trophy className="h-7 w-7 text-primary-foreground" />
-              </div>
-            </div>
-            <h1 className="text-2xl font-bold text-foreground">
-              Willkommen!
-            </h1>
-            <p className="text-muted-foreground">
+      {/* Main Content */}
+      <main className="flex-1 p-4 md:p-6">
+        <div className="max-w-2xl mx-auto space-y-6">
+          {/* Title */}
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Liga beitreten</h1>
+            <p className="text-muted-foreground mt-1">
               Was möchtest du tun?
             </p>
           </div>
