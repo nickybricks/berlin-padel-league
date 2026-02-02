@@ -25,12 +25,6 @@ export default function Onboarding() {
     }
   }, [user, authLoading, navigate]);
 
-  // Redirect if user already has leagues
-  useEffect(() => {
-    if (!authLoading && !leaguesLoading && userLeagues && userLeagues.length > 0) {
-      navigate(`/league/${userLeagues[0].league_id}`, { replace: true });
-    }
-  }, [userLeagues, authLoading, leaguesLoading, navigate]);
 
   const handleJoinLeague = (e: React.FormEvent) => {
     e.preventDefault();

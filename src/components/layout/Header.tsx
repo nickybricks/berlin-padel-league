@@ -84,6 +84,12 @@ export function Header({ leagueId }: HeaderProps) {
                 <div className="px-2 py-1 text-xs font-medium uppercase text-accent">
                   {role}
                 </div>
+                <DropdownMenuItem asChild className="cursor-pointer">
+                  <Link to="/leagues">
+                    <Trophy className="mr-2 h-4 w-4" />
+                    Meine Ligen
+                  </Link>
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={signOut} className="cursor-pointer">
                   <LogOut className="mr-2 h-4 w-4" />
                   Abmelden
