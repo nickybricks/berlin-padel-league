@@ -1,10 +1,30 @@
 import { MatchWithTeams, MatchResult } from '@/types/database';
 import { formatSetResult, getSetScore } from '@/lib/standings';
-import { CheckCircle2, Clock } from 'lucide-react';
+import { CheckCircle2, Clock, Users } from 'lucide-react';
 
 interface MatchCardProps {
   match: MatchWithTeams;
   result?: MatchResult;
+}
+
+function TeamLogo({ logoUrl, name }: { logoUrl: string | null; name: string }) {
+  const fullUrl = logoUrl 
+    ? `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${logoUrl}`
+    : null;
+
+  return (
+    <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted overflow-hidden">
+      {fullUrl ? (
+        <img
+          src={fullUrl}
+          alt={`${name} Logo`}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <Users className="h-4 w-4 text-muted-foreground" />
+      )}
+    </div>
+  );
 }
 
 export function MatchCard({ match, result }: MatchCardProps) {
@@ -45,9 +65,12 @@ export function MatchCard({ match, result }: MatchCardProps) {
         <div className={`flex items-center justify-between p-2 rounded-lg ${
           teamAWon ? 'bg-success/10' : ''
         }`}>
-          <span className={`font-medium ${teamAWon ? 'text-success' : ''}`}>
-            {match.team_a.name}
-          </span>
+          <div className="flex items-center gap-2">
+            <TeamLogo logoUrl={match.team_a.logo_url} name={match.team_a.name} />
+            <span className={`font-medium ${teamAWon ? 'text-success' : ''}`}>
+              {match.team_a.name}
+            </span>
+          </div>
           {result && (
             <span className="text-sm text-muted-foreground">
               {result.set1_a} | {result.set2_a}
@@ -63,9 +86,12 @@ export function MatchCard({ match, result }: MatchCardProps) {
         <div className={`flex items-center justify-between p-2 rounded-lg ${
           teamBWon ? 'bg-success/10' : ''
         }`}>
-          <span className={`font-medium ${teamBWon ? 'text-success' : ''}`}>
-            {match.team_b.name}
-          </span>
+          <div className="flex items-center gap-2">
+            <TeamLogo logoUrl={match.team_b.logo_url} name={match.team_b.name} />
+            <span className={`font-medium ${teamBWon ? 'text-success' : ''}`}>
+              {match.team_b.name}
+            </span>
+          </div>
           {result && (
             <span className="text-sm text-muted-foreground">
               {result.set1_b} | {result.set2_b}
