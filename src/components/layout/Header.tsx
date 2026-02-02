@@ -15,19 +15,19 @@ interface HeaderProps {
 }
 
 export function Header({ leagueId }: HeaderProps) {
-  const basePath = leagueId ? `/league/${leagueId}` : '';
-  
-  const navItems = [
-    { label: 'Tabelle', path: basePath || '/' },
-    { label: 'Teams', path: `${basePath}/teams` },
-    { label: 'Spielplan', path: `${basePath}/schedule` },
-    { label: 'Platzbuchungen', path: `${basePath}/bookings` },
-    { label: 'Playoffs', path: `${basePath}/playoffs` },
-    { label: 'Ergebnis eintragen', path: `${basePath}/enter-result`, requiresAuth: true },
-  ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
+
+  // Only show navigation when inside a league context
+  const navItems = leagueId ? [
+    { label: 'Tabelle', path: `/league/${leagueId}` },
+    { label: 'Teams', path: `/league/${leagueId}/teams` },
+    { label: 'Spielplan', path: `/league/${leagueId}/schedule` },
+    { label: 'Platzbuchungen', path: `/league/${leagueId}/bookings` },
+    { label: 'Playoffs', path: `/league/${leagueId}/playoffs` },
+    { label: 'Ergebnis eintragen', path: `/league/${leagueId}/enter-result`, requiresAuth: true },
+  ] : [];
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -47,22 +47,24 @@ export function Header({ leagueId }: HeaderProps) {
           <span className="hidden sm:inline">Padel Liga</span>
         </Link>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-1">
-          {filteredNavItems.map(item => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                isActive(item.path)
-                  ? 'bg-primary text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-              }`}
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        {/* Desktop Navigation - only show when in league context */}
+        {filteredNavItems.length > 0 && (
+          <nav className="hidden md:flex items-center gap-1">
+            {filteredNavItems.map(item => (
+              <Link
+                key={item.path}
+                to={item.path}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive(item.path)
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                }`}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        )}
 
         {/* Auth Section */}
         <div className="flex items-center gap-2">
@@ -94,20 +96,22 @@ export function Header({ leagueId }: HeaderProps) {
             </Link>
           )}
 
-          {/* Mobile Menu Button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </Button>
+          {/* Mobile Menu Button - only show when in league context */}
+          {filteredNavItems.length > 0 && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="md:hidden"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </Button>
+          )}
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      {mobileMenuOpen && (
+      {/* Mobile Navigation - only show when in league context */}
+      {mobileMenuOpen && filteredNavItems.length > 0 && (
         <nav className="md:hidden border-t bg-card p-4 animate-slide-up">
           <div className="flex flex-col gap-2">
             {filteredNavItems.map(item => (
