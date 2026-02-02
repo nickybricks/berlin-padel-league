@@ -77,11 +77,11 @@ export default function Landing() {
             <form onSubmit={handleJoinLeague} className="space-y-4">
               <Input
                 type="text"
-                placeholder="ABC123"
+                placeholder="BPL2025"
                 value={code}
                 onChange={(e) => setCode(e.target.value.toUpperCase())}
                 className="text-center text-lg font-mono tracking-widest uppercase"
-                maxLength={6}
+                maxLength={10}
                 autoComplete="off"
               />
               <Button 
