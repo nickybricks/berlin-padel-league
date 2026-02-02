@@ -422,40 +422,40 @@ export type Database = {
       }
       teams: {
         Row: {
-          captain_email: string | null
-          captain_name: string | null
-          captain_phone: string | null
           created_at: string
           id: string
           league_id: string | null
           logo_url: string | null
           name: string
+          player1_email: string | null
+          player1_name: string | null
+          player1_phone: string | null
           player2_email: string | null
           player2_name: string | null
           player2_phone: string | null
         }
         Insert: {
-          captain_email?: string | null
-          captain_name?: string | null
-          captain_phone?: string | null
           created_at?: string
           id?: string
           league_id?: string | null
           logo_url?: string | null
           name: string
+          player1_email?: string | null
+          player1_name?: string | null
+          player1_phone?: string | null
           player2_email?: string | null
           player2_name?: string | null
           player2_phone?: string | null
         }
         Update: {
-          captain_email?: string | null
-          captain_name?: string | null
-          captain_phone?: string | null
           created_at?: string
           id?: string
           league_id?: string | null
           logo_url?: string | null
           name?: string
+          player1_email?: string | null
+          player1_name?: string | null
+          player1_phone?: string | null
           player2_email?: string | null
           player2_name?: string | null
           player2_phone?: string | null
@@ -552,40 +552,40 @@ export type Database = {
     Views: {
       teams_authenticated: {
         Row: {
-          captain_email: string | null
-          captain_name: string | null
-          captain_phone: string | null
           created_at: string | null
           id: string | null
           logo_url: string | null
           name: string | null
+          player1_email: string | null
+          player1_name: string | null
+          player1_phone: string | null
           player2_email: string | null
           player2_name: string | null
           player2_phone: string | null
         }
         Insert: {
-          captain_email?: never
-          captain_name?: string | null
-          captain_phone?: never
           created_at?: string | null
           id?: string | null
           logo_url?: string | null
           name?: string | null
-          player2_email?: never
+          player1_email?: string | null
+          player1_name?: string | null
+          player1_phone?: string | null
+          player2_email?: string | null
           player2_name?: string | null
-          player2_phone?: never
+          player2_phone?: string | null
         }
         Update: {
-          captain_email?: never
-          captain_name?: string | null
-          captain_phone?: never
           created_at?: string | null
           id?: string | null
           logo_url?: string | null
           name?: string | null
-          player2_email?: never
+          player1_email?: string | null
+          player1_name?: string | null
+          player1_phone?: string | null
+          player2_email?: string | null
           player2_name?: string | null
-          player2_phone?: never
+          player2_phone?: string | null
         }
         Relationships: []
       }

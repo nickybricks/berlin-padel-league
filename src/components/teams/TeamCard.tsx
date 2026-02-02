@@ -37,9 +37,9 @@ export function TeamCard({ team, onClick }: TeamCardProps) {
             {team.name}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {team.captain_name && team.player2_name 
-              ? `${team.captain_name} & ${team.player2_name}`
-              : 'Team'}
+            {team.player1_name && team.player2_name 
+              ? `${team.player1_name} & ${team.player2_name}`
+              : team.player1_name || team.player2_name || 'Team'}
           </p>
         </div>
 

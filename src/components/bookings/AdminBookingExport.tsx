@@ -43,8 +43,8 @@ export function AdminBookingExport() {
             venue:padel_venues(name)
           ),
           match:matches(
-            team_a:teams!matches_team_a_id_fkey(name, captain_name, captain_email, player2_name, player2_email),
-            team_b:teams!matches_team_b_id_fkey(name, captain_name, captain_email, player2_name, player2_email)
+            team_a:teams!matches_team_a_id_fkey(name, player1_name, player1_email, player2_name, player2_email),
+            team_b:teams!matches_team_b_id_fkey(name, player1_name, player1_email, player2_name, player2_email)
           )
         `)
         .gte('court_slot.slot_date', format(startDate, 'yyyy-MM-dd'))
@@ -69,13 +69,13 @@ export function AdminBookingExport() {
         'Uhrzeit',
         'Verein',
         'Team A',
-        'Captain A',
-        'Email Captain A',
+        'Spieler 1 A',
+        'Email Spieler 1 A',
         'Spieler 2 A',
         'Email Spieler 2 A',
         'Team B',
-        'Captain B',
-        'Email Captain B',
+        'Spieler 1 B',
+        'Email Spieler 1 B',
         'Spieler 2 B',
         'Email Spieler 2 B',
       ];
@@ -92,13 +92,13 @@ export function AdminBookingExport() {
           `${slot.start_time.slice(0, 5)}-${slot.end_time.slice(0, 5)}`,
           slot.venue?.name || '',
           teamA?.name || '',
-          teamA?.captain_name || '',
-          teamA?.captain_email || '',
+          teamA?.player1_name || '',
+          teamA?.player1_email || '',
           teamA?.player2_name || '',
           teamA?.player2_email || '',
           teamB?.name || '',
-          teamB?.captain_name || '',
-          teamB?.captain_email || '',
+          teamB?.player1_name || '',
+          teamB?.player1_email || '',
           teamB?.player2_name || '',
           teamB?.player2_email || '',
         ];

@@ -114,11 +114,18 @@ export function useCheckEmailInLeagueTeam(leagueId: string | undefined, email: s
         .from('teams')
         .select('*')
         .eq('league_id', leagueId)
-        .or(`captain_email.eq.${email},player2_email.eq.${email}`)
+        .or(`player1_email.eq.${email},player2_email.eq.${email}`)
         .maybeSingle();
       if (error) throw error;
       return data;
     },
     enabled: !!leagueId && !!email,
   });
+}
+
+// Helper to determine which player slot is available for a team
+export function getAvailablePlayerSlot(team: { player1_email: string | null; player2_email: string | null }): 'player1' | 'player2' | null {
+  if (!team.player1_email) return 'player1';
+  if (!team.player2_email) return 'player2';
+  return null;
 }
