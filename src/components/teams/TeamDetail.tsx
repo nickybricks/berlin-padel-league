@@ -58,24 +58,24 @@ export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
               Spieler
             </h4>
 
-            {/* Captain */}
-            {team.captain_name && (
+            {/* Player 1 */}
+            {team.player1_name && (
               <div className="flex items-start gap-3 p-3 rounded-lg bg-muted/50">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10">
                   <Crown className="h-5 w-5 text-primary" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium">{team.captain_name}</span>
-                    <Badge variant="secondary" className="text-xs">Captain</Badge>
+                    <span className="font-medium">{team.player1_name}</span>
+                    <Badge variant="secondary" className="text-xs">Spieler 1</Badge>
                   </div>
-                  {team.captain_phone && (
+                  {team.player1_phone && (
                     <a 
-                      href={`tel:${team.captain_phone}`}
+                      href={`tel:${team.player1_phone}`}
                       className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
                     >
                       <Phone className="h-3.5 w-3.5" />
-                      {formatPhone(team.captain_phone)}
+                      {formatPhone(team.player1_phone)}
                     </a>
                   )}
                 </div>

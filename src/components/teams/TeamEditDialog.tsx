@@ -27,9 +27,9 @@ export function TeamEditDialog({ team, open, onOpenChange }: TeamEditDialogProps
   
   const [formData, setFormData] = useState({
     name: team.name,
-    captain_name: team.captain_name || '',
-    captain_email: team.captain_email || '',
-    captain_phone: team.captain_phone || '',
+    player1_name: team.player1_name || '',
+    player1_email: team.player1_email || '',
+    player1_phone: team.player1_phone || '',
     player2_name: team.player2_name || '',
     player2_email: team.player2_email || '',
     player2_phone: team.player2_phone || '',
@@ -51,9 +51,9 @@ export function TeamEditDialog({ team, open, onOpenChange }: TeamEditDialogProps
         .from('teams')
         .update({
           name: formData.name.trim(),
-          captain_name: formData.captain_name.trim() || null,
-          captain_email: formData.captain_email.trim() || null,
-          captain_phone: formData.captain_phone.trim() || null,
+          player1_name: formData.player1_name.trim() || null,
+          player1_email: formData.player1_email.trim() || null,
+          player1_phone: formData.player1_phone.trim() || null,
           player2_name: formData.player2_name.trim() || null,
           player2_email: formData.player2_email.trim() || null,
           player2_phone: formData.player2_phone.trim() || null,
@@ -94,34 +94,34 @@ export function TeamEditDialog({ team, open, onOpenChange }: TeamEditDialogProps
             />
           </div>
 
-          {/* Captain Section */}
+          {/* Player 1 Section */}
           <div className="space-y-3">
-            <h3 className="font-medium text-sm text-muted-foreground">Captain</h3>
+            <h3 className="font-medium text-sm text-muted-foreground">Spieler 1</h3>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="captain-name">Name</Label>
+                <Label htmlFor="player1-name">Name</Label>
                 <Input
-                  id="captain-name"
-                  value={formData.captain_name}
-                  onChange={(e) => handleChange('captain_name', e.target.value)}
+                  id="player1-name"
+                  value={formData.player1_name}
+                  onChange={(e) => handleChange('player1_name', e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="captain-phone">Telefon</Label>
+                <Label htmlFor="player1-phone">Telefon</Label>
                 <Input
-                  id="captain-phone"
+                  id="player1-phone"
                   type="tel"
-                  value={formData.captain_phone}
-                  onChange={(e) => handleChange('captain_phone', e.target.value)}
+                  value={formData.player1_phone}
+                  onChange={(e) => handleChange('player1_phone', e.target.value)}
                 />
               </div>
               <div className="space-y-2 sm:col-span-2">
-                <Label htmlFor="captain-email">E-Mail</Label>
+                <Label htmlFor="player1-email">E-Mail</Label>
                 <Input
-                  id="captain-email"
+                  id="player1-email"
                   type="email"
-                  value={formData.captain_email}
-                  onChange={(e) => handleChange('captain_email', e.target.value)}
+                  value={formData.player1_email}
+                  onChange={(e) => handleChange('player1_email', e.target.value)}
                 />
               </div>
             </div>

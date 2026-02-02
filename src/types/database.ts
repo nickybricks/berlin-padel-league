@@ -5,9 +5,10 @@ export interface Team {
   name: string;
   created_at: string;
   logo_url: string | null;
-  captain_name: string | null;
-  captain_phone: string | null;
-  captain_email: string | null;
+  league_id: string | null;
+  player1_name: string | null;
+  player1_phone: string | null;
+  player1_email: string | null;
   player2_name: string | null;
   player2_phone: string | null;
   player2_email: string | null;

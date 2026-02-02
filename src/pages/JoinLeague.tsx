@@ -6,11 +6,17 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { useAuth } from '@/hooks/useAuth';
-import { useLeagueByCode, useLeagueTeams, useCheckEmailInLeagueTeam, useJoinLeague, useUserLeagues } from '@/hooks/useLeagues';
+import { useLeagueByCode, useLeagueTeams, useCheckEmailInLeagueTeam, useJoinLeague, useUserLeagues, getAvailablePlayerSlot } from '@/hooks/useLeagues';
 import { toast } from '@/hooks/use-toast';
-import type { Team } from '@/types/database';
+import { supabase } from '@/integrations/supabase/client';
 
-type Step = 'loading' | 'auth' | 'team-select' | 'joining' | 'success' | 'already-member' | 'not-found';
+type Step = 'loading' | 'auth' | 'team-select' | 'player-details' | 'joining' | 'success' | 'already-member' | 'not-found' | 'team-full';
+
+interface PlayerSlotInfo {
+  teamId: string;
+  teamName: string;
+  slot: 'player1' | 'player2';
+}
 
 export default function JoinLeague() {
   const { code } = useParams<{ code: string }>();
@@ -23,6 +29,10 @@ export default function JoinLeague() {
   const [password, setPassword] = useState('');
   const [authSubmitting, setAuthSubmitting] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>('');
+  const [playerSlotInfo, setPlayerSlotInfo] = useState<PlayerSlotInfo | null>(null);
+  const [playerName, setPlayerName] = useState('');
+  const [playerPhone, setPlayerPhone] = useState('');
+  const [savingDetails, setSavingDetails] = useState(false);
   
   const { data: league, isLoading: leagueLoading, error: leagueError } = useLeagueByCode(code);
   const { data: leagueTeams, isLoading: teamsLoading } = useLeagueTeams(league?.id);
@@ -61,22 +71,24 @@ export default function JoinLeague() {
 
     // If email matches a team, auto-join
     if (matchedTeam) {
-      handleAutoJoin(matchedTeam);
+      handleAutoJoin(matchedTeam.id, matchedTeam.name);
       return;
     }
 
     // Otherwise, show team selection
-    setStep('team-select');
+    if (step !== 'player-details' && step !== 'joining' && step !== 'success') {
+      setStep('team-select');
+    }
   }, [league, leagueLoading, leagueError, user, authLoading, matchedTeam, matchLoading, teamsLoading, userLeagues]);
 
-  const handleAutoJoin = async (team: Team) => {
+  const handleAutoJoin = async (teamId: string, teamName: string) => {
     if (!league || !user) return;
     setStep('joining');
     try {
       await joinLeague.mutateAsync({
         leagueId: league.id,
         userId: user.id,
-        teamId: team.id,
+        teamId: teamId,
       });
       setStep('success');
       toast({ title: `Willkommen bei ${league.name}!` });
@@ -117,24 +129,75 @@ export default function JoinLeague() {
     }
   };
 
-  const handleTeamJoin = async () => {
-    if (!league || !user) return;
-    setStep('joining');
+  const handleTeamSelect = () => {
+    if (!selectedTeamId || !leagueTeams) return;
+    
+    const selectedTeam = leagueTeams.find(t => t.id === selectedTeamId);
+    if (!selectedTeam) return;
+    
+    const availableSlot = getAvailablePlayerSlot(selectedTeam);
+    
+    if (!availableSlot) {
+      setStep('team-full');
+      return;
+    }
+    
+    setPlayerSlotInfo({
+      teamId: selectedTeam.id,
+      teamName: selectedTeam.name,
+      slot: availableSlot,
+    });
+    setStep('player-details');
+  };
+
+  const handleSavePlayerDetails = async () => {
+    if (!league || !user || !playerSlotInfo) return;
+    
+    if (!playerName.trim()) {
+      toast({ title: 'Bitte gib deinen Namen ein', variant: 'destructive' });
+      return;
+    }
+    
+    setSavingDetails(true);
+    
     try {
+      // Update team with player details
+      const updateData = playerSlotInfo.slot === 'player1' 
+        ? {
+            player1_name: playerName.trim(),
+            player1_email: user.email,
+            player1_phone: playerPhone.trim() || null,
+          }
+        : {
+            player2_name: playerName.trim(),
+            player2_email: user.email,
+            player2_phone: playerPhone.trim() || null,
+          };
+      
+      const { error: updateError } = await supabase
+        .from('teams')
+        .update(updateData)
+        .eq('id', playerSlotInfo.teamId);
+      
+      if (updateError) throw updateError;
+      
+      // Join the league
       await joinLeague.mutateAsync({
         leagueId: league.id,
         userId: user.id,
-        teamId: selectedTeamId || undefined,
+        teamId: playerSlotInfo.teamId,
       });
+      
       setStep('success');
       toast({ title: `Willkommen bei ${league.name}!` });
     } catch (error: any) {
       toast({ 
-        title: 'Fehler beim Beitreten', 
+        title: 'Fehler beim Speichern', 
         description: error.message,
         variant: 'destructive',
       });
-      setStep('team-select');
+    } finally {
+      setSavingDetails(false);
     }
   };
 
@@ -266,34 +329,118 @@ export default function JoinLeague() {
                 onValueChange={setSelectedTeamId}
                 className="space-y-2"
               >
-                {leagueTeams.map((team) => (
-                  <div 
-                    key={team.id}
-                    className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer"
-                  >
-                    <RadioGroupItem value={team.id} id={team.id} />
-                    <Label htmlFor={team.id} className="flex-1 cursor-pointer">
-                      {team.name}
-                    </Label>
-                  </div>
-                ))}
+                {leagueTeams.map((team) => {
+                  const availableSlot = getAvailablePlayerSlot(team);
+                  const isFull = !availableSlot;
+                  
+                  return (
+                    <div 
+                      key={team.id}
+                      className={`flex items-center space-x-3 p-3 rounded-lg border cursor-pointer ${
+                        isFull 
+                          ? 'opacity-50 cursor-not-allowed' 
+                          : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      <RadioGroupItem 
+                        value={team.id} 
+                        id={team.id} 
+                        disabled={isFull}
+                      />
+                      <Label 
+                        htmlFor={team.id} 
+                        className={`flex-1 ${isFull ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                      >
+                        <div>{team.name}</div>
+                        {isFull && (
+                          <span className="text-xs text-muted-foreground">Team ist voll</span>
+                        )}
+                      </Label>
+                    </div>
+                  );
+                })}
               </RadioGroup>
 
-              {/* Create Team - Disabled */}
-              <div className="flex items-center space-x-3 p-3 rounded-lg border opacity-60">
-                <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />
-                <span className="flex-1 text-muted-foreground">
-                  Neues Team erstellen
-                  <span className="ml-2 text-xs">(folgt)</span>
-                </span>
-              </div>
-
               <Button 
-                onClick={handleTeamJoin} 
+                onClick={handleTeamSelect} 
                 className="w-full"
                 disabled={!selectedTeamId}
               >
-                Beitreten
+                Weiter
+              </Button>
+            </div>
+          )}
+
+          {step === 'player-details' && playerSlotInfo && (
+            <div className="bg-card rounded-xl border p-6 space-y-4">
+              <div className="text-center">
+                <h2 className="font-semibold">Deine Daten</h2>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Tritt <strong>{playerSlotInfo.teamName}</strong> bei
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="player-name">Voller Name *</Label>
+                  <Input
+                    id="player-name"
+                    value={playerName}
+                    onChange={(e) => setPlayerName(e.target.value)}
+                    placeholder="Max Mustermann"
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="player-phone">Telefonnummer</Label>
+                  <Input
+                    id="player-phone"
+                    type="tel"
+                    value={playerPhone}
+                    onChange={(e) => setPlayerPhone(e.target.value)}
+                    placeholder="+49 123 456789"
+                  />
+                </div>
+              </div>
+
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setPlayerSlotInfo(null);
+                    setStep('team-select');
+                  }}
+                  className="flex-1"
+                >
+                  Zurück
+                </Button>
+                <Button 
+                  onClick={handleSavePlayerDetails} 
+                  className="flex-1"
+                  disabled={savingDetails || !playerName.trim()}
+                >
+                  {savingDetails && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Beitreten
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {step === 'team-full' && (
+            <div className="bg-card rounded-xl border p-6 text-center space-y-4">
+              <p className="text-muted-foreground">
+                Dieses Team hat bereits zwei Spieler. Bitte wähle ein anderes Team.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSelectedTeamId('');
+                  setStep('team-select');
+                }}
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Anderes Team wählen
               </Button>
             </div>
           )}
