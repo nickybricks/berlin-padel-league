@@ -2,8 +2,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Onboarding from "./pages/Onboarding";
 import JoinLeague from "./pages/JoinLeague";
 import LeagueDashboard from "./pages/LeagueDashboard";
 import Teams from "./pages/Teams";
@@ -12,7 +15,6 @@ import Schedule from "./pages/Schedule";
 import Bookings from "./pages/Bookings";
 import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
-import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,8 +28,10 @@ const App = () => (
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<Landing />} />
-          <Route path="/join/:code" element={<JoinLeague />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/join/:code" element={<JoinLeague />} />
           
           {/* League-specific routes */}
           <Route path="/league/:leagueId" element={<LeagueDashboard />} />

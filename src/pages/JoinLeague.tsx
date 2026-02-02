@@ -257,7 +257,7 @@ export default function JoinLeague() {
               <div className="text-center">
                 <h2 className="font-semibold">Team auswählen</h2>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Wähle dein Team oder tritt ohne Team bei.
+                  Welchem Team gehörst du an?
                 </p>
               </div>
 
@@ -277,15 +277,22 @@ export default function JoinLeague() {
                     </Label>
                   </div>
                 ))}
-                <div className="flex items-center space-x-3 p-3 rounded-lg border hover:bg-muted/50 cursor-pointer">
-                  <RadioGroupItem value="" id="no-team" />
-                  <Label htmlFor="no-team" className="flex-1 cursor-pointer text-muted-foreground">
-                    Ohne Team beitreten
-                  </Label>
-                </div>
               </RadioGroup>
 
-              <Button onClick={handleTeamJoin} className="w-full">
+              {/* Create Team - Disabled */}
+              <div className="flex items-center space-x-3 p-3 rounded-lg border opacity-60">
+                <div className="h-4 w-4 rounded-full border-2 border-muted-foreground/30" />
+                <span className="flex-1 text-muted-foreground">
+                  Neues Team erstellen
+                  <span className="ml-2 text-xs">(folgt)</span>
+                </span>
+              </div>
+
+              <Button 
+                onClick={handleTeamJoin} 
+                className="w-full"
+                disabled={!selectedTeamId}
+              >
                 Beitreten
               </Button>
             </div>
