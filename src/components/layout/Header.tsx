@@ -40,7 +40,7 @@ export function Header({ leagueId }: HeaderProps) {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      <div className="container flex h-16 items-center justify-between">
+      <div className="container flex h-14 items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2 font-bold text-xl">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
