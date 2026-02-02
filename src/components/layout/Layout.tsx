@@ -3,12 +3,13 @@ import { Header } from './Header';
 
 interface LayoutProps {
   children: ReactNode;
+  leagueId?: string;
 }
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, leagueId }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header />
+      <Header leagueId={leagueId} />
       <main className="flex-1 container py-6 md:py-8">
         {children}
       </main>

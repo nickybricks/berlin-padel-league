@@ -10,16 +10,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
-const navItems = [
-  { label: 'Tabelle', path: '/' },
-  { label: 'Teams', path: '/teams' },
-  { label: 'Spielplan', path: '/schedule' },
-  { label: 'Platzbuchungen', path: '/bookings' },
-  { label: 'Playoffs', path: '/playoffs' },
-  { label: 'Ergebnis eintragen', path: '/enter-result', requiresAuth: true },
-];
+interface HeaderProps {
+  leagueId?: string;
+}
 
-export function Header() {
+export function Header({ leagueId }: HeaderProps) {
+  const basePath = leagueId ? `/league/${leagueId}` : '';
+  
+  const navItems = [
+    { label: 'Tabelle', path: basePath || '/' },
+    { label: 'Teams', path: `${basePath}/teams` },
+    { label: 'Spielplan', path: `${basePath}/schedule` },
+    { label: 'Platzbuchungen', path: `${basePath}/bookings` },
+    { label: 'Playoffs', path: `${basePath}/playoffs` },
+    { label: 'Ergebnis eintragen', path: `${basePath}/enter-result`, requiresAuth: true },
+  ];
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();

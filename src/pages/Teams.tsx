@@ -1,15 +1,16 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
-import { useTeams } from '@/hooks/useTeams';
+import { useLeagueTeams } from '@/hooks/useLeagues';
 import { TeamCard } from '@/components/teams/TeamCard';
 import { Users } from 'lucide-react';
 
 export default function Teams() {
-  const { data: teams, isLoading } = useTeams();
+  const { leagueId } = useParams<{ leagueId: string }>();
+  const { data: teams, isLoading } = useLeagueTeams(leagueId);
   const navigate = useNavigate();
 
   return (
-    <Layout>
+    <Layout leagueId={leagueId}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center gap-3">
@@ -40,7 +41,7 @@ export default function Teams() {
               <TeamCard
                 key={team.id}
                 team={team}
-                onClick={() => navigate(`/teams/${team.id}`)}
+                onClick={() => navigate(`/league/${leagueId}/teams/${team.id}`)}
               />
             ))}
           </div>

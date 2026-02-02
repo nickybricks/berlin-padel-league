@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { WeekSection } from '@/components/schedule/WeekSection';
 import { useMatches, useMatchResults, useCreateMatches } from '@/hooks/useMatches';
-import { useTeams } from '@/hooks/useTeams';
+import { useLeagueTeams } from '@/hooks/useLeagues';
 import { generateSchedule } from '@/lib/schedule';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,15 +18,19 @@ import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 
 export default function Schedule() {
+  const { leagueId } = useParams<{ leagueId: string }>();
   const [weekFilter, setWeekFilter] = useState<string>('all');
   const [teamFilter, setTeamFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   
-  const { data: teams } = useTeams();
+  const { data: teams } = useLeagueTeams(leagueId);
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results } = useMatchResults();
   const createMatches = useCreateMatches();
   const { isAdmin } = useAuth();
+
+  // Create set of league team IDs for filtering
+  const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
 
   // Create results map for quick lookup
   const resultsMap = useMemo(() => {
@@ -34,12 +39,17 @@ export default function Schedule() {
     return map;
   }, [results]);
 
-  // Group matches by week
+  // Filter matches to only include teams from this league and group by week
   const matchesByWeek = useMemo(() => {
     if (!matches) return new Map();
     
     const grouped = new Map<number, typeof matches>();
     matches.forEach(match => {
+      // Only include matches from this league
+      if (!leagueTeamIds.has(match.team_a_id) || !leagueTeamIds.has(match.team_b_id)) {
+        return;
+      }
+      
       // Apply filters
       if (teamFilter !== 'all' && 
           match.team_a_id !== teamFilter && 
@@ -57,7 +67,7 @@ export default function Schedule() {
     });
     
     return grouped;
-  }, [matches, teamFilter, statusFilter, resultsMap]);
+  }, [matches, leagueTeamIds, teamFilter, statusFilter, resultsMap]);
 
   // Get all weeks
   const weeks = useMemo(() => {
@@ -101,7 +111,7 @@ export default function Schedule() {
     : 11;
 
   return (
-    <Layout>
+    <Layout leagueId={leagueId}>
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">

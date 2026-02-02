@@ -1,22 +1,30 @@
 import { useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Layout } from '@/components/layout/Layout';
 import { BracketMatch } from '@/components/playoffs/BracketMatch';
-import { useTeams } from '@/hooks/useTeams';
+import { useLeagueTeams } from '@/hooks/useLeagues';
 import { useMatches, useMatchResults } from '@/hooks/useMatches';
 import { calculateStandings } from '@/lib/standings';
 import { Trophy, Lock } from 'lucide-react';
 
 export default function Playoffs() {
-  const { data: teams } = useTeams();
+  const { leagueId } = useParams<{ leagueId: string }>();
+  const { data: teams } = useLeagueTeams(leagueId);
   const { data: groupMatches } = useMatches('group');
   const { data: playoffMatches } = useMatches();
   const { data: results } = useMatchResults();
 
+  // Filter matches to only include teams from this league
+  const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
+
   // Calculate standings
   const standings = useMemo(() => {
     if (!teams || !groupMatches || !results) return [];
-    return calculateStandings(teams, groupMatches, results);
-  }, [teams, groupMatches, results]);
+    const leagueGroupMatches = groupMatches.filter(m => 
+      leagueTeamIds.has(m.team_a_id) && leagueTeamIds.has(m.team_b_id)
+    );
+    return calculateStandings(teams, leagueGroupMatches, results);
+  }, [teams, groupMatches, results, leagueTeamIds]);
 
   // Check if group phase is complete
   const groupPhaseComplete = useMemo(() => {
@@ -50,7 +58,7 @@ export default function Playoffs() {
   }, [results]);
 
   return (
-    <Layout>
+    <Layout leagueId={leagueId}>
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center">

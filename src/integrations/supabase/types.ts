@@ -142,6 +142,89 @@ export type Database = {
           },
         ]
       }
+      league_members: {
+        Row: {
+          created_at: string
+          id: string
+          league_id: string
+          role: Database["public"]["Enums"]["league_role"]
+          team_id: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          league_id: string
+          role?: Database["public"]["Enums"]["league_role"]
+          team_id?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          league_id?: string
+          role?: Database["public"]["Enums"]["league_role"]
+          team_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "league_members_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams_authenticated"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "league_members_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      leagues: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          id: string
+          invite_token: string
+          name: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invite_token?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          invite_token?: string
+          name?: string
+        }
+        Relationships: []
+      }
       match_results: {
         Row: {
           comment: string | null
@@ -344,6 +427,7 @@ export type Database = {
           captain_phone: string | null
           created_at: string
           id: string
+          league_id: string | null
           logo_url: string | null
           name: string
           player2_email: string | null
@@ -356,6 +440,7 @@ export type Database = {
           captain_phone?: string | null
           created_at?: string
           id?: string
+          league_id?: string | null
           logo_url?: string | null
           name: string
           player2_email?: string | null
@@ -368,13 +453,22 @@ export type Database = {
           captain_phone?: string | null
           created_at?: string
           id?: string
+          league_id?: string | null
           logo_url?: string | null
           name?: string
           player2_email?: string | null
           player2_name?: string | null
           player2_phone?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "teams_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -522,12 +616,21 @@ export type Database = {
         Args: { _team_id: string; _user_id: string }
         Returns: boolean
       }
+      get_user_leagues: { Args: { _user_id: string }; Returns: string[] }
       get_user_team: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_league_admin: {
+        Args: { _league_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_league_member: {
+        Args: { _league_id: string; _user_id: string }
         Returns: boolean
       }
       is_team_captain: {
@@ -541,6 +644,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "captain" | "viewer" | "player"
+      league_role: "admin" | "player"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -669,6 +773,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "captain", "viewer", "player"],
+      league_role: ["admin", "player"],
     },
   },
 } as const
