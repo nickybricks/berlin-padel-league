@@ -18,7 +18,7 @@ export default function Login() {
 
   // Redirect if already logged in
   if (!authLoading && user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/leagues" replace />;
   }
 
   const handleSubmit = async (e: React.FormEvent) => {

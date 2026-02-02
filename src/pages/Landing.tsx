@@ -3,27 +3,21 @@ import { useNavigate, Link } from 'react-router-dom';
 import { Trophy, LogIn, UserPlus, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
-import { useUserLeagues } from '@/hooks/useLeagues';
+
 
 export default function Landing() {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
-  const { data: userLeagues, isLoading: leaguesLoading } = useUserLeagues(user?.id);
 
-  // Redirect logged-in users to their first league or onboarding
+  // Redirect logged-in users to leagues overview
   useEffect(() => {
-    if (!authLoading && !leaguesLoading && user) {
-      if (userLeagues && userLeagues.length > 0) {
-        navigate(`/league/${userLeagues[0].league_id}`, { replace: true });
-      } else {
-        // User is logged in but has no leagues -> onboarding
-        navigate('/onboarding', { replace: true });
-      }
+    if (!authLoading && user) {
+      navigate('/leagues', { replace: true });
     }
-  }, [user, userLeagues, authLoading, leaguesLoading, navigate]);
+  }, [user, authLoading, navigate]);
 
   // Show loading state while checking auth
-  if (authLoading || leaguesLoading) {
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
