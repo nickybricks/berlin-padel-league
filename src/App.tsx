@@ -15,6 +15,7 @@ import Schedule from "./pages/Schedule";
 import Bookings from "./pages/Bookings";
 import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
+import LeagueAdmin from "./pages/LeagueAdmin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/league/:leagueId/bookings" element={<Bookings />} />
           <Route path="/league/:leagueId/playoffs" element={<Playoffs />} />
           <Route path="/league/:leagueId/enter-result" element={<EnterResult />} />
+          <Route path="/league/:leagueId/admin" element={<LeagueAdmin />} />
           
           <Route path="*" element={<NotFound />} />
         </Routes>

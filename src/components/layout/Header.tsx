@@ -27,12 +27,14 @@ export function Header({ leagueId }: HeaderProps) {
     { label: 'Platzbuchungen', path: `/league/${leagueId}/bookings` },
     { label: 'Playoffs', path: `/league/${leagueId}/playoffs` },
     { label: 'Ergebnis eintragen', path: `/league/${leagueId}/enter-result`, requiresAuth: true },
+    { label: 'Admin', path: `/league/${leagueId}/admin`, requiresAdmin: true },
   ] : [];
 
   const isActive = (path: string) => location.pathname === path;
 
   const filteredNavItems = navItems.filter(item => {
     if (item.requiresAuth && !canEnterResults) return false;
+    if ('requiresAdmin' in item && item.requiresAdmin && role !== 'admin') return false;
     return true;
   });
 
