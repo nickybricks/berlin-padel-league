@@ -13,7 +13,7 @@ import { MatchWithTeams, MatchResult } from '@/types/database';
 import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
 import { TeamEditDialog } from '@/components/teams/TeamEditDialog';
 export default function TeamPage() {
-  const { teamId } = useParams<{ teamId: string }>();
+  const { leagueId, teamId } = useParams<{ leagueId: string; teamId: string }>();
   const { isAdmin, teamId: userTeamId } = useAuth();
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
@@ -69,7 +69,7 @@ export default function TeamPage() {
       <Layout>
         <div className="text-center py-12">
           <h1 className="text-2xl font-bold text-muted-foreground">Team nicht gefunden</h1>
-          <Link to="/teams">
+          <Link to={`/league/${leagueId}/teams`}>
             <Button variant="outline" className="mt-4">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Zurück zu Teams
@@ -81,10 +81,10 @@ export default function TeamPage() {
   }
 
   return (
-    <Layout>
+    <Layout leagueId={leagueId}>
       <div className="space-y-6">
         {/* Back Button */}
-        <Link to="/teams">
+        <Link to={`/league/${leagueId}/teams`}>
           <Button variant="ghost" size="sm">
             <ArrowLeft className="h-4 w-4 mr-2" />
             Alle Teams
@@ -248,7 +248,7 @@ export default function TeamPage() {
                       <Badge variant="outline">Woche {match.week}</Badge>
                       <span className="text-muted-foreground">vs</span>
                       <Link 
-                        to={`/teams/${opponent.id}`}
+                        to={`/league/${leagueId}/teams/${opponent.id}`}
                         className="font-medium hover:text-primary transition-colors"
                       >
                         {opponent.name}
@@ -328,7 +328,7 @@ export default function TeamPage() {
                           <span>{standing.team.name}</span>
                         ) : (
                           <Link 
-                            to={`/teams/${standing.team.id}`}
+                            to={`/league/${leagueId}/teams/${standing.team.id}`}
                             className="hover:text-primary transition-colors"
                           >
                             {standing.team.name}
