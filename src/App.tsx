@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import MyLeagues from "./pages/MyLeagues";
 import Onboarding from "./pages/Onboarding";
 import JoinLeague from "./pages/JoinLeague";
 import LeagueDashboard from "./pages/LeagueDashboard";
@@ -31,6 +32,7 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/leagues" element={<MyLeagues />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/join/:code" element={<JoinLeague />} />
           
