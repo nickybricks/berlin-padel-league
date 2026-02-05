@@ -1,16 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Trophy, Users, Plus, ArrowRight, Loader2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Users, Plus, ArrowRight, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
+import { NotchHeader } from '@/components/layout/NotchHeader';
 
 type Step = 'choose' | 'enter-code';
 
 export default function Onboarding() {
   const navigate = useNavigate();
-  const { user, signOut, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   
   const [step, setStep] = useState<Step>('choose');
   const [code, setCode] = useState('');
@@ -48,20 +49,7 @@ export default function Onboarding() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <Link to="/leagues" className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
-              <Trophy className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-semibold text-lg">Padel Liga</span>
-          </Link>
-          <Button variant="ghost" size="sm" onClick={signOut}>
-            Abmelden
-          </Button>
-        </div>
-      </header>
+      <NotchHeader />
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-6">

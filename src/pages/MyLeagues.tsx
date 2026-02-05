@@ -5,10 +5,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useUserLeagues } from '@/hooks/useLeagues';
+import { NotchHeader } from '@/components/layout/NotchHeader';
 
 export default function MyLeagues() {
   const navigate = useNavigate();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { data: userLeagues, isLoading: leaguesLoading } = useUserLeagues(user?.id);
 
   // Redirect to login if not authenticated
@@ -32,20 +33,7 @@ export default function MyLeagues() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
-      <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary shadow-sm">
-              <Trophy className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="font-semibold text-lg">Padel Liga</span>
-          </div>
-          <Button variant="ghost" size="sm" onClick={() => signOut()}>
-            Abmelden
-          </Button>
-        </div>
-      </header>
+      <NotchHeader />
 
       {/* Main Content */}
       <main className="flex-1 p-4 md:p-6">
