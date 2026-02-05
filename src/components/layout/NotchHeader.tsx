@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect, useLayoutEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Trophy, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
@@ -10,16 +10,25 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+// Initialize with current scroll position to prevent flash
+const getScrollState = () => typeof window !== 'undefined' && window.scrollY > 10;
+
 export function NotchHeader() {
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(getScrollState);
   const { user, role, signOut } = useAuth();
+  const location = useLocation();
+
+  // Sync scroll state immediately on mount (before paint)
+  useLayoutEffect(() => {
+    setIsScrolled(window.scrollY > 10);
+  }, [location.pathname]);
 
   // Track scroll position for glassmorphism effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
