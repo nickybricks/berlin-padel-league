@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Trophy, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,8 +16,18 @@ interface HeaderProps {
 
 export function Header({ leagueId }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
+
+  // Track scroll position for glassmorphism effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Only show navigation when inside a league context
   const navItems = leagueId ? [
@@ -39,36 +49,99 @@ export function Header({ leagueId }: HeaderProps) {
   });
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
-      <div className="container flex h-14 items-center justify-between">
+    <header className="sticky top-0 z-50 w-full">
+      {/* Desktop: Notch-style header */}
+      <div className="hidden md:block py-3 px-4">
+        <div 
+          className={`mx-auto max-w-4xl flex h-14 items-center justify-between px-6 rounded-full transition-all duration-300 ${
+            isScrolled 
+              ? 'bg-card/80 backdrop-blur-md shadow-md border border-border/50' 
+              : 'bg-card/60 backdrop-blur-sm'
+          }`}
+        >
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <Trophy className="h-4 w-4 text-primary-foreground" />
+            </div>
+            <span>Padel Liga</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          {filteredNavItems.length > 0 && (
+            <nav className="flex items-center gap-1">
+              {filteredNavItems.map(item => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    isActive(item.path)
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          )}
+
+          {/* Auth Section */}
+          <div className="flex items-center gap-2">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="rounded-full h-9 w-9">
+                    <User className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48 bg-popover">
+                  <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                    {user.email}
+                  </div>
+                  <div className="px-2 py-1 text-xs font-medium uppercase text-accent">
+                    {role}
+                  </div>
+                  <DropdownMenuItem asChild className="cursor-pointer">
+                    <Link to="/leagues">
+                      <Trophy className="mr-2 h-4 w-4" />
+                      Meine Ligen
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={signOut} className="cursor-pointer">
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Abmelden
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button variant="default" size="sm" className="rounded-full">
+                  Anmelden
+                </Button>
+              </Link>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile: Traditional header */}
+      <div 
+        className={`md:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
+          isScrolled 
+            ? 'bg-card/80 backdrop-blur-md border-b border-border/50' 
+            : 'bg-transparent'
+        }`}
+      >
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 font-bold text-xl">
+        <Link to="/" className="flex items-center gap-2 font-bold text-lg">
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
             <Trophy className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="hidden sm:inline">Padel Liga</span>
+          <span>Padel Liga</span>
         </Link>
 
-        {/* Desktop Navigation - only show when in league context */}
-        {filteredNavItems.length > 0 && (
-          <nav className="hidden md:flex items-center gap-1">
-            {filteredNavItems.map(item => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive(item.path)
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        )}
-
-        {/* Auth Section */}
+        {/* Mobile Controls */}
         <div className="flex items-center gap-2">
           {user ? (
             <DropdownMenu>
@@ -104,12 +177,11 @@ export function Header({ leagueId }: HeaderProps) {
             </Link>
           )}
 
-          {/* Mobile Menu Button - only show when in league context */}
+          {/* Mobile Menu Button */}
           {filteredNavItems.length > 0 && (
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -118,9 +190,9 @@ export function Header({ leagueId }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile Navigation - only show when in league context */}
+      {/* Mobile Navigation Menu */}
       {mobileMenuOpen && filteredNavItems.length > 0 && (
-        <nav className="md:hidden border-t bg-card p-4 animate-slide-up">
+        <nav className="md:hidden bg-card/95 backdrop-blur-md border-b border-border/50 p-4 animate-slide-up">
           <div className="flex flex-col gap-2">
             {filteredNavItems.map(item => (
               <Link
