@@ -26,7 +26,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
   };
 
   return (
-    <div className="overflow-x-auto">
+    <div>
       <table className="w-full">
         <thead>
           <tr className="border-b text-left text-[11px] sm:text-sm text-muted-foreground">
