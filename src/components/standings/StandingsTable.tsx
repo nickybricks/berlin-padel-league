@@ -27,16 +27,16 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
     <div className="overflow-x-auto">
       <table className="w-full">
         <thead>
-          <tr className="border-b text-left text-sm text-muted-foreground">
-            <th className="pb-3 pl-4 w-12">#</th>
-            <th className="pb-3 w-12"></th>
+          <tr className="border-b text-left text-[11px] sm:text-sm text-muted-foreground">
+            <th className="pb-3 pl-1 sm:pl-4 w-8 sm:w-12">#</th>
+            <th className="pb-3 w-8 sm:w-12"></th>
             <th className="pb-3">Team</th>
-            <th className="pb-3 text-center hidden sm:table-cell">Sp</th>
-            <th className="pb-3 text-center hidden sm:table-cell">S</th>
-            <th className="pb-3 text-center hidden sm:table-cell">N</th>
-            <th className="pb-3 text-center hidden md:table-cell">Sätze</th>
-            <th className="pb-3 text-center hidden lg:table-cell">Spiele</th>
-            <th className="pb-3 text-center pr-4 font-semibold">Pkt</th>
+            <th className="pb-3 text-center">Sp</th>
+            <th className="pb-3 text-center">S</th>
+            <th className="pb-3 text-center">N</th>
+            <th className="pb-3 text-center">Sätze</th>
+            <th className="pb-3 text-center">Spiele</th>
+            <th className="pb-3 text-center pr-2 sm:pr-4 font-semibold">Pkt</th>
           </tr>
         </thead>
         <tbody>
@@ -51,17 +51,16 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                 className="table-row-animate border-b last:border-0"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
-                <td className="py-4 pl-0">
+                <td className="py-3 sm:py-4 pl-0">
                   <div className="flex items-center">
-                    {/* Green stripe for playoff teams */}
-                    <div className={`w-1 h-10 rounded-full mr-3 ${isPlayoff ? 'bg-success' : 'bg-transparent'}`} />
-                    <span className="text-sm font-medium text-muted-foreground w-6 text-center">
+                    <div className={`w-1 h-8 sm:h-10 rounded-full mr-1.5 sm:mr-3 ${isPlayoff ? 'bg-success' : 'bg-transparent'}`} />
+                    <span className="text-[11px] sm:text-sm font-medium text-muted-foreground w-5 sm:w-6 text-center">
                       {standing.rank}
                     </span>
                   </div>
                 </td>
-                <td className="py-4">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-md bg-muted overflow-hidden">
+                <td className="py-3 sm:py-4">
+                  <div className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-muted overflow-hidden">
                     {logoUrl ? (
                       <img
                         src={logoUrl}
@@ -69,20 +68,20 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <Users className="h-4 w-4 text-muted-foreground" />
+                      <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                     )}
                   </div>
                 </td>
-                <td className="py-4">
-                  <div className="flex items-center gap-2">
+                <td className="py-3 sm:py-4">
+                  <div className="flex items-center gap-1 sm:gap-2">
                     <Link 
                       to={`/teams/${standing.team.id}`}
-                      className="font-semibold hover:text-primary transition-colors"
+                      className="text-[11px] sm:text-sm font-semibold hover:text-primary transition-colors truncate max-w-[80px] sm:max-w-none"
                     >
                       {standing.team.name}
                     </Link>
                     {isTop3 && (
-                      <Trophy className={`h-4 w-4 ${
+                      <Trophy className={`h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 ${
                         standing.rank === 1 ? 'text-yellow-500' :
                         standing.rank === 2 ? 'text-gray-400' :
                         'text-amber-600'
@@ -90,20 +89,20 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                     )}
                   </div>
                 </td>
-                <td className="py-4 text-center hidden sm:table-cell text-muted-foreground">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm text-muted-foreground">
                   {standing.played}
                 </td>
-                <td className="py-4 text-center hidden sm:table-cell text-success font-medium">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm text-success font-medium">
                   {standing.wins}
                 </td>
-                <td className="py-4 text-center hidden sm:table-cell text-destructive font-medium">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm text-destructive font-medium">
                   {standing.losses}
                 </td>
-                <td className="py-4 text-center hidden md:table-cell">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm">
                   <span className="text-muted-foreground">
                     {standing.setsWon}:{standing.setsLost}
                   </span>
-                  <span className={`ml-2 text-xs font-medium ${
+                  <span className={`ml-1 text-[9px] sm:text-xs font-medium ${
                     standing.setDiff > 0 ? 'text-success' :
                     standing.setDiff < 0 ? 'text-destructive' :
                     'text-muted-foreground'
@@ -111,11 +110,11 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                     ({standing.setDiff > 0 ? '+' : ''}{standing.setDiff})
                   </span>
                 </td>
-                <td className="py-4 text-center hidden lg:table-cell">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm">
                   <span className="text-muted-foreground">
                     {standing.gamesWon}:{standing.gamesLost}
                   </span>
-                  <span className={`ml-2 text-xs font-medium ${
+                  <span className={`ml-1 text-[9px] sm:text-xs font-medium ${
                     standing.gameDiff > 0 ? 'text-success' :
                     standing.gameDiff < 0 ? 'text-destructive' :
                     'text-muted-foreground'
@@ -123,8 +122,8 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                     ({standing.gameDiff > 0 ? '+' : ''}{standing.gameDiff})
                   </span>
                 </td>
-                <td className="py-4 text-center pr-4">
-                  <span className="inline-flex items-center justify-center min-w-[2.5rem] px-3 py-1 rounded-full bg-primary text-primary-foreground font-bold text-lg">
+                <td className="py-3 sm:py-4 text-center pr-1 sm:pr-4">
+                  <span className="inline-flex items-center justify-center min-w-[1.75rem] sm:min-w-[2.5rem] px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary text-primary-foreground font-bold text-sm sm:text-lg">
                     {standing.points}
                   </span>
                 </td>
