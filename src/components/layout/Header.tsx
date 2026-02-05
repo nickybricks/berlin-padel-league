@@ -28,6 +28,11 @@ export function Header({ leagueId }: HeaderProps) {
     setIsScrolled(window.scrollY > 10);
   }, [location.pathname]);
 
+  // Close mobile menu on navigation
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   // Track scroll position for glassmorphism effect
   useEffect(() => {
     const handleScroll = () => {
