@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useLayoutEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X, Trophy, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,18 +14,26 @@ interface HeaderProps {
   leagueId?: string;
 }
 
+// Initialize with current scroll position to prevent flash
+const getScrollState = () => typeof window !== 'undefined' && window.scrollY > 10;
+
 export function Header({ leagueId }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(getScrollState);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
+
+  // Sync scroll state immediately on mount (before paint)
+  useLayoutEffect(() => {
+    setIsScrolled(window.scrollY > 10);
+  }, [location.pathname]);
 
   // Track scroll position for glassmorphism effect
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
