@@ -1,6 +1,4 @@
 import { useState, useMemo } from 'react';
-import { useParams } from 'react-router-dom';
-import { Layout } from '@/components/layout/Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,17 +24,16 @@ import { de } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
 
 export default function Bookings() {
-  const { leagueId } = useParams<{ leagueId: string }>();
   const { isAdmin, user } = useAuth();
   const { data: venues } = useVenues();
-  
+
   const [selectedVenueId, setSelectedVenueId] = useState<string>('all');
   const [bookingSlot, setBookingSlot] = useState<CourtSlotWithDetails | null>(null);
-  
+
   // Fetch slots for the next 60 days
   const startDate = format(new Date(), 'yyyy-MM-dd');
   const endDate = format(addDays(new Date(), 60), 'yyyy-MM-dd');
-  
+
   const { data: slots, isLoading } = useCourtSlots(
     selectedVenueId !== 'all' ? selectedVenueId : undefined,
     startDate,
@@ -49,7 +46,7 @@ export default function Bookings() {
   // Group slots by date
   const slotsByDate = useMemo(() => {
     if (!slots) return {};
-    
+
     return slots.reduce((acc, slot) => {
       const date = slot.slot_date;
       if (!acc[date]) acc[date] = [];
@@ -60,7 +57,7 @@ export default function Bookings() {
 
   const handleDeleteSlot = async (slotId: string) => {
     if (!confirm('Platz wirklich löschen?')) return;
-    
+
     try {
       await deleteSlot.mutateAsync(slotId);
       toast({ title: 'Platz gelöscht' });
@@ -71,7 +68,7 @@ export default function Bookings() {
 
   const handleCancelBooking = async (bookingId: string) => {
     if (!confirm('Buchung wirklich stornieren?')) return;
-    
+
     try {
       await deleteBooking.mutateAsync(bookingId);
       toast({ title: 'Buchung storniert' });
@@ -81,70 +78,68 @@ export default function Bookings() {
   };
 
   return (
-    <Layout leagueId={leagueId}>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <CalendarDays className="h-6 w-6 text-primary" />
-            Platzbuchungen
-          </h1>
-        </div>
-
-        {isAdmin ? (
-          <Tabs defaultValue="bookings">
-            <TabsList>
-              <TabsTrigger value="bookings">Buchungen</TabsTrigger>
-              <TabsTrigger value="admin">
-                <Settings className="h-4 w-4 mr-1" />
-                Verwaltung
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="bookings" className="mt-4">
-              <BookingsView
-                venues={venues}
-                selectedVenueId={selectedVenueId}
-                setSelectedVenueId={setSelectedVenueId}
-                slotsByDate={slotsByDate}
-                isLoading={isLoading}
-                onBook={setBookingSlot}
-                onCancelBooking={handleCancelBooking}
-                onDeleteSlot={handleDeleteSlot}
-                isLoggedIn={!!user}
-              />
-            </TabsContent>
-
-            <TabsContent value="admin" className="mt-4">
-              <div className="grid gap-6 lg:grid-cols-2">
-                <AdminVenueManager />
-                <AdminSlotCreator />
-                <div className="lg:col-span-2">
-                  <AdminBookingExport />
-                </div>
-              </div>
-            </TabsContent>
-          </Tabs>
-        ) : (
-          <BookingsView
-            venues={venues}
-            selectedVenueId={selectedVenueId}
-            setSelectedVenueId={setSelectedVenueId}
-            slotsByDate={slotsByDate}
-            isLoading={isLoading}
-            onBook={setBookingSlot}
-            onCancelBooking={handleCancelBooking}
-            onDeleteSlot={handleDeleteSlot}
-            isLoggedIn={!!user}
-          />
-        )}
-
-        <BookingDialog
-          slot={bookingSlot}
-          open={!!bookingSlot}
-          onOpenChange={(open) => !open && setBookingSlot(null)}
-        />
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold flex items-center gap-2">
+          <CalendarDays className="h-6 w-6 text-primary" />
+          Platzbuchungen
+        </h1>
       </div>
-    </Layout>
+
+      {isAdmin ? (
+        <Tabs defaultValue="bookings">
+          <TabsList>
+            <TabsTrigger value="bookings">Buchungen</TabsTrigger>
+            <TabsTrigger value="admin">
+              <Settings className="h-4 w-4 mr-1" />
+              Verwaltung
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="bookings" className="mt-4">
+            <BookingsView
+              venues={venues}
+              selectedVenueId={selectedVenueId}
+              setSelectedVenueId={setSelectedVenueId}
+              slotsByDate={slotsByDate}
+              isLoading={isLoading}
+              onBook={setBookingSlot}
+              onCancelBooking={handleCancelBooking}
+              onDeleteSlot={handleDeleteSlot}
+              isLoggedIn={!!user}
+            />
+          </TabsContent>
+
+          <TabsContent value="admin" className="mt-4">
+            <div className="grid gap-6 lg:grid-cols-2">
+              <AdminVenueManager />
+              <AdminSlotCreator />
+              <div className="lg:col-span-2">
+                <AdminBookingExport />
+              </div>
+            </div>
+          </TabsContent>
+        </Tabs>
+      ) : (
+        <BookingsView
+          venues={venues}
+          selectedVenueId={selectedVenueId}
+          setSelectedVenueId={setSelectedVenueId}
+          slotsByDate={slotsByDate}
+          isLoading={isLoading}
+          onBook={setBookingSlot}
+          onCancelBooking={handleCancelBooking}
+          onDeleteSlot={handleDeleteSlot}
+          isLoggedIn={!!user}
+        />
+      )}
+
+      <BookingDialog
+        slot={bookingSlot}
+        open={!!bookingSlot}
+        onOpenChange={(open) => !open && setBookingSlot(null)}
+      />
+    </div>
   );
 }
 
@@ -234,3 +229,4 @@ function BookingsView({
     </div>
   );
 }
+
