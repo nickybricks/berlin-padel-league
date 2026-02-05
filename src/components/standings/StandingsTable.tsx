@@ -34,8 +34,8 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
             <th className="pb-3 text-center">Sp</th>
             <th className="pb-3 text-center">S</th>
             <th className="pb-3 text-center">N</th>
-            <th className="pb-3 text-center">Sätze</th>
-            <th className="pb-3 text-center">Spiele</th>
+            <th className="pb-3 text-center hidden sm:table-cell">Sätze</th>
+            <th className="pb-3 text-center hidden md:table-cell">Spiele</th>
             <th className="pb-3 text-center pr-2 sm:pr-4 font-semibold">Pkt</th>
           </tr>
         </thead>
@@ -98,7 +98,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                 <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm text-destructive font-medium">
                   {standing.losses}
                 </td>
-                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm hidden sm:table-cell">
                   <span className="text-muted-foreground">
                     {standing.setsWon}:{standing.setsLost}
                   </span>
@@ -110,7 +110,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                     ({standing.setDiff > 0 ? '+' : ''}{standing.setDiff})
                   </span>
                 </td>
-                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm">
+                <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm hidden md:table-cell">
                   <span className="text-muted-foreground">
                     {standing.gamesWon}:{standing.gamesLost}
                   </span>
@@ -123,7 +123,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                   </span>
                 </td>
                 <td className="py-3 sm:py-4 text-center pr-1 sm:pr-4">
-                  <span className="inline-flex items-center justify-center min-w-[1.75rem] sm:min-w-[2.5rem] px-1.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-primary text-primary-foreground font-bold text-sm sm:text-lg">
+                  <span className="text-[11px] sm:text-sm font-bold">
                     {standing.points}
                   </span>
                 </td>
