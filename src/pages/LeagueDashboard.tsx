@@ -106,10 +106,6 @@ export default function LeagueDashboard() {
 
       {/* Standings Table */}
       <div className="bg-card rounded-xl border p-4 md:p-6">
-        <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-          <Trophy className="h-5 w-5 text-accent" />
-          Aktuelle Tabelle
-        </h2>
         <StandingsTable standings={standings} loading={isLoading} />
       </div>
     </div>
