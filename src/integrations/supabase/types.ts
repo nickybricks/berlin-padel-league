@@ -191,6 +191,7 @@ export type Database = {
           created_by: string | null
           id: string
           invite_token: string
+          logo_url: string | null
           name: string
         }
         Insert: {
@@ -199,6 +200,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           invite_token?: string
+          logo_url?: string | null
           name: string
         }
         Update: {
@@ -207,6 +209,7 @@ export type Database = {
           created_by?: string | null
           id?: string
           invite_token?: string
+          logo_url?: string | null
           name?: string
         }
         Relationships: []
