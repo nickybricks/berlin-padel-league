@@ -1,6 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { TeamStanding } from '@/types/database';
-import { Trophy, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 
 interface StandingsTableProps {
   standings: TeamStanding[];
@@ -8,6 +8,8 @@ interface StandingsTableProps {
 }
 
 export function StandingsTable({ standings, loading }: StandingsTableProps) {
+  const { leagueId } = useParams<{ leagueId: string }>();
+
   if (loading) {
     return (
       <div className="space-y-3">
@@ -42,7 +44,6 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
         <tbody>
           {standings.map((standing, index) => {
             const isPlayoff = standing.rank <= 8;
-            const isTop3 = standing.rank <= 3;
             const logoUrl = getLogoUrl(standing.team.logo_url);
             
             return (
@@ -73,21 +74,12 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
                   </div>
                 </td>
                 <td className="py-3 sm:py-4">
-                  <div className="flex items-center gap-1 sm:gap-2">
-                    <Link 
-                      to={`/teams/${standing.team.id}`}
-                      className="text-[11px] sm:text-sm font-semibold hover:text-primary transition-colors truncate max-w-[80px] sm:max-w-none"
-                    >
-                      {standing.team.name}
-                    </Link>
-                    {isTop3 && (
-                      <Trophy className={`h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0 ${
-                        standing.rank === 1 ? 'text-yellow-500' :
-                        standing.rank === 2 ? 'text-gray-400' :
-                        'text-amber-600'
-                      }`} />
-                    )}
-                  </div>
+                  <Link 
+                    to={leagueId ? `/league/${leagueId}/teams/${standing.team.id}` : `/teams/${standing.team.id}`}
+                    className="text-[11px] sm:text-sm font-semibold hover:text-primary transition-colors"
+                  >
+                    {standing.team.name}
+                  </Link>
                 </td>
                 <td className="py-3 sm:py-4 text-center text-[11px] sm:text-sm text-muted-foreground">
                   {standing.played}
