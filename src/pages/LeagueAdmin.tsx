@@ -9,6 +9,7 @@ import {
   useRemoveMember,
   LeagueMemberWithDetails
 } from '@/hooks/useLeagueMembers';
+import { LeagueSettingsCard } from '@/components/leagues/LeagueSettingsCard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -121,17 +122,18 @@ export default function LeagueAdmin() {
 
   return (
     <div className="space-y-6">
+      {/* League Settings */}
+      {league && <LeagueSettingsCard league={league} />}
+
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <UserCog className="h-6 w-6 text-primary" />
-            Mitgliederverwaltung
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            {league?.name} • {members?.length ?? 0} Mitglieder
-          </p>
-        </div>
+      <div>
+        <h2 className="text-xl font-bold flex items-center gap-2">
+          <UserCog className="h-5 w-5 text-primary" />
+          Mitgliederverwaltung
+        </h2>
+        <p className="text-muted-foreground mt-1">
+          {members?.length ?? 0} Mitglieder
+        </p>
       </div>
 
       {/* Members Table */}

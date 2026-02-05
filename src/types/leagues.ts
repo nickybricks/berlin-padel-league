@@ -5,6 +5,7 @@ export interface League {
   name: string;
   code: string;
   invite_token: string;
+  logo_url: string | null;
   created_by: string | null;
   created_at: string;
 }
