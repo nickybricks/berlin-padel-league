@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Trophy, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { useLeagueById } from '@/hooks/useLeagues';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,6 +21,13 @@ export function Header({ leagueId }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(getScrollState);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
+  const { data: league } = useLeagueById(leagueId);
+
+  const leagueLogoUrl = league?.logo_url
+    ? `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${league.logo_url}`
+    : null;
+
+  const brandName = league?.name || 'Padel Liga';
 
   useLayoutEffect(() => {
     setIsScrolled(window.scrollY > 10);
@@ -100,11 +108,15 @@ export function Header({ leagueId }: HeaderProps) {
               : 'bg-card/60 backdrop-blur-sm'
           }`}
         >
-          <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-              <Trophy className="h-4 w-4 text-primary-foreground" />
-            </div>
-            <span>Padel Liga</span>
+          <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg">
+            {leagueLogoUrl ? (
+              <img src={leagueLogoUrl} alt={brandName} className="h-8 w-8 rounded-lg object-cover" />
+            ) : (
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+                <Trophy className="h-4 w-4 text-primary-foreground" />
+              </div>
+            )}
+            <span>{brandName}</span>
           </Link>
 
           {filteredNavItems.length > 0 && (
@@ -137,11 +149,15 @@ export function Header({ leagueId }: HeaderProps) {
             : 'bg-card/60 backdrop-blur-sm'
         }`}
       >
-        <Link to="/" className="flex items-center gap-2 font-bold text-lg">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
-            <Trophy className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span>Padel Liga</span>
+        <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg">
+          {leagueLogoUrl ? (
+            <img src={leagueLogoUrl} alt={brandName} className="h-9 w-9 rounded-lg object-cover" />
+          ) : (
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+              <Trophy className="h-5 w-5 text-primary-foreground" />
+            </div>
+          )}
+          <span>{brandName}</span>
         </Link>
 
         <AuthSection />
