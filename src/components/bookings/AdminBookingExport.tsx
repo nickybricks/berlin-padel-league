@@ -18,7 +18,7 @@ import { AutoExportSettings } from './AutoExportSettings';
 export function AdminBookingExport() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date());
   const [endDate, setEndDate] = useState<Date | undefined>(
-    new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
+    new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
   );
   const [isExporting, setIsExporting] = useState(false);
 
