@@ -98,39 +98,7 @@ export default function LeagueDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Card — compact, white, no border */}
-      <div className="bg-card rounded-2xl shadow-sm p-5 md:p-6">
-        <div className="flex items-center gap-6">
-          {/* Left: Circular progress */}
-          <div className="shrink-0">
-            <CircularProgress played={playedCount} total={totalMatches} />
-          </div>
-
-          {/* Right: League info */}
-          <div className="flex flex-col gap-3 min-w-0">
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-foreground truncate">
-                {league?.name || 'Liga'}
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Saison 2025 • Gruppenphase
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Users className="h-4 w-4 shrink-0" />
-                <span className="font-medium text-foreground">{teams?.length ?? 0}</span>
-                <span>Teams</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Trophy className="h-4 w-4 shrink-0" />
-                <span>Playoffs: Top 8</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Hero Card — currently hidden */}
 
       {/* Standings Table */}
       <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
