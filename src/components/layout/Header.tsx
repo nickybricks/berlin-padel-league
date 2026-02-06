@@ -102,7 +102,7 @@ export function Header({ leagueId }: HeaderProps) {
       {/* Desktop: Notch-style header */}
       <div className="hidden lg:block py-3 px-4">
         <div 
-          className={`mx-auto max-w-5xl flex h-14 items-center justify-between px-6 rounded-full transition-all duration-300 ${
+          className={`mx-auto max-w-4xl flex h-14 items-center justify-between px-6 rounded-full transition-all duration-300 ${
             isScrolled 
               ? 'bg-card/80 backdrop-blur-md shadow-md border border-border/50' 
               : 'bg-card/60 backdrop-blur-sm'
