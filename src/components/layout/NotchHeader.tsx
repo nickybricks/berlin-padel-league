@@ -35,7 +35,7 @@ export function NotchHeader() {
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Desktop: Notch-style header */}
-      <div className="hidden md:block py-3 px-4">
+      <div className="hidden lg:block py-3 px-4">
         <div 
           className={`mx-auto max-w-2xl flex h-14 items-center justify-between px-6 rounded-full transition-all duration-300 ${
             isScrolled 
@@ -90,9 +90,9 @@ export function NotchHeader() {
         </div>
       </div>
 
-      {/* Mobile: Traditional header */}
+      {/* Mobile & Tablet: Traditional header */}
       <div 
-        className={`md:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
+        className={`lg:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
           isScrolled 
             ? 'bg-card/80 backdrop-blur-md border-b border-border/50' 
             : 'bg-transparent'
