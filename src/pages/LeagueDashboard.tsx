@@ -4,7 +4,53 @@ import { StandingsTable } from '@/components/standings/StandingsTable';
 import { useLeagueById, useLeagueTeams } from '@/hooks/useLeagues';
 import { useMatches, useMatchResults } from '@/hooks/useMatches';
 import { calculateStandings } from '@/lib/standings';
-import { Trophy, Users, Calendar, Target, Loader2 } from 'lucide-react';
+import { Trophy, Users, Loader2 } from 'lucide-react';
+
+function CircularProgress({ played, total }: { played: number; total: number }) {
+  const radius = 54;
+  const stroke = 8;
+  const normalizedRadius = radius - stroke / 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const arcCircumference = circumference * 0.75;
+  const progress = total > 0 ? played / total : 0;
+  const arcOffset = arcCircumference - progress * arcCircumference;
+
+  return (
+    <div className="flex flex-col items-center gap-1">
+      <div className="relative">
+        <svg width={radius * 2} height={radius * 2} className="-rotate-[135deg]">
+          <circle
+            className="text-muted"
+            stroke="currentColor"
+            fill="transparent"
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            strokeDasharray={`${arcCircumference} ${circumference}`}
+          />
+          <circle
+            className="text-primary transition-all duration-500"
+            stroke="currentColor"
+            fill="transparent"
+            strokeWidth={stroke}
+            strokeLinecap="round"
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            strokeDasharray={`${arcCircumference} ${circumference}`}
+            strokeDashoffset={arcOffset}
+          />
+        </svg>
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <span className="text-2xl font-bold text-foreground">{played}/{total}</span>
+        </div>
+      </div>
+      <span className="text-xs text-muted-foreground">Gespielt</span>
+    </div>
+  );
+}
 
 export default function LeagueDashboard() {
   const { leagueId } = useParams<{ leagueId: string }>();
@@ -14,7 +60,6 @@ export default function LeagueDashboard() {
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
 
-  // Filter matches to only include teams from this league
   const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
 
   const leagueMatches = useMemo(() => {
@@ -37,8 +82,6 @@ export default function LeagueDashboard() {
   }, [results, leagueMatches]);
 
   const totalMatches = leagueMatches.length;
-  const progress = totalMatches > 0 ? Math.round((playedCount / totalMatches) * 100) : 0;
-
   const isLoading = leagueLoading || teamsLoading || matchesLoading || resultsLoading;
 
   if (leagueError) {
@@ -54,53 +97,38 @@ export default function LeagueDashboard() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-primary p-6 md:p-8 text-primary-foreground">
-        <div className="relative z-10">
-          <h1 className="text-2xl md:text-4xl font-bold mb-2">
-            {league?.name || 'Liga'}
-          </h1>
-          <p className="text-primary-foreground/80 max-w-xl">
-            Saison 2025 • Gruppenphase • {teams?.length ?? 0} Teams
-          </p>
-        </div>
+    <div className="space-y-6">
+      {/* Hero Card — compact, white, no border */}
+      <div className="bg-card rounded-2xl shadow-sm p-5 md:p-6">
+        <div className="flex items-center gap-6">
+          {/* Left: Circular progress */}
+          <div className="shrink-0">
+            <CircularProgress played={playedCount} total={totalMatches} />
+          </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <div className="bg-primary-foreground/10 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-              <Users className="h-4 w-4" />
-              Teams
+          {/* Right: League info */}
+          <div className="flex flex-col gap-3 min-w-0">
+            <div>
+              <h1 className="text-xl md:text-2xl font-bold text-foreground truncate">
+                {league?.name || 'Liga'}
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Saison 2025 • Gruppenphase
+              </p>
             </div>
-            <div className="text-2xl font-bold">{teams?.length ?? 0}</div>
-          </div>
-          <div className="bg-primary-foreground/10 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-              <Calendar className="h-4 w-4" />
-              Gespielt
-            </div>
-            <div className="text-2xl font-bold">{playedCount}/{totalMatches}</div>
-          </div>
-          <div className="bg-primary-foreground/10 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-              <Target className="h-4 w-4" />
-              Fortschritt
-            </div>
-            <div className="text-2xl font-bold">{progress}%</div>
-          </div>
-          <div className="bg-primary-foreground/10 rounded-xl p-4">
-            <div className="flex items-center gap-2 text-primary-foreground/70 text-sm mb-1">
-              <Trophy className="h-4 w-4" />
-              Playoffs
-            </div>
-            <div className="text-2xl font-bold">Top 8</div>
-          </div>
-        </div>
 
-        {/* Background decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
-          <Trophy className="w-full h-full" />
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Users className="h-4 w-4 shrink-0" />
+                <span className="font-medium text-foreground">{teams?.length ?? 0}</span>
+                <span>Teams</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Trophy className="h-4 w-4 shrink-0" />
+                <span>Playoffs: Top 8</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -111,4 +139,3 @@ export default function LeagueDashboard() {
     </div>
   );
 }
-
