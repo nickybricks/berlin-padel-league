@@ -76,7 +76,7 @@ export default function EnterResult() {
       </div>
 
       {/* Result Form */}
-      <div className="bg-card rounded-xl border p-4 md:p-6">
+      <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
         {leagueMatches.length > 0 && (
           <ResultForm
             matches={leagueMatches}

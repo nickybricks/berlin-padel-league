@@ -197,12 +197,11 @@
 
   /* Match card */
   .match-card {
-    @apply relative overflow-hidden rounded-xl border bg-card transition-all duration-300;
+    @apply relative overflow-hidden rounded-xl bg-card shadow-sm transition-all duration-300;
   }
 
   .match-card:hover {
-    @apply border-accent/50;
-    box-shadow: var(--shadow-glow);
+    box-shadow: var(--shadow-md);
   }
 
   /* Bracket connector */

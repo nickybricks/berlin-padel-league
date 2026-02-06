@@ -133,7 +133,7 @@ export default function LeagueDashboard() {
       </div>
 
       {/* Standings Table */}
-      <div className="bg-card rounded-xl border p-4 md:p-6">
+      <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
         <StandingsTable standings={standings} loading={isLoading} />
       </div>
     </div>
