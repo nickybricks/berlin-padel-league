@@ -20,8 +20,8 @@ export function BracketMatch({ match, result, placeholder, round }: BracketMatch
       <div className="text-xs text-muted-foreground font-medium mb-1 uppercase tracking-wide">
         {round}
       </div>
-      <div className={`rounded-lg border overflow-hidden ${
-        isPlayed ? 'border-accent/50' : 'border-border'
+      <div className={`rounded-lg overflow-hidden shadow-sm ${
+        isPlayed ? 'ring-1 ring-accent/50' : ''
       }`}>
         <div className={`flex items-center justify-between px-3 py-2 text-sm ${
           teamAWon ? 'bg-success/10 font-semibold' : 'bg-card'

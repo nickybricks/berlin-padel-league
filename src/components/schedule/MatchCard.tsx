@@ -33,7 +33,7 @@ export function MatchCard({ match, result }: MatchCardProps) {
   const teamBWon = result?.winner_id === match.team_b_id;
 
   return (
-    <div className={`match-card p-4 ${isPlayed ? 'border-accent/30' : ''}`}>
+    <div className="match-card p-4">
       {/* Match Status Badge */}
       <div className="flex items-center justify-between mb-3">
         <span className={`sport-badge ${

@@ -137,7 +137,7 @@ export default function LeagueAdmin() {
       </div>
 
       {/* Members Table */}
-      <div className="bg-card rounded-xl border overflow-hidden">
+      <div className="bg-card rounded-xl shadow-sm overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-muted/50">

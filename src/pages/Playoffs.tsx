@@ -86,7 +86,7 @@ export default function Playoffs() {
       )}
 
       {/* Current Top 8 Preview */}
-      <div className="bg-card rounded-xl border p-4 md:p-6">
+      <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
         <h2 className="text-lg font-bold mb-4">
           {groupPhaseComplete ? 'Playoff-Teilnehmer' : 'Aktuelle Top 8'}
         </h2>
@@ -108,7 +108,7 @@ export default function Playoffs() {
       </div>
 
       {/* Bracket Visualization */}
-      <div className="bg-card rounded-xl border p-4 md:p-6 overflow-x-auto">
+      <div className="bg-card rounded-xl shadow-sm p-4 md:p-6 overflow-x-auto">
         <h2 className="text-lg font-bold mb-6">Turnierbaum</h2>
 
         <div className="min-w-[800px] flex items-center justify-between gap-8">

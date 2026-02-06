@@ -138,7 +138,7 @@ export default function Schedule() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 p-4 bg-card rounded-xl border">
+      <div className="flex flex-wrap gap-3 p-4 bg-card rounded-xl shadow-sm">
         <div className="flex items-center gap-2">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Filter:</span>

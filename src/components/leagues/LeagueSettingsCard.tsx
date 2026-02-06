@@ -101,7 +101,7 @@ export function LeagueSettingsCard({ league }: LeagueSettingsCardProps) {
   };
 
   return (
-    <div className="bg-card rounded-xl border p-5 space-y-5">
+    <div className="bg-card rounded-xl shadow-sm p-5 space-y-5">
       <h2 className="text-lg font-bold">Liga-Einstellungen</h2>
 
       <div className="flex items-start gap-5">
