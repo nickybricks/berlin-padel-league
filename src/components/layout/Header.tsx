@@ -100,32 +100,32 @@ export function Header({ leagueId }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full">
       {/* Desktop: Notch-style header */}
-      <div className="hidden md:block py-3 px-4">
+      <div className="hidden lg:block py-3 px-4">
         <div 
-          className={`mx-auto max-w-4xl flex h-14 items-center justify-between px-6 rounded-full transition-all duration-300 ${
+          className={`mx-auto max-w-5xl flex h-14 items-center justify-between px-6 rounded-full transition-all duration-300 ${
             isScrolled 
               ? 'bg-card/80 backdrop-blur-md shadow-md border border-border/50' 
               : 'bg-card/60 backdrop-blur-sm'
           }`}
         >
-          <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg">
+          <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg shrink-0 max-w-[200px]">
             {leagueLogoUrl ? (
-              <img src={leagueLogoUrl} alt={brandName} className="h-8 w-8 rounded-lg object-cover" />
+              <img src={leagueLogoUrl} alt={brandName} className="h-8 w-8 rounded-lg object-cover shrink-0" />
             ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
                 <Trophy className="h-4 w-4 text-primary-foreground" />
               </div>
             )}
-            <span>{brandName}</span>
+            <span className="truncate">{brandName}</span>
           </Link>
 
           {filteredNavItems.length > 0 && (
-            <nav className="flex items-center gap-1">
+            <nav className="flex items-center gap-0.5 shrink-0">
               {filteredNavItems.map(item => (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  className={`px-2.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
                     isActive(item.path)
                       ? 'bg-primary text-primary-foreground'
                       : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
@@ -141,31 +141,31 @@ export function Header({ leagueId }: HeaderProps) {
         </div>
       </div>
 
-      {/* Mobile: Header bar */}
+      {/* Mobile & Tablet: Header bar */}
       <div 
-        className={`md:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
+        className={`lg:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
           isScrolled 
             ? 'bg-card/80 backdrop-blur-md border-b border-border/50' 
             : 'bg-card/60 backdrop-blur-sm'
         }`}
       >
-        <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg">
+        <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg min-w-0">
           {leagueLogoUrl ? (
-            <img src={leagueLogoUrl} alt={brandName} className="h-9 w-9 rounded-lg object-cover" />
+            <img src={leagueLogoUrl} alt={brandName} className="h-9 w-9 rounded-lg object-cover shrink-0" />
           ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shrink-0">
               <Trophy className="h-5 w-5 text-primary-foreground" />
             </div>
           )}
-          <span>{brandName}</span>
+          <span className="truncate">{brandName}</span>
         </Link>
 
         <AuthSection />
       </div>
 
-      {/* Mobile: Horizontal scrollable navigation */}
+      {/* Mobile & Tablet: Horizontal scrollable navigation */}
       {filteredNavItems.length > 0 && (
-        <nav className="md:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md">
+        <nav className="lg:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md">
           <div className="flex items-center gap-1 px-3 py-2 min-w-max">
             {filteredNavItems.map(item => (
               <Link
