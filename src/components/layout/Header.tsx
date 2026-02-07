@@ -28,12 +28,16 @@ export function Header({ leagueId }: HeaderProps) {
   const scrollActiveIntoView = useCallback(() => {
     const container = navScrollRef.current;
     if (!container) return;
-    const active = container.querySelector('[data-active="true"]') as HTMLElement | null;
-    if (!active) return;
-    const containerRect = container.getBoundingClientRect();
-    const activeRect = active.getBoundingClientRect();
-    const scrollLeft = container.scrollLeft + (activeRect.left - containerRect.left) - (containerRect.width / 2) + (activeRect.width / 2);
-    container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+    // Small delay to ensure DOM is updated after route change
+    requestAnimationFrame(() => {
+      const active = container.querySelector('[data-active="true"]') as HTMLElement | null;
+      if (!active) return;
+      const containerWidth = container.offsetWidth;
+      const activeLeft = active.offsetLeft;
+      const activeWidth = active.offsetWidth;
+      const scrollTarget = activeLeft - (containerWidth / 2) + (activeWidth / 2);
+      container.scrollTo({ left: scrollTarget, behavior: 'smooth' });
+    });
   }, []);
 
   useEffect(() => {
@@ -182,8 +186,11 @@ export function Header({ leagueId }: HeaderProps) {
 
       {/* Mobile & Tablet: Horizontal scrollable navigation */}
       {filteredNavItems.length > 0 && (
-        <nav className="lg:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md">
-          <div ref={navScrollRef} className="flex items-center gap-1 px-3 py-2 min-w-max overflow-x-auto scrollbar-hide">
+        <nav
+          ref={navScrollRef}
+          className="lg:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md"
+        >
+          <div className="flex items-center gap-1 px-3 py-2 w-max">
             {filteredNavItems.map(item => (
               <Link
                 key={item.path}
