@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect } from 'react';
+import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Trophy, User, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,6 +22,23 @@ export function Header({ leagueId }: HeaderProps) {
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
   const { data: league } = useLeagueById(leagueId);
+  const navScrollRef = useRef<HTMLDivElement>(null);
+
+  // Scroll active nav item into center
+  const scrollActiveIntoView = useCallback(() => {
+    const container = navScrollRef.current;
+    if (!container) return;
+    const active = container.querySelector('[data-active="true"]') as HTMLElement | null;
+    if (!active) return;
+    const containerRect = container.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+    const scrollLeft = container.scrollLeft + (activeRect.left - containerRect.left) - (containerRect.width / 2) + (activeRect.width / 2);
+    container.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => {
+    scrollActiveIntoView();
+  }, [location.pathname, scrollActiveIntoView]);
 
   const leagueLogoUrl = league?.logo_url
     ? `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${league.logo_url}`
@@ -166,11 +183,12 @@ export function Header({ leagueId }: HeaderProps) {
       {/* Mobile & Tablet: Horizontal scrollable navigation */}
       {filteredNavItems.length > 0 && (
         <nav className="lg:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md">
-          <div className="flex items-center gap-1 px-3 py-2 min-w-max">
+          <div ref={navScrollRef} className="flex items-center gap-1 px-3 py-2 min-w-max overflow-x-auto scrollbar-hide">
             {filteredNavItems.map(item => (
               <Link
                 key={item.path}
                 to={item.path}
+                data-active={isActive(item.path)}
                 className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors ${
                   isActive(item.path)
                     ? 'bg-primary text-primary-foreground'
