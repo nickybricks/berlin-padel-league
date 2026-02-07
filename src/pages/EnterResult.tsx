@@ -4,7 +4,7 @@ import { ResultForm } from '@/components/forms/ResultForm';
 import { useAuth } from '@/hooks/useAuth';
 import { useMatches, useMatchResults } from '@/hooks/useMatches';
 import { useLeagueTeams } from '@/hooks/useLeagues';
-import { ClipboardEdit, Shield } from 'lucide-react';
+import { Shield } from 'lucide-react';
 
 export default function EnterResult() {
   const { leagueId } = useParams<{ leagueId: string }>();
@@ -56,19 +56,6 @@ export default function EnterResult() {
 
   return (
     <div className="max-w-xl mx-auto space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-          <ClipboardEdit className="h-7 w-7 text-accent" />
-          Ergebnis eintragen
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          {isAdmin
-            ? 'Als Admin kannst du alle Spiele eintragen.'
-            : 'Als Spieler kannst du die Spiele deines Teams eintragen.'}
-        </p>
-      </div>
-
       {/* Role Badge */}
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 text-accent text-sm font-medium">
         <Shield className="h-4 w-4" />

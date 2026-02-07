@@ -58,16 +58,6 @@ export default function Playoffs() {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="text-center">
-        <h1 className="text-2xl md:text-3xl font-bold flex items-center justify-center gap-2">
-          <Trophy className="h-7 w-7 text-accent" />
-          Playoffs
-        </h1>
-        <p className="text-muted-foreground mt-1">
-          Top 8 kämpfen um den Titel
-        </p>
-      </div>
 
       {/* Group Phase Status */}
       {!groupPhaseComplete && (

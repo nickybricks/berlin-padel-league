@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar, Filter, Loader2 } from 'lucide-react';
+import { Filter, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { toast } from '@/hooks/use-toast';
 
@@ -111,31 +111,18 @@ export default function Schedule() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
-            <Calendar className="h-7 w-7 text-accent" />
-            Spielplan
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Gruppenphase • {matches?.length ?? 55} Spiele
-          </p>
-        </div>
-
-        {/* Generate Schedule Button (Admin only) */}
-        {isAdmin && (!matches || matches.length === 0) && (
-          <Button
-            onClick={handleGenerateSchedule}
-            disabled={createMatches.isPending}
-          >
-            {createMatches.isPending ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            ) : null}
-            Spielplan generieren
-          </Button>
-        )}
-      </div>
+      {/* Generate Schedule Button (Admin only) */}
+      {isAdmin && (!matches || matches.length === 0) && (
+        <Button
+          onClick={handleGenerateSchedule}
+          disabled={createMatches.isPending}
+        >
+          {createMatches.isPending ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : null}
+          Spielplan generieren
+        </Button>
+      )}
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3 p-4 bg-card rounded-xl shadow-sm">
