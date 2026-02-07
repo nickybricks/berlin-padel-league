@@ -1,7 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom';
 import { useLeagueTeams } from '@/hooks/useLeagues';
 import { TeamCard } from '@/components/teams/TeamCard';
-import { Users } from 'lucide-react';
 
 export default function Teams() {
   const { leagueId } = useParams<{ leagueId: string }>();
@@ -10,19 +9,6 @@ export default function Teams() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
-          <Users className="h-5 w-5 text-primary-foreground" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold">Teams</h1>
-          <p className="text-sm text-muted-foreground">
-            Alle {teams?.length || 0} Teams der Liga
-          </p>
-        </div>
-      </div>
-
       {/* Loading State */}
       {isLoading && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

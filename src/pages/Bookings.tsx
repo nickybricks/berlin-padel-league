@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CalendarDays, Settings, Loader2 } from 'lucide-react';
+import { Settings, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useVenues } from '@/hooks/useVenues';
 import { useCourtSlots, useDeleteCourtSlot, useDeleteBooking } from '@/hooks/useBookings';
@@ -79,12 +79,6 @@ export default function Bookings() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold flex items-center gap-2">
-          <CalendarDays className="h-6 w-6 text-primary" />
-          Platzbuchungen
-        </h1>
-      </div>
 
       {isAdmin ? (
         <Tabs defaultValue="bookings">
