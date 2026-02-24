@@ -5,15 +5,16 @@ import { Users } from 'lucide-react';
 interface StandingsTableProps {
   standings: TeamStanding[];
   loading?: boolean;
+  playoffCount?: number;
 }
 
-export function StandingsTable({ standings, loading }: StandingsTableProps) {
+export function StandingsTable({ standings, loading, playoffCount = 4 }: StandingsTableProps) {
   const { leagueId } = useParams<{ leagueId: string }>();
 
   if (loading) {
     return (
       <div className="space-y-3">
-        {Array.from({ length: 11 }).map((_, i) => (
+        {Array.from({ length: 7 }).map((_, i) => (
           <div key={i} className="h-14 bg-muted animate-pulse rounded-lg" />
         ))}
       </div>
@@ -43,7 +44,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
         </thead>
         <tbody>
           {standings.map((standing, index) => {
-            const isPlayoff = standing.rank <= 8;
+            const isPlayoff = standing.rank <= playoffCount;
             const logoUrl = getLogoUrl(standing.team.logo_url);
             
             return (
@@ -129,7 +130,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
       <div className="mt-4 pt-4 border-t flex flex-wrap gap-4 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <div className="w-1 h-4 rounded-full bg-success" />
-          <span>Playoff-Qualifikation (Top 8)</span>
+          <span>Playoff-Qualifikation (Top {playoffCount})</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="font-medium">Sp</span> = Spiele

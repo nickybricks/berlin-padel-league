@@ -12,6 +12,7 @@ export interface Team {
   player2_name: string | null;
   player2_phone: string | null;
   player2_email: string | null;
+  group_name: string | null;
 }
 
 export interface Match {
