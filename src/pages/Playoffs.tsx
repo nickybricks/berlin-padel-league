@@ -13,43 +13,65 @@ export default function Playoffs() {
   const { data: playoffMatches } = useMatches();
   const { data: results } = useMatchResults();
 
-  // Filter matches to only include teams from this league
   const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
 
-  // Calculate standings
-  const standings = useMemo(() => {
-    if (!teams || !groupMatches || !results) return [];
-    const leagueGroupMatches = groupMatches.filter(m =>
-      leagueTeamIds.has(m.team_a_id) && leagueTeamIds.has(m.team_b_id)
-    );
-    return calculateStandings(teams, leagueGroupMatches, results);
-  }, [teams, groupMatches, results, leagueTeamIds]);
+  const groupATeams = useMemo(() => teams?.filter(t => t.group_name === 'A') ?? [], [teams]);
+  const groupBTeams = useMemo(() => teams?.filter(t => t.group_name === 'B') ?? [], [teams]);
+  const hasGroups = groupATeams.length > 0 && groupBTeams.length > 0;
 
-  // Check if group phase is complete
+  // Calculate standings per group
+  const standingsA = useMemo(() => {
+    if (!hasGroups || !groupMatches || !results) return [];
+    const ids = new Set(groupATeams.map(t => t.id));
+    const gm = groupMatches.filter(m => ids.has(m.team_a_id) && ids.has(m.team_b_id));
+    return calculateStandings(groupATeams, gm, results);
+  }, [hasGroups, groupATeams, groupMatches, results]);
+
+  const standingsB = useMemo(() => {
+    if (!hasGroups || !groupMatches || !results) return [];
+    const ids = new Set(groupBTeams.map(t => t.id));
+    const gm = groupMatches.filter(m => ids.has(m.team_a_id) && ids.has(m.team_b_id));
+    return calculateStandings(groupBTeams, gm, results);
+  }, [hasGroups, groupBTeams, groupMatches, results]);
+
+  // Expected total group matches
+  const expectedGroupMatches = useMemo(() => {
+    if (!hasGroups) return 55;
+    const nA = groupATeams.length;
+    const nB = groupBTeams.length;
+    return (nA * (nA - 1)) / 2 + (nB * (nB - 1)) / 2;
+  }, [hasGroups, groupATeams, groupBTeams]);
+
   const groupPhaseComplete = useMemo(() => {
     if (!groupMatches || !results) return false;
-    const groupMatchIds = new Set(groupMatches.map(m => m.id));
+    const leagueGroupMatches = groupMatches.filter(m => leagueTeamIds.has(m.team_a_id) && leagueTeamIds.has(m.team_b_id));
+    const groupMatchIds = new Set(leagueGroupMatches.map(m => m.id));
     const playedGroupMatches = results.filter(r => groupMatchIds.has(r.match_id));
-    return playedGroupMatches.length >= 55;
-  }, [groupMatches, results]);
+    return playedGroupMatches.length >= expectedGroupMatches;
+  }, [groupMatches, results, leagueTeamIds, expectedGroupMatches]);
 
-  // Get top 8 teams
-  const top8 = standings.slice(0, 8);
+  // Cross-group bracket: 1A vs 4B, 2A vs 3B, 1B vs 4A, 2B vs 3A
+  const quarterFinals = useMemo(() => {
+    if (hasGroups) {
+      return [
+        { teamA: standingsA[0]?.team?.name ?? '1. Gr. A', teamB: standingsB[3]?.team?.name ?? '4. Gr. B' },
+        { teamA: standingsB[1]?.team?.name ?? '2. Gr. B', teamB: standingsA[2]?.team?.name ?? '3. Gr. A' },
+        { teamA: standingsB[0]?.team?.name ?? '1. Gr. B', teamB: standingsA[3]?.team?.name ?? '4. Gr. A' },
+        { teamA: standingsA[1]?.team?.name ?? '2. Gr. A', teamB: standingsB[2]?.team?.name ?? '3. Gr. B' },
+      ];
+    }
+    return [
+      { teamA: '1. Platz', teamB: '8. Platz' },
+      { teamA: '4. Platz', teamB: '5. Platz' },
+      { teamA: '2. Platz', teamB: '7. Platz' },
+      { teamA: '3. Platz', teamB: '6. Platz' },
+    ];
+  }, [hasGroups, standingsA, standingsB]);
 
-  // Create playoff bracket placeholders
-  const quarterFinals = [
-    { teamA: top8[0]?.team?.name ?? '1. Platz', teamB: top8[7]?.team?.name ?? '8. Platz' },
-    { teamA: top8[3]?.team?.name ?? '4. Platz', teamB: top8[4]?.team?.name ?? '5. Platz' },
-    { teamA: top8[1]?.team?.name ?? '2. Platz', teamB: top8[6]?.team?.name ?? '7. Platz' },
-    { teamA: top8[2]?.team?.name ?? '3. Platz', teamB: top8[5]?.team?.name ?? '6. Platz' },
-  ];
-
-  // Get playoff matches by type
   const quarterMatches = playoffMatches?.filter(m => m.match_type === 'quarter') ?? [];
   const semiMatches = playoffMatches?.filter(m => m.match_type === 'semi') ?? [];
   const finalMatch = playoffMatches?.find(m => m.match_type === 'final');
 
-  // Results map
   const resultsMap = useMemo(() => {
     const map = new Map();
     results?.forEach(r => map.set(r.match_id, r));
@@ -58,79 +80,84 @@ export default function Playoffs() {
 
   return (
     <div className="space-y-8">
-
-      {/* Group Phase Status */}
       {!groupPhaseComplete && (
         <div className="bg-warning/10 border border-warning/30 rounded-xl p-4 flex items-start gap-3">
           <Lock className="h-5 w-5 text-warning mt-0.5" />
           <div>
-            <p className="font-medium text-warning-foreground">
-              Gruppenphase läuft noch
-            </p>
+            <p className="font-medium text-warning-foreground">Gruppenphase läuft noch</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Die Playoff-Paarungen werden nach Abschluss aller 55 Gruppenspiele festgelegt.
+              Die Playoff-Paarungen werden nach Abschluss aller {expectedGroupMatches} Gruppenspiele festgelegt.
               Aktuelle Zwischenstände sind vorläufig.
             </p>
           </div>
         </div>
       )}
 
-      {/* Current Top 8 Preview */}
-      <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
-        <h2 className="text-lg font-bold mb-4">
-          {groupPhaseComplete ? 'Playoff-Teilnehmer' : 'Aktuelle Top 8'}
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {top8.map((standing, index) => (
-            <div
-              key={standing.team.id}
-              className="flex items-center gap-3 p-3 rounded-lg bg-muted/50"
-            >
-              <span className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
-                index < 4 ? 'bg-accent text-accent-foreground' : 'bg-primary/10 text-primary'
-              }`}>
-                {index + 1}
-              </span>
-              <span className="font-medium truncate">{standing.team.name}</span>
+      {/* Top 4 per group preview */}
+      {hasGroups ? (
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
+            <h2 className="text-lg font-bold mb-4">
+              {groupPhaseComplete ? 'Playoff-Teilnehmer Gruppe A' : 'Top 4 Gruppe A'}
+            </h2>
+            <div className="space-y-2">
+              {standingsA.slice(0, 4).map((s, i) => (
+                <div key={s.team.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground text-sm font-bold">
+                    {i + 1}
+                  </span>
+                  <span className="font-medium truncate">{s.team.name}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
+          <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
+            <h2 className="text-lg font-bold mb-4">
+              {groupPhaseComplete ? 'Playoff-Teilnehmer Gruppe B' : 'Top 4 Gruppe B'}
+            </h2>
+            <div className="space-y-2">
+              {standingsB.slice(0, 4).map((s, i) => (
+                <div key={s.team.id} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary text-sm font-bold">
+                    {i + 1}
+                  </span>
+                  <span className="font-medium truncate">{s.team.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
+          <h2 className="text-lg font-bold mb-4">Aktuelle Top 8</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-accent text-accent-foreground text-sm font-bold">
+                  {i + 1}
+                </span>
+                <span className="font-medium truncate">TBD</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
-      {/* Bracket Visualization */}
+      {/* Bracket */}
       <div className="bg-card rounded-xl shadow-sm p-4 md:p-6 overflow-x-auto">
         <h2 className="text-lg font-bold mb-6">Turnierbaum</h2>
-
         <div className="min-w-[800px] flex items-center justify-between gap-8">
-          {/* Quarter Finals */}
           <div className="flex flex-col gap-8">
-            <BracketMatch
-              match={quarterMatches[0]}
-              result={quarterMatches[0] ? resultsMap.get(quarterMatches[0].id) : undefined}
-              placeholder={quarterFinals[0]}
-              round="VF 1"
-            />
-            <BracketMatch
-              match={quarterMatches[1]}
-              result={quarterMatches[1] ? resultsMap.get(quarterMatches[1].id) : undefined}
-              placeholder={quarterFinals[1]}
-              round="VF 2"
-            />
-            <BracketMatch
-              match={quarterMatches[2]}
-              result={quarterMatches[2] ? resultsMap.get(quarterMatches[2].id) : undefined}
-              placeholder={quarterFinals[2]}
-              round="VF 3"
-            />
-            <BracketMatch
-              match={quarterMatches[3]}
-              result={quarterMatches[3] ? resultsMap.get(quarterMatches[3].id) : undefined}
-              placeholder={quarterFinals[3]}
-              round="VF 4"
-            />
+            {quarterFinals.map((qf, i) => (
+              <BracketMatch
+                key={i}
+                match={quarterMatches[i]}
+                result={quarterMatches[i] ? resultsMap.get(quarterMatches[i].id) : undefined}
+                placeholder={qf}
+                round={`VF ${i + 1}`}
+              />
+            ))}
           </div>
-
-          {/* Semi Finals */}
           <div className="flex flex-col gap-24">
             <BracketMatch
               match={semiMatches[0]}
@@ -145,8 +172,6 @@ export default function Playoffs() {
               round="HF 2"
             />
           </div>
-
-          {/* Final */}
           <div className="flex flex-col items-center">
             <BracketMatch
               match={finalMatch}
@@ -166,8 +191,14 @@ export default function Playoffs() {
       <div className="bg-muted/50 rounded-xl p-4 md:p-6">
         <h3 className="font-bold mb-3">Playoff-Modus</h3>
         <ul className="space-y-2 text-sm text-muted-foreground">
-          <li>• <strong>Viertelfinale:</strong> 1. vs 8., 2. vs 7., 3. vs 6., 4. vs 5.</li>
-          <li>• <strong>Halbfinale:</strong> Sieger der Viertelfinals</li>
+          {hasGroups ? (
+            <>
+              <li>• <strong>Viertelfinale:</strong> 1.A vs 4.B, 2.B vs 3.A, 1.B vs 4.A, 2.A vs 3.B</li>
+              <li>• <strong>Halbfinale:</strong> Sieger VF 1 vs Sieger VF 2, Sieger VF 3 vs Sieger VF 4</li>
+            </>
+          ) : (
+            <li>• <strong>Viertelfinale:</strong> 1. vs 8., 2. vs 7., 3. vs 6., 4. vs 5.</li>
+          )}
           <li>• <strong>Finale:</strong> Sieger der Halbfinals</li>
           <li>• Alle Playoff-Spiele werden im Best-of-3-Modus gespielt</li>
         </ul>
@@ -175,4 +206,3 @@ export default function Playoffs() {
     </div>
   );
 }
-

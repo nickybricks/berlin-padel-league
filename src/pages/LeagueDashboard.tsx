@@ -4,53 +4,7 @@ import { StandingsTable } from '@/components/standings/StandingsTable';
 import { useLeagueById, useLeagueTeams } from '@/hooks/useLeagues';
 import { useMatches, useMatchResults } from '@/hooks/useMatches';
 import { calculateStandings } from '@/lib/standings';
-import { Trophy, Users, Loader2 } from 'lucide-react';
-
-function CircularProgress({ played, total }: { played: number; total: number }) {
-  const radius = 54;
-  const stroke = 8;
-  const normalizedRadius = radius - stroke / 2;
-  const circumference = normalizedRadius * 2 * Math.PI;
-  const arcCircumference = circumference * 0.75;
-  const progress = total > 0 ? played / total : 0;
-  const arcOffset = arcCircumference - progress * arcCircumference;
-
-  return (
-    <div className="flex flex-col items-center gap-1">
-      <div className="relative">
-        <svg width={radius * 2} height={radius * 2} className="-rotate-[135deg]">
-          <circle
-            className="text-muted"
-            stroke="currentColor"
-            fill="transparent"
-            strokeWidth={stroke}
-            strokeLinecap="round"
-            r={normalizedRadius}
-            cx={radius}
-            cy={radius}
-            strokeDasharray={`${arcCircumference} ${circumference}`}
-          />
-          <circle
-            className="text-primary transition-all duration-500"
-            stroke="currentColor"
-            fill="transparent"
-            strokeWidth={stroke}
-            strokeLinecap="round"
-            r={normalizedRadius}
-            cx={radius}
-            cy={radius}
-            strokeDasharray={`${arcCircumference} ${circumference}`}
-            strokeDashoffset={arcOffset}
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-2xl font-bold text-foreground">{played}/{total}</span>
-        </div>
-      </div>
-      <span className="text-xs text-muted-foreground">Gespielt</span>
-    </div>
-  );
-}
+import { Loader2 } from 'lucide-react';
 
 export default function LeagueDashboard() {
   const { leagueId } = useParams<{ leagueId: string }>();
@@ -69,19 +23,33 @@ export default function LeagueDashboard() {
     );
   }, [matches, leagueTeamIds]);
 
-  const standings = useMemo(() => {
+  const groupATeams = useMemo(() => teams?.filter(t => t.group_name === 'A') ?? [], [teams]);
+  const groupBTeams = useMemo(() => teams?.filter(t => t.group_name === 'B') ?? [], [teams]);
+  const hasGroups = groupATeams.length > 0 && groupBTeams.length > 0;
+
+  const standingsA = useMemo(() => {
+    if (!hasGroups || !leagueMatches || !results) return [];
+    const groupTeamIds = new Set(groupATeams.map(t => t.id));
+    const groupMatches = leagueMatches.filter(m => groupTeamIds.has(m.team_a_id) && groupTeamIds.has(m.team_b_id));
+    const groupResults = results.filter(r => groupMatches.some(m => m.id === r.match_id));
+    return calculateStandings(groupATeams, groupMatches, groupResults);
+  }, [hasGroups, groupATeams, leagueMatches, results]);
+
+  const standingsB = useMemo(() => {
+    if (!hasGroups || !leagueMatches || !results) return [];
+    const groupTeamIds = new Set(groupBTeams.map(t => t.id));
+    const groupMatches = leagueMatches.filter(m => groupTeamIds.has(m.team_a_id) && groupTeamIds.has(m.team_b_id));
+    const groupResults = results.filter(r => groupMatches.some(m => m.id === r.match_id));
+    return calculateStandings(groupBTeams, groupMatches, groupResults);
+  }, [hasGroups, groupBTeams, leagueMatches, results]);
+
+  const allStandings = useMemo(() => {
+    if (hasGroups) return [];
     if (!teams || !leagueMatches || !results) return [];
-    const leagueResults = results.filter(r =>
-      leagueMatches.some(m => m.id === r.match_id)
-    );
+    const leagueResults = results.filter(r => leagueMatches.some(m => m.id === r.match_id));
     return calculateStandings(teams, leagueMatches, leagueResults);
-  }, [teams, leagueMatches, results]);
+  }, [hasGroups, teams, leagueMatches, results]);
 
-  const playedCount = useMemo(() => {
-    return results?.filter(r => leagueMatches.some(m => m.id === r.match_id)).length ?? 0;
-  }, [results, leagueMatches]);
-
-  const totalMatches = leagueMatches.length;
   const isLoading = leagueLoading || teamsLoading || matchesLoading || resultsLoading;
 
   if (leagueError) {
@@ -98,12 +66,22 @@ export default function LeagueDashboard() {
 
   return (
     <div className="space-y-6">
-      {/* Hero Card — currently hidden */}
-
-      {/* Standings Table */}
-      <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
-        <StandingsTable standings={standings} loading={isLoading} />
-      </div>
+      {hasGroups ? (
+        <>
+          <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
+            <h2 className="text-lg font-bold mb-4">Gruppe A</h2>
+            <StandingsTable standings={standingsA} loading={isLoading} playoffCount={4} />
+          </div>
+          <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
+            <h2 className="text-lg font-bold mb-4">Gruppe B</h2>
+            <StandingsTable standings={standingsB} loading={isLoading} playoffCount={4} />
+          </div>
+        </>
+      ) : (
+        <div className="bg-card rounded-xl shadow-sm p-4 md:p-6">
+          <StandingsTable standings={allStandings} loading={isLoading} playoffCount={8} />
+        </div>
+      )}
     </div>
   );
 }

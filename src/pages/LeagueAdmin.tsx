@@ -10,6 +10,7 @@ import {
   LeagueMemberWithDetails
 } from '@/hooks/useLeagueMembers';
 import { LeagueSettingsCard } from '@/components/leagues/LeagueSettingsCard';
+import { GroupAssignment } from '@/components/admin/GroupAssignment';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -121,9 +122,12 @@ export default function LeagueAdmin() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* League Settings */}
       {league && <LeagueSettingsCard league={league} />}
+
+      {/* Group Assignment */}
+      {teams && teams.length > 0 && <GroupAssignment teams={teams} />}
 
       {/* Header */}
       <div>
