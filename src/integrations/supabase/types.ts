@@ -391,7 +391,6 @@ export type Database = {
       teams: {
         Row: {
           created_at: string
-          group_name: string | null
           id: string
           league_id: string | null
           logo_url: string | null
@@ -405,7 +404,6 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          group_name?: string | null
           id?: string
           league_id?: string | null
           logo_url?: string | null
@@ -419,7 +417,6 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          group_name?: string | null
           id?: string
           league_id?: string | null
           logo_url?: string | null

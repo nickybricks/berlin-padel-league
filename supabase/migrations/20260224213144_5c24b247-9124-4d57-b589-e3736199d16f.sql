@@ -1,1 +1,0 @@
-ALTER TABLE public.teams ADD COLUMN group_name text DEFAULT NULL;

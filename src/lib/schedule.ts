@@ -6,33 +6,41 @@ interface ScheduledMatch {
   week: number;
 }
 
-// Generate round-robin schedule within a single group
-function generateGroupSchedule(teams: Team[], weekOffset: number = 0): ScheduledMatch[] {
+// Generate proper round-robin schedule for 11 teams (55 matches)
+// Uses the circle method: each week, every team plays at most once
+// With 11 teams (odd), we have 11 weeks with 5 matches each (one team has bye per week)
+export function generateSchedule(teams: Team[]): ScheduledMatch[] {
   const matches: ScheduledMatch[] = [];
   const n = teams.length;
-
+  
+  // For odd number of teams, add a "bye" placeholder
   const teamsWithBye = [...teams];
   const hasOddTeams = n % 2 === 1;
-
+  
   if (hasOddTeams) {
+    // Add a virtual "bye" team at position 0
     teamsWithBye.unshift({ id: 'BYE', name: 'BYE', created_at: '' } as Team);
   }
-
-  const totalTeams = teamsWithBye.length;
-  const rounds = totalTeams - 1;
-
+  
+  const totalTeams = teamsWithBye.length; // 12 for 11 real teams
+  const rounds = totalTeams - 1; // 11 rounds
+  
+  // Circle method: fix position 0, rotate the rest
+  // Create initial positions (indices into teamsWithBye)
   const positions = Array.from({ length: totalTeams }, (_, i) => i);
-
+  
   for (let round = 0; round < rounds; round++) {
-    const week = round + 1 + weekOffset;
-
+    const week = round + 1;
+    
+    // Generate matches for this round
     for (let i = 0; i < totalTeams / 2; i++) {
       const teamAIdx = positions[i];
       const teamBIdx = positions[totalTeams - 1 - i];
-
+      
       const teamA = teamsWithBye[teamAIdx];
       const teamB = teamsWithBye[teamBIdx];
-
+      
+      // Skip matches involving the "bye" team
       if (teamA.id !== 'BYE' && teamB.id !== 'BYE') {
         matches.push({
           team_a_id: teamA.id,
@@ -41,32 +49,17 @@ function generateGroupSchedule(teams: Team[], weekOffset: number = 0): Scheduled
         });
       }
     }
-
+    
+    // Rotate: keep position 0 fixed, rotate the rest clockwise
     const last = positions.pop()!;
     positions.splice(1, 0, last);
   }
-
+  
   return matches;
 }
 
-// Generate schedule for two groups (each group plays round-robin)
-export function generateSchedule(teams: Team[]): ScheduledMatch[] {
-  const groupA = teams.filter(t => t.group_name === 'A');
-  const groupB = teams.filter(t => t.group_name === 'B');
-
-  if (groupA.length === 0 || groupB.length === 0) {
-    // Fallback: single group round-robin
-    return generateGroupSchedule(teams);
-  }
-
-  // Both groups play in parallel, same week numbers
-  const matchesA = generateGroupSchedule(groupA);
-  const matchesB = generateGroupSchedule(groupB);
-
-  return [...matchesA, ...matchesB];
-}
-
 // Get the number of weeks in the schedule
-export function getWeekCount(matchCount: number, matchesPerWeek: number = 5): number {
+export function getWeekCount(matchCount: number): number {
+  const matchesPerWeek = 5;
   return Math.ceil(matchCount / matchesPerWeek);
 }
