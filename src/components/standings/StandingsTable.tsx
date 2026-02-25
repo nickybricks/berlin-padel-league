@@ -48,7 +48,7 @@ export function StandingsTable({ standings, loading, formatType, groupCount, pla
           </tr>
         </thead>
         <tbody>
-          {standings.map((standing, index) => {
+          {data.map((standing, index) => {
             const isPlayoff = standing.rank <= qualifierCount;
             const logoUrl = getLogoUrl(standing.team.logo_url);
             
