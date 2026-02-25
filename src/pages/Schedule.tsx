@@ -129,6 +129,7 @@ export default function Schedule() {
               <SelectValue placeholder="Gruppe" />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
+              <SelectItem value="all">Alle Gruppen</SelectItem>
               {groupNames.map((g) => (
                 <SelectItem key={g} value={g}>
                   Gruppe {g}
