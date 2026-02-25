@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useLeagueById, useLeagueTeams } from '@/hooks/useLeagues';
+import { useMatches, useMatchResults } from '@/hooks/useMatches';
 import {
   useLeagueMembers,
   useUpdateMemberRole,
@@ -10,6 +11,8 @@ import {
   LeagueMemberWithDetails
 } from '@/hooks/useLeagueMembers';
 import { LeagueSettingsCard } from '@/components/leagues/LeagueSettingsCard';
+import { TournamentFormatCard } from '@/components/leagues/TournamentFormatCard';
+import { GroupAssignment } from '@/components/leagues/GroupAssignment';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -49,6 +52,8 @@ export default function LeagueAdmin() {
   const { data: league, isLoading: leagueLoading } = useLeagueById(leagueId);
   const { data: teams } = useLeagueTeams(leagueId);
   const { data: members, isLoading: membersLoading } = useLeagueMembers(leagueId);
+  const { data: matches } = useMatches('group');
+  const { data: results } = useMatchResults();
 
   const updateRole = useUpdateMemberRole();
   const updateTeam = useUpdateMemberTeam();
@@ -124,6 +129,19 @@ export default function LeagueAdmin() {
     <div className="space-y-6">
       {/* League Settings */}
       {league && <LeagueSettingsCard league={league} />}
+
+      {/* Tournament Format */}
+      {league && <TournamentFormatCard league={league} />}
+
+      {/* Group Assignment (only when format is groups) */}
+      {league && league.format_type === 'groups' && teams && matches && results && (
+        <GroupAssignment
+          league={league}
+          teams={teams}
+          matches={matches}
+          results={results}
+        />
+      )}
 
       {/* Header */}
       <div>

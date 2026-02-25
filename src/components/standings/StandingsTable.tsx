@@ -1,14 +1,20 @@
 import { Link, useParams } from 'react-router-dom';
 import { TeamStanding } from '@/types/database';
 import { Users } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 interface StandingsTableProps {
   standings: TeamStanding[];
   loading?: boolean;
+  formatType?: string;
+  groupCount?: number;
+  playoffQualifiers?: number;
+  standingsByGroup?: Record<string, TeamStanding[]>;
 }
 
-export function StandingsTable({ standings, loading }: StandingsTableProps) {
+export function StandingsTable({ standings, loading, formatType, groupCount, playoffQualifiers, standingsByGroup }: StandingsTableProps) {
   const { leagueId } = useParams<{ leagueId: string }>();
+  const qualifiers = playoffQualifiers || 8;
 
   if (loading) {
     return (
@@ -25,7 +31,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
     return `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${logoPath}`;
   };
 
-  return (
+  const renderTable = (data: TeamStanding[], qualifierCount: number) => (
     <div>
       <table className="w-full">
         <thead>
@@ -43,7 +49,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
         </thead>
         <tbody>
           {standings.map((standing, index) => {
-            const isPlayoff = standing.rank <= 8;
+            const isPlayoff = standing.rank <= qualifierCount;
             const logoUrl = getLogoUrl(standing.team.logo_url);
             
             return (
@@ -129,7 +135,7 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
       <div className="mt-4 pt-4 border-t flex flex-wrap gap-4 text-sm text-muted-foreground">
         <div className="flex items-center gap-2">
           <div className="w-1 h-4 rounded-full bg-success" />
-          <span>Playoff-Qualifikation (Top 8)</span>
+          <span>Playoff-Qualifikation (Top {qualifierCount})</span>
         </div>
         <div className="flex items-center gap-2">
           <span className="font-medium">Sp</span> = Spiele
@@ -143,4 +149,29 @@ export function StandingsTable({ standings, loading }: StandingsTableProps) {
       </div>
     </div>
   );
+
+  // If groups format with group standings
+  if (formatType === 'groups' && standingsByGroup && Object.keys(standingsByGroup).length > 0) {
+    const groupNames = Object.keys(standingsByGroup).sort();
+    return (
+      <Tabs defaultValue={groupNames[0]}>
+        <TabsList className="mb-4">
+          {groupNames.map(g => (
+            <TabsTrigger key={g} value={g}>Gruppe {g}</TabsTrigger>
+          ))}
+          <TabsTrigger value="all">Gesamt</TabsTrigger>
+        </TabsList>
+        {groupNames.map(g => (
+          <TabsContent key={g} value={g}>
+            {renderTable(standingsByGroup[g], qualifiers)}
+          </TabsContent>
+        ))}
+        <TabsContent value="all">
+          {renderTable(standings, qualifiers)}
+        </TabsContent>
+      </Tabs>
+    );
+  }
+
+  return renderTable(standings, qualifiers);
 }

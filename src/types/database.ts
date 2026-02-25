@@ -6,6 +6,7 @@ export interface Team {
   created_at: string;
   logo_url: string | null;
   league_id: string | null;
+  group_name: string | null;
   player1_name: string | null;
   player1_phone: string | null;
   player1_email: string | null;
