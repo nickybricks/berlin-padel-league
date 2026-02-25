@@ -1,71 +1,65 @@
-import { useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { WeekSection } from '@/components/schedule/WeekSection';
-import { useMatches, useMatchResults, useCreateMatches } from '@/hooks/useMatches';
-import { useLeagueById, useLeagueTeams } from '@/hooks/useLeagues';
-import { generateSchedule } from '@/lib/schedule';
-import { generateGroupSchedule, groupTeamsByName } from '@/lib/groupSchedule';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Filter, Loader2 } from 'lucide-react';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from '@/hooks/use-toast';
+import { useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
+import { WeekSection } from "@/components/schedule/WeekSection";
+import { useMatches, useMatchResults, useCreateMatches } from "@/hooks/useMatches";
+import { useLeagueById, useLeagueTeams } from "@/hooks/useLeagues";
+import { generateSchedule } from "@/lib/schedule";
+import { generateGroupSchedule, groupTeamsByName } from "@/lib/groupSchedule";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Filter, Loader2 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "@/hooks/use-toast";
 
 export default function Schedule() {
   const { leagueId } = useParams<{ leagueId: string }>();
-  const [weekFilter, setWeekFilter] = useState<string>('all');
-  const [teamFilter, setTeamFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [groupFilter, setGroupFilter] = useState<string>('all');
+  const [weekFilter, setWeekFilter] = useState<string>("all");
+  const [teamFilter, setTeamFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [groupFilter, setGroupFilter] = useState<string>("all");
 
   const { data: league } = useLeagueById(leagueId);
   const { data: teams } = useLeagueTeams(leagueId);
-  const { data: matches, isLoading: matchesLoading } = useMatches('group');
+  const { data: matches, isLoading: matchesLoading } = useMatches("group");
   const { data: results } = useMatchResults();
   const createMatches = useCreateMatches();
   const { isAdmin } = useAuth();
 
-  const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
+  const leagueTeamIds = useMemo(() => new Set(teams?.map((t) => t.id) || []), [teams]);
 
   const resultsMap = useMemo(() => {
     const map = new Map();
-    results?.forEach(r => map.set(r.match_id, r));
+    results?.forEach((r) => map.set(r.match_id, r));
     return map;
   }, [results]);
 
   // Get unique group names
   const groupNames = useMemo(() => {
     if (!teams) return [];
-    return [...new Set(teams.map(t => t.group_name).filter(Boolean))].sort() as string[];
+    return [...new Set(teams.map((t) => t.group_name).filter(Boolean))].sort() as string[];
   }, [teams]);
 
   // Team IDs in selected group
   const groupTeamIds = useMemo(() => {
-    if (groupFilter === 'all' || !teams) return null;
-    return new Set(teams.filter(t => t.group_name === groupFilter).map(t => t.id));
+    if (groupFilter === "all" || !teams) return null;
+    return new Set(teams.filter((t) => t.group_name === groupFilter).map((t) => t.id));
   }, [groupFilter, teams]);
 
   const matchesByWeek = useMemo(() => {
     if (!matches) return new Map();
 
     const grouped = new Map<number, typeof matches>();
-    matches.forEach(match => {
+    matches.forEach((match) => {
       if (!leagueTeamIds.has(match.team_a_id) || !leagueTeamIds.has(match.team_b_id)) return;
 
       // Group filter
       if (groupTeamIds && (!groupTeamIds.has(match.team_a_id) || !groupTeamIds.has(match.team_b_id))) return;
 
-      if (teamFilter !== 'all' && match.team_a_id !== teamFilter && match.team_b_id !== teamFilter) return;
+      if (teamFilter !== "all" && match.team_a_id !== teamFilter && match.team_b_id !== teamFilter) return;
 
       const hasResult = resultsMap.has(match.id);
-      if (statusFilter === 'played' && !hasResult) return;
-      if (statusFilter === 'open' && hasResult) return;
+      if (statusFilter === "played" && !hasResult) return;
+      if (statusFilter === "open" && hasResult) return;
 
       const existing = grouped.get(match.week) || [];
       existing.push(match);
@@ -77,7 +71,7 @@ export default function Schedule() {
 
   const weeks = useMemo(() => {
     const allWeeks = Array.from(matchesByWeek.keys()).sort((a, b) => a - b);
-    if (weekFilter !== 'all') return allWeeks.filter(w => w === parseInt(weekFilter));
+    if (weekFilter !== "all") return allWeeks.filter((w) => w === parseInt(weekFilter));
     return allWeeks;
   }, [matchesByWeek, weekFilter]);
 
@@ -86,7 +80,7 @@ export default function Schedule() {
 
     try {
       let schedule;
-      if (league?.format_type === 'groups') {
+      if (league?.format_type === "groups") {
         const groups = groupTeamsByName(teams);
         schedule = generateGroupSchedule(groups);
       } else {
@@ -94,24 +88,24 @@ export default function Schedule() {
       }
 
       await createMatches.mutateAsync(
-        schedule.map(m => ({
+        schedule.map((m) => ({
           team_a_id: m.team_a_id,
           team_b_id: m.team_b_id,
           week: m.week,
-          match_type: 'group' as const,
-        }))
+          match_type: "group" as const,
+        })),
       );
 
       toast({
-        title: 'Spielplan erstellt',
+        title: "Spielplan erstellt",
         description: `${schedule.length} Spiele wurden generiert.`,
       });
     } catch (error: any) {
-      toast({ title: 'Fehler', description: error.message, variant: 'destructive' });
+      toast({ title: "Fehler", description: error.message, variant: "destructive" });
     }
   };
 
-  const maxWeek = matches?.length ? Math.max(...matches.map(m => m.week)) : 11;
+  const maxWeek = matches?.length ? Math.max(...matches.map((m) => m.week)) : 11;
 
   return (
     <div className="space-y-6">
@@ -135,9 +129,10 @@ export default function Schedule() {
               <SelectValue placeholder="Gruppe" />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
-              <SelectItem value="all">Alle Gruppen</SelectItem>
-              {groupNames.map(g => (
-                <SelectItem key={g} value={g}>Gruppe {g}</SelectItem>
+              {groupNames.map((g) => (
+                <SelectItem key={g} value={g}>
+                  Gruppe {g}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -150,7 +145,9 @@ export default function Schedule() {
           <SelectContent className="bg-popover z-50">
             <SelectItem value="all">Alle Wochen</SelectItem>
             {Array.from({ length: maxWeek }, (_, i) => (
-              <SelectItem key={i + 1} value={String(i + 1)}>Woche {i + 1}</SelectItem>
+              <SelectItem key={i + 1} value={String(i + 1)}>
+                Woche {i + 1}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -161,8 +158,10 @@ export default function Schedule() {
           </SelectTrigger>
           <SelectContent className="bg-popover z-50">
             <SelectItem value="all">Alle Teams</SelectItem>
-            {teams?.map(team => (
-              <SelectItem key={team.id} value={team.id}>{team.name}</SelectItem>
+            {teams?.map((team) => (
+              <SelectItem key={team.id} value={team.id}>
+                {team.name}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -194,11 +193,11 @@ export default function Schedule() {
         </div>
       ) : weeks.length === 0 ? (
         <div className="text-center py-12 text-muted-foreground">
-          {matches?.length === 0 ? 'Noch kein Spielplan erstellt.' : 'Keine Spiele gefunden.'}
+          {matches?.length === 0 ? "Noch kein Spielplan erstellt." : "Keine Spiele gefunden."}
         </div>
       ) : (
         <div className="space-y-8">
-          {weeks.map(week => (
+          {weeks.map((week) => (
             <WeekSection key={week} week={week} matches={matchesByWeek.get(week) || []} results={resultsMap} />
           ))}
         </div>
