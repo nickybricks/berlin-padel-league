@@ -16,7 +16,7 @@ export default function Schedule() {
   const [weekFilter, setWeekFilter] = useState<string>("all");
   const [teamFilter, setTeamFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [groupFilter, setGroupFilter] = useState<string>("all");
+  const [groupFilter, setGroupFilter] = useState<string>("A");
 
   const { data: league } = useLeagueById(leagueId);
   const { data: teams } = useLeagueTeams(leagueId);
@@ -129,7 +129,6 @@ export default function Schedule() {
               <SelectValue placeholder="Gruppe" />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
-              <SelectItem value="all">Alle Gruppen</SelectItem>
               {groupNames.map((g) => (
                 <SelectItem key={g} value={g}>
                   Gruppe {g}
