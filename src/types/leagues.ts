@@ -1,4 +1,6 @@
 export type LeagueRole = 'admin' | 'player';
+export type FormatType = 'round_robin' | 'groups';
+export type PlayoffFormat = 'top8_bracket' | 'top4_bracket' | 'cross_group';
 
 export interface League {
   id: string;
@@ -8,6 +10,10 @@ export interface League {
   logo_url: string | null;
   created_by: string | null;
   created_at: string;
+  format_type: FormatType;
+  group_count: number;
+  playoff_format: PlayoffFormat;
+  playoff_qualifiers_per_group: number;
 }
 
 export interface LeagueMember {

@@ -3,12 +3,17 @@ import { Team, MatchResult, Match, TeamStanding } from '@/types/database';
 export function calculateStandings(
   teams: Team[],
   matches: Match[],
-  results: MatchResult[]
+  results: MatchResult[],
+  groupName?: string
 ): TeamStanding[] {
+  // Filter teams by group if specified
+  const filteredTeams = groupName
+    ? teams.filter(t => t.group_name === groupName)
+    : teams;
   // Initialize standings for each team
   const standingsMap = new Map<string, TeamStanding>();
   
-  teams.forEach(team => {
+  filteredTeams.forEach(team => {
     standingsMap.set(team.id, {
       team,
       played: 0,

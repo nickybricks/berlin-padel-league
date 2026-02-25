@@ -189,28 +189,40 @@ export type Database = {
           code: string
           created_at: string
           created_by: string | null
+          format_type: string
+          group_count: number
           id: string
           invite_token: string
           logo_url: string | null
           name: string
+          playoff_format: string
+          playoff_qualifiers_per_group: number
         }
         Insert: {
           code: string
           created_at?: string
           created_by?: string | null
+          format_type?: string
+          group_count?: number
           id?: string
           invite_token?: string
           logo_url?: string | null
           name: string
+          playoff_format?: string
+          playoff_qualifiers_per_group?: number
         }
         Update: {
           code?: string
           created_at?: string
           created_by?: string | null
+          format_type?: string
+          group_count?: number
           id?: string
           invite_token?: string
           logo_url?: string | null
           name?: string
+          playoff_format?: string
+          playoff_qualifiers_per_group?: number
         }
         Relationships: []
       }
@@ -391,6 +403,7 @@ export type Database = {
       teams: {
         Row: {
           created_at: string
+          group_name: string | null
           id: string
           league_id: string | null
           logo_url: string | null
@@ -404,6 +417,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          group_name?: string | null
           id?: string
           league_id?: string | null
           logo_url?: string | null
@@ -417,6 +431,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          group_name?: string | null
           id?: string
           league_id?: string | null
           logo_url?: string | null
