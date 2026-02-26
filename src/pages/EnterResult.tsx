@@ -16,10 +16,24 @@ export default function EnterResult() {
   // Filter matches to only include teams from this league
   const leagueTeamIds = useMemo(() => new Set(teams?.map(t => t.id) || []), [teams]);
 
+  // Build teamId -> groupName map
+  const teamGroupMap = useMemo(() => {
+    const map = new Map<string, string | null>();
+    teams?.forEach((t) => map.set(t.id, t.group_name));
+    return map;
+  }, [teams]);
+
   const leagueMatches = useMemo(() => {
     if (!matches) return [];
-    return matches.filter(m => leagueTeamIds.has(m.team_a_id) && leagueTeamIds.has(m.team_b_id));
-  }, [matches, leagueTeamIds]);
+    return matches.filter(m => {
+      if (!leagueTeamIds.has(m.team_a_id) || !leagueTeamIds.has(m.team_b_id)) return false;
+      // Filter out cross-group matches (old round-robin leftovers)
+      const groupA = teamGroupMap.get(m.team_a_id);
+      const groupB = teamGroupMap.get(m.team_b_id);
+      if (groupA && groupB && groupA !== groupB) return false;
+      return true;
+    });
+  }, [matches, leagueTeamIds, teamGroupMap]);
 
   // Create set of played match IDs
   const playedMatchIds = useMemo(() => {

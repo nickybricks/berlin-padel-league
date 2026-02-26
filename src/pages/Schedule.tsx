@@ -45,12 +45,28 @@ export default function Schedule() {
     return new Set(teams.filter((t) => t.group_name === groupFilter).map((t) => t.id));
   }, [groupFilter, teams]);
 
+  // Build a map of teamId -> groupName for intra-group filtering
+  const teamGroupMap = useMemo(() => {
+    const map = new Map<string, string | null>();
+    teams?.forEach((t) => map.set(t.id, t.group_name));
+    return map;
+  }, [teams]);
+
   const matchesByWeek = useMemo(() => {
     if (!matches) return new Map();
+
+    const isGroupFormat = league?.format_type === 'groups';
 
     const grouped = new Map<number, typeof matches>();
     matches.forEach((match) => {
       if (!leagueTeamIds.has(match.team_a_id) || !leagueTeamIds.has(match.team_b_id)) return;
+
+      // In group format, only show intra-group matches (filters out old round-robin cross-group matches)
+      if (isGroupFormat) {
+        const groupA = teamGroupMap.get(match.team_a_id);
+        const groupB = teamGroupMap.get(match.team_b_id);
+        if (groupA !== groupB) return;
+      }
 
       // Group filter
       if (groupTeamIds && (!groupTeamIds.has(match.team_a_id) || !groupTeamIds.has(match.team_b_id))) return;
@@ -67,7 +83,7 @@ export default function Schedule() {
     });
 
     return grouped;
-  }, [matches, leagueTeamIds, groupTeamIds, teamFilter, statusFilter, resultsMap]);
+  }, [matches, leagueTeamIds, groupTeamIds, teamGroupMap, league, teamFilter, statusFilter, resultsMap]);
 
   const weeks = useMemo(() => {
     const allWeeks = Array.from(matchesByWeek.keys()).sort((a, b) => a - b);
