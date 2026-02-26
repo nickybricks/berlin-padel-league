@@ -1,136 +1,72 @@
 
+# Alte Matches bereinigen und Filter korrigieren
 
-# Turniermodus-Verwaltung: Gruppen, Spielplan und Playoffs
+## Problem
+Die Datenbank enthalt noch 78 Matches aus dem alten Round-Robin-Format (13 Teams, jeder gegen jeden). Nach dem Wechsel auf 2 Gruppen (6+7 Teams) sollten nur noch ca. 36 Matches existieren (21 in Gruppe A + 15 in Gruppe B). Die alten Cross-Group-Matches verursachen falsche Spielwochen (bis 13) und tauchen in Buchungs- und Ergebnis-Dropdowns auf.
 
-## Zusammenfassung
-Der Admin bekommt in den Liga-Einstellungen die Moglichkeit, das Turnierformat flexibel zu konfigurieren: Einzelrunde (Round Robin) oder Gruppenphase mit mehreren Gruppen. Dazu gehort die Gruppenzuteilung (manuell oder zufallig), ein angepasster Spielplan (nur innerhalb der Gruppe) und konfigurierbare Playoff-Formate mit gruppenuebergreifenden Paarungen.
+## Loesung
 
----
+### 1. Datenbank bereinigen
+- DELETE-Policy fuer Admins auf der `matches`-Tabelle hinzufuegen (fehlt aktuell)
+- Alle Cross-Group-Matches aus der DB loeschen: Matches, bei denen team_a und team_b unterschiedliche `group_name`-Werte haben
+- Zugehoerige `court_bookings` und `match_results` fuer diese Matches ebenfalls loeschen
 
-## Schritt 1: Datenbank erweitern
+### 2. Schedule-Filter: "Alle" Option hinzufuegen
+- `groupFilter` Default-Wert von `"A"` auf `"all"` aendern
+- "Alle Gruppen" als erste Option im Gruppen-Dropdown einfuegen
+- `maxWeek` basierend auf den gefilterten (sichtbaren) Matches berechnen statt auf allen Matches
 
-Neue Spalten in der `leagues`-Tabelle:
-
-| Spalte | Typ | Default | Beschreibung |
-|--------|-----|---------|--------------|
-| `format_type` | text | `'round_robin'` | `round_robin` oder `groups` |
-| `group_count` | integer | `1` | Anzahl Gruppen (1-4) |
-| `playoff_format` | text | `'top8_bracket'` | z.B. `top8_bracket`, `top4_bracket`, `cross_group` |
-| `playoff_qualifiers_per_group` | integer | `4` | Wie viele Teams pro Gruppe weiterkommen |
-| `keep_existing_results` | boolean | `false` | Ob bei Formatwechsel Ergebnisse beibehalten werden |
-
-Die `teams`-Tabelle hat bereits eine `group_name`-Spalte -- diese wird genutzt (z.B. `'A'`, `'B'`).
-
----
-
-## Schritt 2: Admin-UI -- Turnierformat-Konfiguration
-
-Neue Komponente `TournamentFormatCard` auf der Admin-Seite mit:
-
-- **Format-Auswahl**: Einzelrunde / Gruppenphase (Radio-Buttons)
-- **Gruppenanzahl**: Dropdown (2, 3, 4)
-- **Playoff-Format**: Dropdown
-  - "Top 8 Bracket" (1. vs 8., etc.)
-  - "Kreuzspiel" (1A vs 4B, 2A vs 3B, 1B vs 4A, 2B vs 3A)
-  - "Top 4 Bracket"
-- **Qualifikanten pro Gruppe**: Zahleneingabe
-- **Bei Formatwechsel**: Dialog mit Optionen:
-  - "Neu starten" (alle Matches loschen)
-  - "Ergebnisse beibehalten" (bereits gespielte Paarungen bleiben, Teams die gegeneinander gespielt haben kommen in eine Gruppe)
-
----
-
-## Schritt 3: Admin-UI -- Gruppenzuteilung
-
-Neue Komponente `GroupAssignment` mit zwei Modi:
-
-**Manueller Modus:**
-- Gruppen als Spalten/Karten (Gruppe A, Gruppe B)
-- Teams per Dropdown einer Gruppe zuweisen
-- Validierung: Teams, die bereits gegeneinander gespielt haben, muessen in einer Gruppe sein (Warnung anzeigen)
-
-**Zufallsmodus:**
-- Button "Zufallig zuteilen"
-- Constraint: Teams mit bestehenden Ergebnissen werden automatisch in die gleiche Gruppe gesetzt
-- Restliche Teams werden gleichmaessig verteilt (z.B. 7/6 bei 13 Teams)
-- Vorschau vor dem Speichern
-
----
-
-## Schritt 4: Spielplan-Generierung anpassen
-
-Die bestehende `generateSchedule`-Funktion in `src/lib/schedule.ts` wird erweitert:
-
-```text
-generateGroupSchedule(groups: Map<string, Team[]>)
-  -> Fuer jede Gruppe: Round-Robin innerhalb der Gruppe
-  -> Wochennummerierung durchgehend
-  -> Bestehende Ergebnisse beibehalten (optional)
-```
-
-- Gruppe A (7 Teams): 21 Spiele, 7 Wochen
-- Gruppe B (6 Teams): 15 Spiele, 5 Wochen (mit Bye-Wochen)
-- Der Admin kann den Spielplan neu generieren (mit Bestaetigung)
-
----
-
-## Schritt 5: Tabelle/Standings gruppenweise anzeigen
-
-- `calculateStandings` bekommt einen optionalen `groupName`-Filter
-- `StandingsTable` zeigt bei Gruppenformat Tabs: "Gruppe A" | "Gruppe B"
-- Playoff-Qualifikation wird pro Gruppe markiert (z.B. Top 4 pro Gruppe)
-- Dashboard zeigt beide Gruppen-Tabellen
-
----
-
-## Schritt 6: Playoffs anpassen
-
-Die Playoff-Seite wird dynamisch basierend auf `league.playoff_format`:
-
-**Kreuzspiel-Format (cross_group):**
-```text
-VF 1: 1. Gruppe A vs 4. Gruppe B
-VF 2: 2. Gruppe A vs 3. Gruppe B
-VF 3: 1. Gruppe B vs 4. Gruppe A
-VF 4: 2. Gruppe B vs 3. Gruppe A
-     -> Halbfinale -> Finale
-```
-
-**Top 8 Bracket (wie bisher):**
-Gesamttabelle aller Gruppen, Top 8 nach Punkten.
-
----
-
-## Schritt 7: Bestehende Ergebnisse behandeln
-
-Wenn der Admin von Round-Robin zu Gruppen wechselt:
-
-1. System ermittelt alle bereits gespielten Paarungen
-2. Teams, die gegeneinander gespielt haben, werden als "verbunden" markiert
-3. Bei der Gruppenzuteilung: verbundene Teams muessen in dieselbe Gruppe
-4. Option "Komplett neu starten": alle Matches und Ergebnisse loeschen
+### 3. Keine weiteren Aenderungen noetig
+Die Buchungs- und Ergebnis-Seiten filtern bereits clientseitig nach Intra-Group-Matches. Sobald die alten Matches aus der DB entfernt sind, zeigen alle Views automatisch die korrekten Daten.
 
 ---
 
 ## Technische Details
 
-### Dateien die erstellt werden:
-- `src/components/leagues/TournamentFormatCard.tsx` -- Format-Konfiguration
-- `src/components/leagues/GroupAssignment.tsx` -- Gruppenzuteilung
-- `src/lib/groupSchedule.ts` -- Gruppenbasierte Spielplan-Generierung
-- `src/hooks/useLeagueFormat.ts` -- Hook fuer Format-Einstellungen
+### Migration SQL
+```sql
+-- DELETE policy fuer Admins
+CREATE POLICY "Admins can delete matches"
+  ON public.matches FOR DELETE
+  USING (has_role(auth.uid(), 'admin'::app_role));
 
-### Dateien die geaendert werden:
-- `src/pages/LeagueAdmin.tsx` -- Neue Karten einbinden
-- `src/lib/standings.ts` -- Gruppenfilter hinzufuegen
-- `src/components/standings/StandingsTable.tsx` -- Gruppen-Tabs
-- `src/pages/LeagueDashboard.tsx` -- Gruppen-Tabellen anzeigen
-- `src/pages/Playoffs.tsx` -- Dynamisches Playoff-Format
-- `src/pages/Schedule.tsx` -- Gruppenfilter im Spielplan
-- `src/lib/schedule.ts` -- Gruppenbasierte Generierung
-- `src/types/leagues.ts` -- Neue Felder im League-Typ
+-- Cross-group matches und zugehoerige Daten loeschen
+DELETE FROM public.court_bookings
+WHERE match_id IN (
+  SELECT m.id FROM public.matches m
+  JOIN public.teams ta ON m.team_a_id = ta.id
+  JOIN public.teams tb ON m.team_b_id = tb.id
+  WHERE ta.group_name IS DISTINCT FROM tb.group_name
+    AND ta.group_name IS NOT NULL
+    AND tb.group_name IS NOT NULL
+);
 
-### Datenbank-Migration:
-- `leagues`-Tabelle um Format-Spalten erweitern
-- RLS-Policies bleiben unveraendert (Admins koennen `leagues` updaten)
+DELETE FROM public.match_results
+WHERE match_id IN (
+  SELECT m.id FROM public.matches m
+  JOIN public.teams ta ON m.team_a_id = ta.id
+  JOIN public.teams tb ON m.team_b_id = tb.id
+  WHERE ta.group_name IS DISTINCT FROM tb.group_name
+    AND ta.group_name IS NOT NULL
+    AND tb.group_name IS NOT NULL
+);
 
+DELETE FROM public.matches
+WHERE id IN (
+  SELECT m.id FROM public.matches m
+  JOIN public.teams ta ON m.team_a_id = ta.id
+  JOIN public.teams tb ON m.team_b_id = tb.id
+  WHERE ta.group_name IS DISTINCT FROM tb.group_name
+    AND ta.group_name IS NOT NULL
+    AND tb.group_name IS NOT NULL
+);
+```
+
+### Schedule.tsx Aenderungen
+- Zeile 19: `groupFilter` Default von `"A"` auf `"all"`
+- Zeile 147-153: "Alle Gruppen" Option vor den Gruppen-Items einfuegen
+- Zeile 124: `maxWeek` aus `matchesByWeek.keys()` berechnen statt aus allen Matches
+
+### Dateien
+- `supabase/migrations/` -- Neue Migration
+- `src/pages/Schedule.tsx` -- Filter-Fixes
