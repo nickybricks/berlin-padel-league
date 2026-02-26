@@ -135,7 +135,7 @@ export function useDeleteBooking() {
   });
 }
 
-// Get unbooked matches for a team
+// Get unbooked matches for a team (only intra-group matches)
 export function useTeamUnbookedMatches(teamId: string | null) {
   return useQuery({
     queryKey: ['team-unbooked-matches', teamId],
@@ -143,6 +143,13 @@ export function useTeamUnbookedMatches(teamId: string | null) {
     queryFn: async () => {
       if (!teamId) return [];
       
+      // First get the team's group_name
+      const { data: teamData } = await supabase
+        .from('teams')
+        .select('group_name, league_id')
+        .eq('id', teamId)
+        .maybeSingle();
+
       // Get all matches for this team
       const { data: matches, error: matchError } = await supabase
         .from('matches')
@@ -150,8 +157,8 @@ export function useTeamUnbookedMatches(teamId: string | null) {
           id,
           week,
           match_type,
-          team_a:teams!matches_team_a_id_fkey(id, name),
-          team_b:teams!matches_team_b_id_fkey(id, name)
+          team_a:teams!matches_team_a_id_fkey(id, name, group_name),
+          team_b:teams!matches_team_b_id_fkey(id, name, group_name)
         `)
         .or(`team_a_id.eq.${teamId},team_b_id.eq.${teamId}`)
         .eq('match_type', 'group')
@@ -168,8 +175,15 @@ export function useTeamUnbookedMatches(teamId: string | null) {
 
       const bookedMatchIds = new Set(bookings?.map(b => b.match_id) || []);
 
-      // Filter out already booked matches
-      return (matches || []).filter(m => !bookedMatchIds.has(m.id));
+      // Filter out already booked matches AND cross-group matches
+      return (matches || []).filter(m => {
+        if (bookedMatchIds.has(m.id)) return false;
+        // Only show intra-group matches (both teams same group)
+        const teamAGroup = (m.team_a as any)?.group_name;
+        const teamBGroup = (m.team_b as any)?.group_name;
+        if (teamAGroup && teamBGroup && teamAGroup !== teamBGroup) return false;
+        return true;
+      });
     },
   });
 }
