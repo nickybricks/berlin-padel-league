@@ -16,7 +16,7 @@ export default function Schedule() {
   const [weekFilter, setWeekFilter] = useState<string>("all");
   const [teamFilter, setTeamFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [groupFilter, setGroupFilter] = useState<string>("A");
+  const [groupFilter, setGroupFilter] = useState<string>("all");
 
   const { data: league } = useLeagueById(leagueId);
   const { data: teams } = useLeagueTeams(leagueId);
@@ -121,7 +121,10 @@ export default function Schedule() {
     }
   };
 
-  const maxWeek = matches?.length ? Math.max(...matches.map((m) => m.week)) : 11;
+  const maxWeek = useMemo(() => {
+    const weekKeys = Array.from(matchesByWeek.keys());
+    return weekKeys.length > 0 ? Math.max(...weekKeys) : 0;
+  }, [matchesByWeek]);
 
   return (
     <div className="space-y-6">
@@ -145,6 +148,7 @@ export default function Schedule() {
               <SelectValue placeholder="Gruppe" />
             </SelectTrigger>
             <SelectContent className="bg-popover z-50">
+              <SelectItem value="all">Alle Gruppen</SelectItem>
               {groupNames.map((g) => (
                 <SelectItem key={g} value={g}>
                   Gruppe {g}
