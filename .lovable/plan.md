@@ -1,72 +1,90 @@
 
-# Alte Matches bereinigen und Filter korrigieren
+# Liga erstellen -- Feature-Plan
 
-## Problem
-Die Datenbank enthalt noch 78 Matches aus dem alten Round-Robin-Format (13 Teams, jeder gegen jeden). Nach dem Wechsel auf 2 Gruppen (6+7 Teams) sollten nur noch ca. 36 Matches existieren (21 in Gruppe A + 15 in Gruppe B). Die alten Cross-Group-Matches verursachen falsche Spielwochen (bis 13) und tauchen in Buchungs- und Ergebnis-Dropdowns auf.
+## Uebersicht
+Nutzer koennen ueber die Onboarding-Seite eine eigene Liga erstellen. Ein mehrstufiger Wizard fuehrt durch alle Einstellungen. Nach Erstellung erhaelt der Nutzer einen Einladungslink zum Teilen.
 
-## Loesung
+## User Flow (Wizard mit 3 Schritten)
 
-### 1. Datenbank bereinigen
-- DELETE-Policy fuer Admins auf der `matches`-Tabelle hinzufuegen (fehlt aktuell)
-- Alle Cross-Group-Matches aus der DB loeschen: Matches, bei denen team_a und team_b unterschiedliche `group_name`-Werte haben
-- Zugehoerige `court_bookings` und `match_results` fuer diese Matches ebenfalls loeschen
+```text
+Schritt 1: Grundlagen
++----------------------------------+
+| Liga-Name:  [________________]   |
+| Logo:       [Bild hochladen]     |
++----------------------------------+
 
-### 2. Schedule-Filter: "Alle" Option hinzufuegen
-- `groupFilter` Default-Wert von `"A"` auf `"all"` aendern
-- "Alle Gruppen" als erste Option im Gruppen-Dropdown einfuegen
-- `maxWeek` basierend auf den gefilterten (sichtbaren) Matches berechnen statt auf allen Matches
+Schritt 2: Turnierformat
++----------------------------------+
+| Modus:  (o) Liga  ( ) Gruppen   |
+| Hin+Rueck?  [x] Ja              |
+| Max Teams:  [ 16 ] (optional)   |
++----------------------------------+
 
-### 3. Keine weiteren Aenderungen noetig
-Die Buchungs- und Ergebnis-Seiten filtern bereits clientseitig nach Intra-Group-Matches. Sobald die alten Matches aus der DB entfernt sind, zeigen alle Views automatisch die korrekten Daten.
+Schritt 3: Playoffs
++----------------------------------+
+| Wer kommt weiter?  [Top 4 v]    |
+| Playoff-Art:  [Bracket  v]      |
+| (bei Gruppen: Kreuzspiel mgl.)  |
++----------------------------------+
 
----
+        --> Liga erstellt! -->
+
+Ergebnis-Screen
++----------------------------------+
+| Liga "XYZ" erstellt!             |
+| Code: BPL2025                    |
+| [Link kopieren]  [Zur Liga]     |
++----------------------------------+
+```
+
+## Datenbank-Aenderungen
+
+### Neue Spalte: `home_and_away` (boolean)
+Migration auf `leagues`-Tabelle:
+- `ALTER TABLE public.leagues ADD COLUMN home_and_away boolean NOT NULL DEFAULT false;`
+- `ALTER TABLE public.leagues ADD COLUMN max_teams integer;`
+
+Der `League`-Typ wird entsprechend erweitert.
+
+### Leagues INSERT Policy
+Bereits vorhanden: "Authenticated users can create leagues" -- passt.
+
+## Neue Dateien
+
+### 1. `src/pages/CreateLeague.tsx`
+Mehrstufiger Wizard (3 Steps) mit lokalem State. Nutzt bestehende shadcn-Komponenten (Input, RadioGroup, Select, Switch, Button). Am Ende: `supabase.from('leagues').insert(...)`, dann automatisch `league_members` mit Rolle `admin` einfuegen. Zeigt Erfolgsscreen mit Code und Share-Link.
+
+### 2. `src/hooks/useCreateLeague.ts`
+Mutation-Hook: Erstellt die Liga und fuegt den Ersteller als Admin-Mitglied hinzu (zwei Inserts in Folge).
+
+## Bestehende Dateien -- Aenderungen
+
+### `src/pages/Onboarding.tsx`
+- "Liga erstellen"-Karte aktivieren (opacity entfernen, onClick zu `/create-league`)
+- Button-Text von "Folgt" auf "Erstellen" aendern
+
+### `src/App.tsx`
+- Neue Route: `<Route path="/create-league" element={<CreateLeague />} />`
+
+### `src/types/leagues.ts`
+- `home_and_away: boolean` und `max_teams: number | null` zum `League`-Interface hinzufuegen
+
+### `src/components/leagues/TournamentFormatCard.tsx`
+- Hin-und-Rueckrunde Toggle (Switch) ergaenzen, damit Admins das auch nachtraeglich aendern koennen
 
 ## Technische Details
 
-### Migration SQL
-```sql
--- DELETE policy fuer Admins
-CREATE POLICY "Admins can delete matches"
-  ON public.matches FOR DELETE
-  USING (has_role(auth.uid(), 'admin'::app_role));
+### Liga-Code Generierung
+Zufaelliger 6-stelliger alphanumerischer Code, clientseitig generiert (z.B. `Math.random().toString(36).substring(2, 8).toUpperCase()`). Unique-Constraint in DB verhindert Kollisionen.
 
--- Cross-group matches und zugehoerige Daten loeschen
-DELETE FROM public.court_bookings
-WHERE match_id IN (
-  SELECT m.id FROM public.matches m
-  JOIN public.teams ta ON m.team_a_id = ta.id
-  JOIN public.teams tb ON m.team_b_id = tb.id
-  WHERE ta.group_name IS DISTINCT FROM tb.group_name
-    AND ta.group_name IS NOT NULL
-    AND tb.group_name IS NOT NULL
-);
+### Einladungslink
+Format: `{window.location.origin}/join/{code}` -- bereits vom bestehenden Join-Flow unterstuetzt. Zusaetzlich "Link kopieren"-Button mit `navigator.clipboard.writeText()`.
 
-DELETE FROM public.match_results
-WHERE match_id IN (
-  SELECT m.id FROM public.matches m
-  JOIN public.teams ta ON m.team_a_id = ta.id
-  JOIN public.teams tb ON m.team_b_id = tb.id
-  WHERE ta.group_name IS DISTINCT FROM tb.group_name
-    AND ta.group_name IS NOT NULL
-    AND tb.group_name IS NOT NULL
-);
+### Max Teams / Liga schliessen
+- `max_teams` ist optional (null = unbegrenzt)
+- Im Join-Flow (`JoinLeague.tsx`) wird geprueft ob die aktuelle Teamanzahl < max_teams ist, bevor neue Teams hinzugefuegt werden koennen
+- Admins koennen max_teams nachtraeglich in den Liga-Einstellungen aendern
 
-DELETE FROM public.matches
-WHERE id IN (
-  SELECT m.id FROM public.matches m
-  JOIN public.teams ta ON m.team_a_id = ta.id
-  JOIN public.teams tb ON m.team_b_id = tb.id
-  WHERE ta.group_name IS DISTINCT FROM tb.group_name
-    AND ta.group_name IS NOT NULL
-    AND tb.group_name IS NOT NULL
-);
-```
-
-### Schedule.tsx Aenderungen
-- Zeile 19: `groupFilter` Default von `"A"` auf `"all"`
-- Zeile 147-153: "Alle Gruppen" Option vor den Gruppen-Items einfuegen
-- Zeile 124: `maxWeek` aus `matchesByWeek.keys()` berechnen statt aus allen Matches
-
-### Dateien
-- `supabase/migrations/` -- Neue Migration
-- `src/pages/Schedule.tsx` -- Filter-Fixes
+### Hin- und Rueckrunde
+- `home_and_away = true` verdoppelt die generierten Gruppenspiele (jede Paarung wird zweimal generiert)
+- Wird beim Spielplan-Generieren beruecksichtigt
