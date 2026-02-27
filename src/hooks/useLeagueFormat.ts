@@ -8,6 +8,7 @@ interface UpdateFormatParams {
   group_count: number;
   playoff_format: PlayoffFormat;
   playoff_qualifiers_per_group: number;
+  home_and_away?: boolean;
 }
 
 export function useUpdateLeagueFormat() {

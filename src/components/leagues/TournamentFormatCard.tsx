@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Loader2, Save, Settings2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useUpdateLeagueFormat } from '@/hooks/useLeagueFormat';
@@ -18,6 +19,7 @@ export function TournamentFormatCard({ league }: TournamentFormatCardProps) {
   const [formatType, setFormatType] = useState<FormatType>(league.format_type || 'round_robin');
   const [groupCount, setGroupCount] = useState(league.group_count || 2);
   const [playoffFormat, setPlayoffFormat] = useState<PlayoffFormat>(league.playoff_format || 'top8_bracket');
+  const [homeAndAway, setHomeAndAway] = useState(league.home_and_away ?? false);
   const [qualifiers, setQualifiers] = useState(league.playoff_qualifiers_per_group || 4);
 
   const updateFormat = useUpdateLeagueFormat();
@@ -27,13 +29,15 @@ export function TournamentFormatCard({ league }: TournamentFormatCardProps) {
     setGroupCount(league.group_count || 2);
     setPlayoffFormat(league.playoff_format || 'top8_bracket');
     setQualifiers(league.playoff_qualifiers_per_group || 4);
+    setHomeAndAway(league.home_and_away ?? false);
   }, [league]);
 
   const hasChanges =
     formatType !== (league.format_type || 'round_robin') ||
     groupCount !== (league.group_count || 2) ||
     playoffFormat !== (league.playoff_format || 'top8_bracket') ||
-    qualifiers !== (league.playoff_qualifiers_per_group || 4);
+    qualifiers !== (league.playoff_qualifiers_per_group || 4) ||
+    homeAndAway !== (league.home_and_away ?? false);
 
   const handleSave = async () => {
     try {
@@ -43,6 +47,7 @@ export function TournamentFormatCard({ league }: TournamentFormatCardProps) {
         group_count: formatType === 'round_robin' ? 1 : groupCount,
         playoff_format: playoffFormat,
         playoff_qualifiers_per_group: qualifiers,
+        home_and_away: homeAndAway,
       });
       toast.success('Turnierformat aktualisiert');
     } catch {
@@ -94,6 +99,12 @@ export function TournamentFormatCard({ league }: TournamentFormatCardProps) {
             </Select>
           </div>
         )}
+
+        {/* Home and Away */}
+        <div className="flex items-center justify-between">
+          <Label htmlFor="home-away-toggle">Hin- und Rückrunde</Label>
+          <Switch id="home-away-toggle" checked={homeAndAway} onCheckedChange={setHomeAndAway} />
+        </div>
 
         {/* Playoff Format */}
         <div className="space-y-2">

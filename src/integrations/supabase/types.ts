@@ -191,9 +191,11 @@ export type Database = {
           created_by: string | null
           format_type: string
           group_count: number
+          home_and_away: boolean
           id: string
           invite_token: string
           logo_url: string | null
+          max_teams: number | null
           name: string
           playoff_format: string
           playoff_qualifiers_per_group: number
@@ -204,9 +206,11 @@ export type Database = {
           created_by?: string | null
           format_type?: string
           group_count?: number
+          home_and_away?: boolean
           id?: string
           invite_token?: string
           logo_url?: string | null
+          max_teams?: number | null
           name: string
           playoff_format?: string
           playoff_qualifiers_per_group?: number
@@ -217,9 +221,11 @@ export type Database = {
           created_by?: string | null
           format_type?: string
           group_count?: number
+          home_and_away?: boolean
           id?: string
           invite_token?: string
           logo_url?: string | null
+          max_teams?: number | null
           name?: string
           playoff_format?: string
           playoff_qualifiers_per_group?: number

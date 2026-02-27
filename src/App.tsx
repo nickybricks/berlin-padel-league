@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyLeagues from "./pages/MyLeagues";
 import Onboarding from "./pages/Onboarding";
+import CreateLeague from "./pages/CreateLeague";
 import JoinLeague from "./pages/JoinLeague";
 
 import LeagueDashboard from "./pages/LeagueDashboard";
@@ -37,6 +38,7 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/leagues" element={<MyLeagues />} />
           <Route path="/onboarding" element={<Onboarding />} />
+          <Route path="/create-league" element={<CreateLeague />} />
           <Route path="/join/:code" element={<JoinLeague />} />
 
           {/* League-specific routes (persistent layout) */}

@@ -64,19 +64,23 @@ export default function Onboarding() {
 
           {step === 'choose' && (
             <div className="space-y-4">
-              {/* Create League - Disabled */}
-              <div className="bg-card rounded-xl border p-5 opacity-60">
+              {/* Create League */}
+              <div 
+                className="bg-card rounded-xl border p-5 cursor-pointer hover:border-primary/50 transition-colors"
+                onClick={() => navigate('/create-league')}
+              >
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted">
-                    <Plus className="h-5 w-5 text-muted-foreground" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <Plus className="h-5 w-5 text-primary" />
                   </div>
                   <div className="flex-1">
                     <h3 className="font-semibold text-foreground">Liga erstellen</h3>
                     <p className="text-sm text-muted-foreground mt-1">
                       Erstelle eine eigene Liga und lade Teams ein.
                     </p>
-                    <Button variant="outline" className="mt-3" disabled>
-                      Folgt
+                    <Button className="mt-3">
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Erstellen
                     </Button>
                   </div>
                 </div>

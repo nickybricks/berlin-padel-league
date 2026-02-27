@@ -14,6 +14,8 @@ export interface League {
   group_count: number;
   playoff_format: PlayoffFormat;
   playoff_qualifiers_per_group: number;
+  home_and_away: boolean;
+  max_teams: number | null;
 }
 
 export interface LeagueMember {
