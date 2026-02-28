@@ -92,9 +92,9 @@ export function TournamentFormatCard({ league }: TournamentFormatCardProps) {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="2">2 Gruppen</SelectItem>
-                <SelectItem value="3">3 Gruppen</SelectItem>
-                <SelectItem value="4">4 Gruppen</SelectItem>
+                {[2,3,4,5,6,7,8].map(n => (
+                  <SelectItem key={n} value={String(n)}>{n} Gruppen</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
