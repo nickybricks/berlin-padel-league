@@ -2,9 +2,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { CourtSlotWithDetails } from '@/types/bookings';
 
-export function useCourtSlots(venueId?: string, startDate?: string, endDate?: string) {
+export function useCourtSlots(venueId?: string, startDate?: string, endDate?: string, leagueId?: string) {
   return useQuery({
-    queryKey: ['court-slots', venueId, startDate, endDate],
+    queryKey: ['court-slots', venueId, startDate, endDate, leagueId],
     queryFn: async (): Promise<CourtSlotWithDetails[]> => {
       let query = supabase
         .from('court_slots')
@@ -37,8 +37,14 @@ export function useCourtSlots(venueId?: string, startDate?: string, endDate?: st
       const { data, error } = await query;
       if (error) throw error;
       
+      // Filter by leagueId via venue relationship
+      let filtered = data || [];
+      if (leagueId) {
+        filtered = filtered.filter((slot: any) => slot.venue?.league_id === leagueId);
+      }
+
       // Transform the data - booking is a single object (1:1 relationship) or array
-      return (data || []).map(slot => ({
+      return filtered.map(slot => ({
         ...slot,
         booking: Array.isArray(slot.booking) 
           ? slot.booking[0] || undefined 

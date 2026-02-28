@@ -28,8 +28,8 @@ function VenueCourtsBadge({ venueId }: { venueId: string }) {
   );
 }
 
-export function AdminVenueManager() {
-  const { data: venues, isLoading } = useVenues();
+export function AdminVenueManager({ leagueId }: { leagueId?: string }) {
+  const { data: venues, isLoading } = useVenues(leagueId);
   const createVenue = useCreateVenue();
   const updateVenue = useUpdateVenue();
   const deleteVenue = useDeleteVenue();
@@ -71,9 +71,14 @@ export function AdminVenueManager() {
         });
         toast({ title: 'Verein aktualisiert' });
       } else {
+        if (!leagueId) {
+          toast({ title: 'Keine Liga ausgewählt', variant: 'destructive' });
+          return;
+        }
         await createVenue.mutateAsync({ 
           name: name.trim(), 
-          address: address.trim() || undefined 
+          address: address.trim() || undefined,
+          league_id: leagueId,
         });
         toast({ title: 'Verein erstellt' });
       }

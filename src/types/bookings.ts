@@ -2,6 +2,7 @@ export interface Venue {
   id: string;
   name: string;
   address: string | null;
+  league_id: string;
   created_at: string;
 }
 
