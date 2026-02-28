@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useParams } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -24,8 +25,9 @@ import { de } from 'date-fns/locale';
 import { toast } from '@/hooks/use-toast';
 
 export default function Bookings() {
+  const { leagueId } = useParams<{ leagueId: string }>();
   const { isAdmin, user } = useAuth();
-  const { data: venues } = useVenues();
+  const { data: venues } = useVenues(leagueId);
 
   const [selectedVenueId, setSelectedVenueId] = useState<string>('all');
   const [bookingSlot, setBookingSlot] = useState<CourtSlotWithDetails | null>(null);
@@ -37,7 +39,8 @@ export default function Bookings() {
   const { data: slots, isLoading } = useCourtSlots(
     selectedVenueId !== 'all' ? selectedVenueId : undefined,
     startDate,
-    endDate
+    endDate,
+    leagueId
   );
 
   const deleteSlot = useDeleteCourtSlot();
@@ -106,8 +109,8 @@ export default function Bookings() {
 
           <TabsContent value="admin" className="mt-4">
             <div className="grid gap-6 lg:grid-cols-2">
-              <AdminVenueManager />
-              <AdminSlotCreator />
+              <AdminVenueManager leagueId={leagueId} />
+              <AdminSlotCreator leagueId={leagueId} />
               <div className="lg:col-span-2">
                 <AdminBookingExport />
               </div>
@@ -223,4 +226,3 @@ function BookingsView({
     </div>
   );
 }
-

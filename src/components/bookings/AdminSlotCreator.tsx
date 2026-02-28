@@ -31,8 +31,8 @@ const TIME_SLOTS = [
   { start: '21:00', end: '22:30' },
 ];
 
-export function AdminSlotCreator() {
-  const { data: venues } = useVenues();
+export function AdminSlotCreator({ leagueId }: { leagueId?: string }) {
+  const { data: venues } = useVenues(leagueId);
   const createSlots = useCreateCourtSlots();
 
   const [venueId, setVenueId] = useState<string>('');

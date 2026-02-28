@@ -2,15 +2,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { Venue, VenueCourt } from '@/types/bookings';
 
-export function useVenues() {
+export function useVenues(leagueId?: string) {
   return useQuery({
-    queryKey: ['venues'],
+    queryKey: ['venues', leagueId],
     queryFn: async (): Promise<Venue[]> => {
-      const { data, error } = await supabase
+      let query = supabase
         .from('padel_venues')
         .select('*')
         .order('name');
 
+      if (leagueId) {
+        query = query.eq('league_id', leagueId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
       return data as Venue[];
     },
@@ -21,7 +26,7 @@ export function useCreateVenue() {
   const queryClient = useQueryClient();
   
   return useMutation({
-    mutationFn: async (venue: { name: string; address?: string }) => {
+    mutationFn: async (venue: { name: string; address?: string; league_id: string }) => {
       const { data, error } = await supabase
         .from('padel_venues')
         .insert(venue)

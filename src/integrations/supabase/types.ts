@@ -363,21 +363,32 @@ export type Database = {
           address: string | null
           created_at: string
           id: string
+          league_id: string
           name: string
         }
         Insert: {
           address?: string | null
           created_at?: string
           id?: string
+          league_id: string
           name: string
         }
         Update: {
           address?: string | null
           created_at?: string
           id?: string
+          league_id?: string
           name?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "padel_venues_league_id_fkey"
+            columns: ["league_id"]
+            isOneToOne: false
+            referencedRelation: "leagues"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
