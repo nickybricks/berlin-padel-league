@@ -1,9 +1,21 @@
 import { useState, useRef } from 'react';
-import { Pencil, Upload, Loader2, Save, Image } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Pencil, Upload, Loader2, Save, Image, Trash2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
 import { useQueryClient } from '@tanstack/react-query';
 import type { League } from '@/types/leagues';
@@ -16,8 +28,10 @@ export function LeagueSettingsCard({ league }: LeagueSettingsCardProps) {
   const [name, setName] = useState(league.name);
   const [isUploading, setIsUploading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   const logoUrl = league.logo_url
     ? `https://hoinybrkpfhedbltdbxq.supabase.co/storage/v1/object/public/${league.logo_url}`
@@ -165,6 +179,50 @@ export function LeagueSettingsCard({ league }: LeagueSettingsCardProps) {
             Code: {league.code}
           </p>
         </div>
+      </div>
+      {/* Delete League */}
+      <div className="pt-4 border-t border-border">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive" size="sm" className="gap-2" disabled={isDeleting}>
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+              Liga löschen
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Liga endgültig löschen?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Möchtest du die Liga „{league.name}" wirklich löschen? Alle Mitgliedschaften werden entfernt. Diese Aktion kann nicht rückgängig gemacht werden.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={async () => {
+                  setIsDeleting(true);
+                  try {
+                    const { error } = await supabase
+                      .from('leagues')
+                      .delete()
+                      .eq('id', league.id);
+                    if (error) throw error;
+                    toast.success('Liga gelöscht');
+                    queryClient.invalidateQueries({ queryKey: ['user-leagues'] });
+                    navigate('/onboarding');
+                  } catch (error) {
+                    console.error('Delete error:', error);
+                    toast.error('Fehler beim Löschen der Liga');
+                    setIsDeleting(false);
+                  }
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Endgültig löschen
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     </div>
   );
