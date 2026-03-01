@@ -20,7 +20,7 @@ export default function Onboarding() {
   // Redirect if not logged in
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/', { replace: true });
+      navigate('/leagues', { replace: true });
     }
   }, [user, authLoading, navigate]);
 
