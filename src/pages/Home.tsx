@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Trophy, Calendar, CheckCircle2, MapPin, Clock } from 'lucide-react';
+import { Trophy, Calendar, CheckCircle2, MapPin, Clock, Mail, Swords, BarChart3, CalendarDays, Zap, Layers } from 'lucide-react';
 
 const standingsData = [
   { rank: 1, team: 'Smash Brothers', played: 6, wins: 5, losses: 1, sets: '12:4', points: 18 },
@@ -189,6 +189,61 @@ export default function Home() {
               </Tabs>
             </CardContent>
           </Card>
+        </section>
+
+        {/* So funktioniert's */}
+        <section className="w-full max-w-2xl pb-16 space-y-6">
+          <h2 className="text-xl font-semibold text-foreground text-center">
+            So funktioniert's
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            {[
+              { icon: Mail, title: 'Einladung erhalten', desc: 'Du bekommst einen Einladungslink von deinem Liga-Admin' },
+              { icon: Swords, title: 'Matches spielen', desc: 'Round-Robin-Format, Best-of-3 Sätze' },
+              { icon: BarChart3, title: 'Tabelle checken', desc: 'Live-Ranking mit Punkten, Sätzen und Statistiken' },
+            ].map((step, i) => (
+              <div key={i} className="flex flex-col items-center text-center space-y-2.5 p-5 rounded-xl border border-border/50 bg-card">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <step.icon className="h-5 w-5 text-primary" />
+                </div>
+                <h3 className="font-semibold text-sm text-foreground">{step.title}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Features */}
+        <section className="w-full max-w-2xl pb-16 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { icon: CalendarDays, title: 'Automatischer Spielplan', desc: 'Alle Spiele werden automatisch generiert' },
+              { icon: Zap, title: 'Ergebnisse in Sekunden', desc: 'Satzweise Eingabe, direkt vom Platz' },
+              { icon: Trophy, title: 'Live-Tabelle', desc: 'Punkte und Ranking immer aktuell' },
+              { icon: Layers, title: 'Gruppen & Playoffs', desc: 'Flexible Formate für jede Ligagröße' },
+            ].map((feat, i) => (
+              <div key={i} className="flex items-start gap-3.5 p-4 rounded-xl border border-border/50 bg-card">
+                <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                  <feat.icon className="h-4.5 w-4.5 text-primary" />
+                </div>
+                <div className="space-y-0.5">
+                  <h3 className="font-semibold text-sm text-foreground">{feat.title}</h3>
+                  <p className="text-xs text-muted-foreground">{feat.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Footer */}
+        <section className="w-full max-w-2xl pb-12 text-center space-y-5">
+          <h2 className="text-xl font-semibold text-foreground">Bereit für deine Liga?</h2>
+          <Link to="/register">
+            <Button size="lg" className="rounded-full px-8">
+              Jetzt registrieren
+            </Button>
+          </Link>
+          <p className="text-xs text-muted-foreground pt-4">© 2026 Padel Leagues</p>
         </section>
       </main>
     </div>
