@@ -40,7 +40,7 @@ export default function CreateLeague() {
   const [step, setStep] = useState<Step>(1);
 
   useEffect(() => {
-    if (!authLoading && !user) navigate('/leagues', { replace: true });
+    if (!authLoading && !user) navigate('/', { replace: true });
   }, [user, authLoading, navigate]);
 
   const handleCreate = async () => {

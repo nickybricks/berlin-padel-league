@@ -1,78 +1,90 @@
 
-
-# Neue Landing Page + Routing-Umstellung
+# Liga erstellen -- Feature-Plan
 
 ## Uebersicht
-Die aktuelle minimale Landing Page (`/`) wird durch eine vollstaendige Marketing-Seite mit 5 Sektionen ersetzt. Alle internen Verweise, die bisher auf `"/"` zeigen (und eigentlich "zurueck zur App" meinen), werden auf `"/leagues"` umgestellt.
+Nutzer koennen ueber die Onboarding-Seite eine eigene Liga erstellen. Ein mehrstufiger Wizard fuehrt durch alle Einstellungen. Nach Erstellung erhaelt der Nutzer einen Einladungslink zum Teilen.
 
-## Routing-Aenderungen
+## User Flow (Wizard mit 3 Schritten)
+
+```text
+Schritt 1: Grundlagen
++----------------------------------+
+| Liga-Name:  [________________]   |
+| Logo:       [Bild hochladen]     |
++----------------------------------+
+
+Schritt 2: Turnierformat
++----------------------------------+
+| Modus:  (o) Liga  ( ) Gruppen   |
+| Hin+Rueck?  [x] Ja              |
+| Max Teams:  [ 16 ] (optional)   |
++----------------------------------+
+
+Schritt 3: Playoffs
++----------------------------------+
+| Wer kommt weiter?  [Top 4 v]    |
+| Playoff-Art:  [Bracket  v]      |
+| (bei Gruppen: Kreuzspiel mgl.)  |
++----------------------------------+
+
+        --> Liga erstellt! -->
+
+Ergebnis-Screen
++----------------------------------+
+| Liga "XYZ" erstellt!             |
+| Code: BPL2025                    |
+| [Link kopieren]  [Zur Liga]     |
++----------------------------------+
+```
+
+## Datenbank-Aenderungen
+
+### Neue Spalte: `home_and_away` (boolean)
+Migration auf `leagues`-Tabelle:
+- `ALTER TABLE public.leagues ADD COLUMN home_and_away boolean NOT NULL DEFAULT false;`
+- `ALTER TABLE public.leagues ADD COLUMN max_teams integer;`
+
+Der `League`-Typ wird entsprechend erweitert.
+
+### Leagues INSERT Policy
+Bereits vorhanden: "Authenticated users can create leagues" -- passt.
+
+## Neue Dateien
+
+### 1. `src/pages/CreateLeague.tsx`
+Mehrstufiger Wizard (3 Steps) mit lokalem State. Nutzt bestehende shadcn-Komponenten (Input, RadioGroup, Select, Switch, Button). Am Ende: `supabase.from('leagues').insert(...)`, dann automatisch `league_members` mit Rolle `admin` einfuegen. Zeigt Erfolgsscreen mit Code und Share-Link.
+
+### 2. `src/hooks/useCreateLeague.ts`
+Mutation-Hook: Erstellt die Liga und fuegt den Ersteller als Admin-Mitglied hinzu (zwei Inserts in Folge).
+
+## Bestehende Dateien -- Aenderungen
+
+### `src/pages/Onboarding.tsx`
+- "Liga erstellen"-Karte aktivieren (opacity entfernen, onClick zu `/create-league`)
+- Button-Text von "Folgt" auf "Erstellen" aendern
 
 ### `src/App.tsx`
-- Route `"/"` zeigt die neue Landing Page (mit Auth-Redirect auf `/leagues` fuer eingeloggte User)
-- Route `"/leagues"` bleibt fuer `MyLeagues`
-- Keine weitere Aenderung noetig
+- Neue Route: `<Route path="/create-league" element={<CreateLeague />} />`
 
-### Verweise auf `"/"` aktualisieren (zu `"/leagues"`)
-Folgende Dateien verlinken auf `"/"` und meinen damit die App-Startseite nach Login:
-- `src/pages/LeagueDashboard.tsx` -- `Navigate to="/"` wird zu `"/leagues"`
-- `src/pages/Onboarding.tsx` -- Auth-Redirect `navigate('/')` wird zu `"/leagues"`
-- `src/pages/CreateLeague.tsx` -- Auth-Redirect `navigate('/')` wird zu `"/leagues"`
-- `src/pages/JoinLeague.tsx` -- zwei `Link to="/"` werden zu `"/leagues"`
-- `src/pages/Register.tsx` -- `Link to="/"` ("Zurueck") wird zu `"/"`  (bleibt, da es zur Landing zurueck soll)
+### `src/types/leagues.ts`
+- `home_and_away: boolean` und `max_teams: number | null` zum `League`-Interface hinzufuegen
 
-## Neue Datei: `src/pages/Landing.tsx` (kompletter Rewrite)
-
-Eingeloggte User werden weiterhin auf `/leagues` redirected.
-
-### Header -- Fixed Navigation Island
-- `fixed top-4 left-1/2 -translate-x-1/2 z-50` zentriert
-- `rounded-full backdrop-blur-xl bg-white/70 border border-border/30 shadow-md`
-- Links: "Padel Leagues" Logo-Text (bold, dark green via `text-accent`)
-- Rechts: "Login" (ghost Button) + "Registrieren" (primary Button, gruener Hintergrund)
-- Kein Hamburger-Menu, mobile gleich, nur kleineres Padding
-
-### Section 1 -- Hero
-- Headline: "Padel Leagues"
-- Subline: Beschreibungstext
-- CTA: "Jetzt mitmachen" Button -> `/register`
-- Darunter: Fake-Browser-Mockup mit eingebetteter Mini-Tabelle (echte shadcn Table mit Dummy-Daten, abgerundeter Rahmen + Schatten)
-
-### Section 2 -- Live App Preview ("So sieht deine Liga aus")
-- shadcn `Tabs` mit 3 Tabs: Tabelle, Spielplan, Ergebnis
-- Tab "Tabelle": shadcn `Table` mit 5 Dummy-Teams, Rang 1 mit gruener Badge
-- Tab "Spielplan": 3 Match-Cards (shadcn Card) mit Teams, Datum, Venue, Status-Badge "Geplant"
-- Tab "Ergebnis": Eine Result-Card mit Satzstaenden, Gewinner grueen hervorgehoben, Badge "Abgeschlossen"
-- Alles in einem Card-Container mit Schatten
-
-### Section 3 -- "So funktioniert's"
-- 3 Steps horizontal (desktop) / gestapelt (mobile)
-- Lucide Icons: `Mail`, `Swords`/`Trophy`, `BarChart3`
-- Titel + Beschreibungstext pro Step
-
-### Section 4 -- Features (2x2 Grid)
-- 4 Feature-Cards mit Lucide Icon + Titel + Einzeiler
-- Icons: `CalendarDays`, `Timer`, `TrendingUp`, `Layers`
-
-### Section 5 -- CTA Footer
-- "Bereit fuer deine Liga?" + "Jetzt registrieren" Button -> `/register`
-- Copyright-Zeile
-
-## Zusammenfassung der Aenderungen
-
-| Datei | Aenderung |
-|---|---|
-| `src/pages/Landing.tsx` | Komplett neu geschrieben (Marketing-Seite) |
-| `src/App.tsx` | Keine Aenderung noetig (Route `/` und `/leagues` existieren bereits) |
-| `src/pages/LeagueDashboard.tsx` | `Navigate to="/"` -> `to="/leagues"` |
-| `src/pages/Onboarding.tsx` | `navigate('/')` -> `navigate('/leagues')` |
-| `src/pages/CreateLeague.tsx` | `navigate('/')` -> `navigate('/leagues')` |
-| `src/pages/JoinLeague.tsx` | 2x `Link to="/"` -> `to="/leagues"` |
-
-`Register.tsx` behaelt `Link to="/"` da es zur Landing zurueck verweisen soll.
+### `src/components/leagues/TournamentFormatCard.tsx`
+- Hin-und-Rueckrunde Toggle (Switch) ergaenzen, damit Admins das auch nachtraeglich aendern koennen
 
 ## Technische Details
-- Alle Dummy-Daten sind statisch im Component definiert (kein DB-Zugriff)
-- Verwendet ausschliesslich bestehende shadcn-Komponenten (Table, Tabs, Card, Button, Badge)
-- Mobile-first: Sections stacken vertikal, Feature-Grid wird 1-spaltig
-- Header Island ist `fixed` mit `backdrop-blur-xl` fuer Glassmorphism
 
+### Liga-Code Generierung
+Zufaelliger 6-stelliger alphanumerischer Code, clientseitig generiert (z.B. `Math.random().toString(36).substring(2, 8).toUpperCase()`). Unique-Constraint in DB verhindert Kollisionen.
+
+### Einladungslink
+Format: `{window.location.origin}/join/{code}` -- bereits vom bestehenden Join-Flow unterstuetzt. Zusaetzlich "Link kopieren"-Button mit `navigator.clipboard.writeText()`.
+
+### Max Teams / Liga schliessen
+- `max_teams` ist optional (null = unbegrenzt)
+- Im Join-Flow (`JoinLeague.tsx`) wird geprueft ob die aktuelle Teamanzahl < max_teams ist, bevor neue Teams hinzugefuegt werden koennen
+- Admins koennen max_teams nachtraeglich in den Liga-Einstellungen aendern
+
+### Hin- und Rueckrunde
+- `home_and_away = true` verdoppelt die generierten Gruppenspiele (jede Paarung wird zweimal generiert)
+- Wird beim Spielplan-Generieren beruecksichtigt
