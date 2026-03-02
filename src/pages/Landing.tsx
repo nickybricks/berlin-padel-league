@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Loader2, Mail, Swords, BarChart3, CalendarDays, Timer, TrendingUp, Layers, Trophy, CheckCircle2, MapPin, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,22 +37,9 @@ const features = [
 ];
 
 export default function Landing() {
-  const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
+  const showAuthButtons = !authLoading && !user;
 
-  useEffect(() => {
-    if (!authLoading && user) {
-      navigate('/leagues', { replace: true });
-    }
-  }, [user, authLoading, navigate]);
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -60,12 +47,20 @@ export default function Landing() {
       <nav className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 rounded-full backdrop-blur-xl bg-card/70 border border-border/30 shadow-md px-4 py-2 md:px-6 md:py-2.5">
         <span className="text-sm md:text-base font-bold text-accent whitespace-nowrap">Padel Leagues</span>
         <div className="flex items-center gap-2">
-          <Link to="/login">
-            <Button variant="ghost" size="sm" className="text-xs md:text-sm">Login</Button>
-          </Link>
-          <Link to="/register">
-            <Button size="sm" className="text-xs md:text-sm">Registrieren</Button>
-          </Link>
+          {showAuthButtons ? (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" size="sm" className="text-xs md:text-sm">Login</Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm" className="text-xs md:text-sm">Registrieren</Button>
+              </Link>
+            </>
+          ) : (
+            <Link to="/leagues">
+              <Button size="sm" className="text-xs md:text-sm">Meine Ligen</Button>
+            </Link>
+          )}
         </div>
       </nav>
 
