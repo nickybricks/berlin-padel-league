@@ -1,28 +1,7 @@
-import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
-  const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
-
-  // Redirect logged-in users to leagues overview
-  useEffect(() => {
-    if (!authLoading && user) {
-      navigate('/leagues', { replace: true });
-    }
-  }, [user, authLoading, navigate]);
-
-  if (authLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Floating Header Island */}
