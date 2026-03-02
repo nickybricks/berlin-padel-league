@@ -47,7 +47,7 @@ export default function LeagueDashboard() {
 
   const isLoading = leagueLoading || teamsLoading || matchesLoading || resultsLoading;
 
-  if (leagueError) return <Navigate to="/" replace />;
+  if (leagueError) return <Navigate to="/leagues" replace />;
 
   if (leagueLoading) {
     return (

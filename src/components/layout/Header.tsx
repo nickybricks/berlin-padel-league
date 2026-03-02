@@ -129,7 +129,7 @@ export function Header({ leagueId }: HeaderProps) {
               : 'bg-card/60 backdrop-blur-sm'
           }`}
         >
-          <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg shrink-0 max-w-[200px]">
+          <Link to={leagueId ? `/league/${leagueId}` : '/leagues'} className="flex items-center gap-2 font-bold text-lg shrink-0 max-w-[200px]">
             {leagueLogoUrl ? (
               <img src={leagueLogoUrl} alt={brandName} className="h-8 w-8 rounded-lg object-cover shrink-0" />
             ) : (
@@ -170,7 +170,7 @@ export function Header({ leagueId }: HeaderProps) {
             : 'bg-card/60 backdrop-blur-sm'
         }`}
       >
-        <Link to={leagueId ? `/league/${leagueId}` : '/'} className="flex items-center gap-2 font-bold text-lg min-w-0">
+        <Link to={leagueId ? `/league/${leagueId}` : '/leagues'} className="flex items-center gap-2 font-bold text-lg min-w-0">
           {leagueLogoUrl ? (
             <img src={leagueLogoUrl} alt={brandName} className="h-9 w-9 rounded-lg object-cover shrink-0" />
           ) : (
