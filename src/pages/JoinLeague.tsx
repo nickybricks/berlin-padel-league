@@ -483,7 +483,7 @@ export default function JoinLeague() {
           {(step === 'auth' || step === 'team-select') && (
             <div className="text-center">
               <Link 
-                to="/" 
+                to="/leagues" 
                 className="text-sm text-muted-foreground hover:text-foreground inline-flex items-center"
               >
                 <ArrowLeft className="mr-1 h-4 w-4" />

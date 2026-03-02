@@ -144,7 +144,7 @@ export default function Register() {
           {/* Back link */}
           <div className="text-center">
             <Link 
-              to="/" 
+              to="/leagues" 
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               ← Zurück zur Startseite
