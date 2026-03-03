@@ -6,7 +6,7 @@ export default function Home() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Floating Header Island */}
       <header className="w-full flex justify-center pt-4 px-4 z-50">
-        <div className="w-full max-w-2xl flex items-center justify-between px-5 sm:px-6 h-14 rounded-full bg-white/70 backdrop-blur-xl border border-border/40 shadow-sm shadow-black/5">
+        <div className="w-full max-w-[991px] flex items-center justify-between px-5 sm:px-6 h-14 rounded-full bg-white/70 backdrop-blur-xl border border-border/40 shadow-sm shadow-black/5">
           {/* Logo */}
           <span className="text-lg font-bold text-primary tracking-tight whitespace-nowrap">
             Padel Leagues
