@@ -31,7 +31,7 @@ export default function AppPreviewSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start start', 'end end'],
+    offset: ['start end', 'end end'],
   });
 
   // Phase ranges: table 0-0.3, schedule 0.3-0.6, result 0.6-1
@@ -61,7 +61,7 @@ export default function AppPreviewSection() {
   const scoreProgress = useTransform(scrollYProgress, [0.65, 0.85], [0, 1]);
 
   return (
-    <section ref={containerRef} className="relative h-[300vh]">
+    <section ref={containerRef} className="relative h-[200vh]">
       <div className="sticky top-0 h-screen flex flex-col items-center justify-center px-4">
         {/* Label */}
         <motion.p
