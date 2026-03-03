@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import AppPreviewSection from '@/components/landing/AppPreviewSection';
 
 export default function Home() {
   return (
@@ -68,6 +69,9 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {/* App Preview Section */}
+      <AppPreviewSection />
 
       {/* Court line animations */}
       <style>{`
