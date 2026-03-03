@@ -47,7 +47,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <main className="relative z-10 flex items-center justify-center min-h-screen px-6">
+      <main className="relative z-10 flex items-center justify-center h-[85vh] px-6">
         <div className="text-center max-w-4xl">
           <h1 className="text-6xl md:text-8xl font-[800] text-primary leading-[1.05] tracking-tight mb-6">
             Deine Liga.
