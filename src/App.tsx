@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import LeagueLayout from "@/components/layout/LeagueLayout";
 
 import Home from "./pages/Home";
+import DemoPage from "./demo/DemoPage";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyLeagues from "./pages/MyLeagues";
@@ -40,6 +41,7 @@ const App = () => (
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/create-league" element={<CreateLeague />} />
           <Route path="/join/:code" element={<JoinLeague />} />
+          <Route path="/demo" element={<DemoPage />} />
 
           {/* League-specific routes (persistent layout) */}
           <Route path="/league/:leagueId" element={<LeagueLayout />}>
