@@ -5,6 +5,7 @@ import { useMatches, useMatchResults, useCreateMatches } from "@/hooks/useMatche
 import { useLeagueById, useLeagueTeams } from "@/hooks/useLeagues";
 import { generateSchedule } from "@/lib/schedule";
 import { generateGroupSchedule, groupTeamsByName } from "@/lib/groupSchedule";
+import { reassignWeeks } from "@/lib/weekReassign";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Filter, Loader2 } from "lucide-react";
@@ -52,22 +53,34 @@ export default function Schedule() {
     return map;
   }, [teams]);
 
-  const matchesByWeek = useMemo(() => {
-    if (!matches) return new Map();
+  // First: filter to valid intra-group matches, then reassign weeks if group format
+  const processedMatches = useMemo(() => {
+    if (!matches) return [];
 
     const isGroupFormat = league?.format_type === 'groups';
 
-    const grouped = new Map<number, typeof matches>();
-    matches.forEach((match) => {
-      if (!leagueTeamIds.has(match.team_a_id) || !leagueTeamIds.has(match.team_b_id)) return;
-
-      // In group format, only show intra-group matches (filters out old round-robin cross-group matches)
+    // Filter to league matches and intra-group only
+    let filtered = matches.filter((match) => {
+      if (!leagueTeamIds.has(match.team_a_id) || !leagueTeamIds.has(match.team_b_id)) return false;
       if (isGroupFormat) {
         const groupA = teamGroupMap.get(match.team_a_id);
         const groupB = teamGroupMap.get(match.team_b_id);
-        if (groupA !== groupB) return;
+        if (groupA !== groupB) return false;
       }
+      return true;
+    });
 
+    // Reassign weeks so no team plays twice in the same week
+    if (isGroupFormat) {
+      filtered = reassignWeeks(filtered);
+    }
+
+    return filtered;
+  }, [matches, leagueTeamIds, teamGroupMap, league]);
+
+  const matchesByWeek = useMemo(() => {
+    const grouped = new Map<number, typeof processedMatches>();
+    processedMatches.forEach((match) => {
       // Group filter
       if (groupTeamIds && (!groupTeamIds.has(match.team_a_id) || !groupTeamIds.has(match.team_b_id))) return;
 
@@ -83,7 +96,7 @@ export default function Schedule() {
     });
 
     return grouped;
-  }, [matches, leagueTeamIds, groupTeamIds, teamGroupMap, league, teamFilter, statusFilter, resultsMap]);
+  }, [processedMatches, groupTeamIds, teamFilter, statusFilter, resultsMap]);
 
   const weeks = useMemo(() => {
     const allWeeks = Array.from(matchesByWeek.keys()).sort((a, b) => a - b);
