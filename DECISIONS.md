@@ -184,6 +184,23 @@
 
 **Nächste Schritte:**
 - Max-Teams-Prüfung im Join-Flow implementieren
-- Playoffs / Bracket-View aufbauen
 - Booking-Export per Liga scopen
 - Spielplan-Generierung für Hin-/Rückrunde testen
+
+### 2026-03-05
+**Erledigt:**
+- Interaktive Demo-Liga implementiert (`/demo` Route + Landingpage-Embed)
+  - `DemoLeagueContext` mit 8 Teams, 2 Gruppen, 12 Matches, lokaler State
+  - 5 Tabs: Tabelle, Teams, Spielplan, Playoffs, Ergebnis eintragen
+  - Kompakte Embed-Version auf Landingpage mit Browser-Mockup-Frame
+  - Playoff-Bracket (VF→HF→Finale) dynamisch aus Tabellenstand berechnet
+  - Ergebniseingabe mit Live-Aktualisierung von Tabelle und Playoffs
+- Spielplan-Bug behoben: Teams erschienen mehrfach in derselben Spielwoche
+  - Ursache: Round-Robin-Spielplan wurde für alle Teams generiert, dann nach Gruppen gefiltert → alte Wochennummern blieben, Kollisionen
+  - Lösung: `reassignWeeks()` Greedy-Algorithmus in `src/lib/weekReassign.ts` – verteilt Matches so um, dass kein Team doppelt pro Woche spielt
+
+**Nächste Schritte:**
+- Max-Teams-Prüfung im Join-Flow implementieren
+- Booking-Export per Liga scopen
+- Spielplan-Generierung für Hin-/Rückrunde testen
+- Demo-Seite auf Mobile testen und optimieren
