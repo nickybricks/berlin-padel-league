@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { Layout } from '@/components/layout/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -9,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, Users, Calendar, Star, ChevronRight, Check, X, AlertTriangle, Info, Download, Sun, Moon } from 'lucide-react';
+import { Trophy, Users, Calendar, Star, ChevronRight, Check, X, AlertTriangle, Info, Download } from 'lucide-react';
 
 function ColorSwatch({ name, variable, className }: { name: string; variable: string; className: string }) {
   return (
