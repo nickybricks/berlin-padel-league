@@ -157,7 +157,9 @@
 - [x] Gruppenzuteilung (manuell + zufällig)
 - [x] Hin- und Rückrunde Toggle
 - [x] Bis zu 8 Gruppen
-- [ ] Playoffs / Bracket-Ansicht
+- [x] **Dark Mode** — System-Erkennung (`prefers-color-scheme`) + manueller Toggle im Header
+- [x] **Interaktive Demo-Liga** — `/demo` mit 8 Teams, lokalem State, Playoffs
+- [ ] Playoffs / Bracket-Ansicht (für echte Ligen)
 - [ ] Max-Teams-Prüfung im Join-Flow
 
 ### Phase 3: Optimierung / Skalierung
