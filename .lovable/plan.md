@@ -1,73 +1,68 @@
-
-
-# Plan: Interaktive Demo-Padel-Liga
+# Plan: Berlin Padel Liga
 
 ## Zusammenfassung
-Eine vollständig im Browser-State lebende Demo-Liga mit 8 Teams in 2 Gruppen, Spielplan, Tabelle, Playoffs und Ergebniseingabe. Erreichbar als eigenständige Seite unter `/demo` und eingebettet als interaktive Preview auf der Landingpage `/`.
+Eine vollständige Padel-Liga-Verwaltung mit Multi-Liga-Architektur, Team-Verwaltung, Spielplan-Generierung, Ergebniseingabe, Tabellenberechnung, Platzbuchungssystem und interaktiver Demo.
 
-## Neue Dateien
+## ✅ Implementierte Features
 
-### 1. `src/demo/DemoLeagueContext.tsx` — React Context + Provider
-- Hardcoded 8 Teams (4 pro Gruppe A/B) mit IDs, Namen, Spielernamen, Gruppe
-- 12 Round-Robin-Matches (6 pro Gruppe), aufgeteilt in 3 Spielwochen (je 4 Spiele)
-- 4 Matches aus Woche 1 haben vordefinierte Ergebnisse
-- State: `results` Map, Funktionen `submitResult(matchId, sets)` und `clearResult(matchId)`
-- Automatische Berechnung von Standings (reuse `calculateStandings` aus `src/lib/standings.ts`) und Playoff-Bracket bei jeder Ergebnisänderung
-- Kein API-Call, kein Backend — alles in `useState`
+### Phase 1: MVP
+- [x] Authentifizierung (Login, Register, E-Mail-Verifizierung)
+- [x] Liga beitreten via Einladungslink
+- [x] Team-Zuordnung (E-Mail-Match + manuelle Auswahl)
+- [x] Spielplan-Generierung (Round Robin + Gruppen)
+- [x] Ergebnis-Eintragung (Best-of-3)
+- [x] Tabelle mit Punkte-/Satzverhältnis
+- [x] Platzbuchungssystem (Venues, Courts, Slots)
+- [x] Admin-Bereich (Mitglieder, Rollen, Teams)
+- [x] RLS-Policies für alle Tabellen
 
-### 2. `src/demo/DemoPage.tsx` — Route `/demo`
-- Floating Header Island (wie bestehender Stil): "Demo Padel Liga" + orange "DEMO" Badge, rechts Tab-Pills
-- 5 Tabs via React State: Tabelle, Teams, Spielplan, Playoffs, Ergebnis eintragen
-- Fixiertes Bottom-Banner: "Dies ist eine interaktive Demo" + CTAs zu `/register` und `/`
-- User-Icon rechts im Header (dekorativ)
+### Phase 2: Erweiterungen
+- [x] Liga erstellen (3-Schritt-Wizard)
+- [x] Multi-Liga-Architektur (alle Daten per `league_id` isoliert)
+- [x] Liga-spezifische Platzbuchungen
+- [x] Liga löschen
+- [x] Turnierformat nachträglich ändern (Admin)
+- [x] Gruppenzuteilung (manuell + zufällig)
+- [x] Hin- und Rückrunde Toggle
+- [x] Bis zu 8 Gruppen
+- [x] **Dark Mode** — System-Erkennung + manueller Toggle
+- [x] **Interaktive Demo-Liga** — `/demo` mit 8 Teams, 2 Gruppen, Playoffs
 
-### 3. `src/demo/tabs/DemoStandings.tsx` — Tab "Tabelle"
-- Sub-Tabs: Gruppe A, Gruppe B, Gesamt (shadcn Tabs)
-- Wiederverwendung der Tabellenlogik aus `StandingsTable` aber als eigenständige Demo-Variante (kein `useParams`, keine Links)
-- Grüner Playoff-Balken links, farbige Differenz-Werte, Legende
+### Phase 3: Offene Features
+- [ ] Playoffs / Bracket-Ansicht (echte Liga)
+- [ ] Max-Teams-Prüfung im Join-Flow
+- [ ] Push-Notifications für neue Ergebnisse
+- [ ] Realtime-Updates
+- [ ] Statistik-Dashboard mit Charts
+- [ ] PWA-Support
+- [ ] Export-Funktionen (CSV, PDF)
 
-### 4. `src/demo/tabs/DemoTeams.tsx` — Tab "Teams"
-- 3/2/1-Spalten-Grid, Cards mit User-Icon-Avatar, Name, Spielernamen, Chevron
-- Klick → Toast "In der echten App siehst du hier Team-Details."
+## Architektur
 
-### 5. `src/demo/tabs/DemoSchedule.tsx` — Tab "Spielplan"
-- Filter-Dropdowns (Gruppe, Woche, Team, Status) — filtern den lokalen State
-- Match-Cards gruppiert nach Spielwoche, Header mit "X/Y gespielt"
-- Gespielt: grünes Badge, Satz-Score, Gewinner grün, Game-Scores
-- Ausstehend: graues Badge, nur Teamnamen
-- Klick auf ausstehende Card → wechselt zu Tab "Ergebnis eintragen" mit vorausgewähltem Match
+### Tech Stack
+- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
+- **UI**: shadcn/ui mit HSL-Farbvariablen
+- **Backend**: Lovable Cloud (PostgreSQL, Auth, Storage)
+- **State**: TanStack React Query für Server-State
 
-### 6. `src/demo/tabs/DemoPlayoffs.tsx` — Tab "Playoffs"
-- Gelbes Info-Banner, Qualifikations-Chips, Bracket (VF→HF→Finale→Champion)
-- Kreuzspiel-Format: 1A vs 4B, 2A vs 3B, 1B vs 4A, 2B vs 3A
-- Playoff-Modus-Erklärung als Card
+### Design-System
+- Mobile-First, daumen-optimiert
+- Apple-like Clean & Minimalist
+- Konsistente Tokens: `--background`, `--primary`, `--muted`, `--accent`
+- Keine Hex-Codes in Komponenten
 
-### 7. `src/demo/tabs/DemoEnterResult.tsx` — Tab "Ergebnis eintragen"
-- Orange "Demo-Modus" Badge
-- Select für ausstehende Spiele, Satz-Eingabe (1-3), optionaler Kommentar
-- Submit → `submitResult()` → Erfolgs-Toast, Tabelle aktualisiert sich
+## Nächste Schritte
 
-### 8. `src/demo/DemoEmbed.tsx` — Kompakte Version für Landingpage
-- Browser-Mockup-Frame (dunkle Titelleiste mit 3 Punkten + Fake-URL)
-- Kompakte Tabs: Tabelle, Spielplan, Ergebnis eintragen
-- Reduziertes Padding/Schriftgrößen
-- Umgeben von Headline "Probier es aus – live Demo" und CTAs
+### Priorität Hoch
+1. **Playoff-System für echte Ligen** — Aktuell nur in Demo verfügbar
+2. **Max-Teams-Prüfung** — Verhindere Überschreitung bei Join-Flow
 
-## Geänderte Dateien
+### Priorität Mittel
+3. **Statistik-Dashboard** — Charts für Team-Performance
+4. **Push-Notifications** — Neue Ergebnisse, anstehende Spiele
+5. **Export-Funktionen** — CSV-Export für Admins
 
-### `src/App.tsx`
-- Neue Route `/demo` → `DemoPage`
-
-### `src/pages/Home.tsx`
-- Import und Einbettung von `DemoEmbed` nach dem Header
-- Headline-Section + Browser-Frame + CTA-Buttons darunter
-
-## Technische Details
-
-- **Datenfluss**: `DemoLeagueProvider` wrapped nur die Demo-Routen/Komponenten, nicht die gesamte App
-- **Standings-Berechnung**: Direkte Wiederverwendung von `calculateStandings()` und `formatSetResult()` / `getSetScore()` aus `src/lib/standings.ts`
-- **Typen**: Wiederverwendung von `Team`, `Match`, `MatchResult`, `TeamStanding`, `MatchWithTeams` aus `src/types/database.ts`
-- **Kein Backend**: Alle Daten leben in React State, Page Refresh setzt zurück
-- **Mobile-first**: Bottom-Banner fixed, Header scrollbar auf Mobile, responsive Grids
-- **Styling**: Konsistent mit bestehendem Design-System (shadcn, Tailwind-Variablen, `match-card`, `sport-badge` CSS-Klassen)
+### Priorität Niedrig
+6. **PWA-Support** — Offline-Fähigkeit
+7. **Liga-übergreifende Profile** — Spieler-Statistiken über alle Ligen
 
