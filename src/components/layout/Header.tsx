@@ -195,7 +195,7 @@ export function Header({ leagueId }: HeaderProps) {
       {filteredNavItems.length > 0 && (
         <nav
           ref={navScrollRef}
-          className="lg:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md"
+          className="lg:hidden sticky top-0 z-50 overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md"
         >
           <div className="flex items-center gap-1 px-3 py-2 w-max">
             {filteredNavItems.map(item => (
