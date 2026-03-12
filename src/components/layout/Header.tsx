@@ -120,78 +120,80 @@ export function Header({ leagueId }: HeaderProps) {
   );
 
   return (
-    <header className="w-full z-50">
-      {/* Desktop: Notch-style header */}
-      <div className="hidden lg:block lg:sticky lg:top-0 lg:z-50 py-3 px-4">
+    <>
+      <header className="w-full z-40">
+        {/* Desktop: Notch-style header */}
+        <div className="hidden lg:block lg:sticky lg:top-0 lg:z-50 py-3 px-4">
+          <div 
+            className={`mx-auto max-w-[992px] flex h-14 items-center justify-between px-4 rounded-full transition-all duration-300 ${
+              isScrolled 
+                ? 'bg-card/80 backdrop-blur-md shadow-md border border-border/50' 
+                : 'bg-card/60 backdrop-blur-sm'
+            }`}
+          >
+            <Link to={leagueId ? `/league/${leagueId}` : '/leagues'} className="flex items-center gap-2 font-bold text-lg shrink-0 max-w-[200px]">
+              {leagueLogoUrl ? (
+                <img src={leagueLogoUrl} alt={brandName} className="h-8 w-8 rounded-lg object-cover shrink-0" />
+              ) : (
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
+                  <Trophy className="h-4 w-4 text-primary-foreground" />
+                </div>
+              )}
+              <span className="truncate">{brandName}</span>
+            </Link>
+
+            {filteredNavItems.length > 0 && (
+              <nav className="flex items-center gap-0.5 shrink-0">
+                {filteredNavItems.map(item => (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`px-2.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                      isActive(item.path)
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </nav>
+            )}
+
+            <div className="flex items-center gap-1 shrink-0">
+              <ThemeToggle />
+              <AuthSection />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile & Tablet: Header bar (scrolls away) */}
         <div 
-          className={`mx-auto max-w-[992px] flex h-14 items-center justify-between px-4 rounded-full transition-all duration-300 ${
+          className={`lg:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
             isScrolled 
-              ? 'bg-card/80 backdrop-blur-md shadow-md border border-border/50' 
+              ? 'bg-card/80 backdrop-blur-md border-b border-border/50' 
               : 'bg-card/60 backdrop-blur-sm'
           }`}
         >
-          <Link to={leagueId ? `/league/${leagueId}` : '/leagues'} className="flex items-center gap-2 font-bold text-lg shrink-0 max-w-[200px]">
+          <Link to={leagueId ? `/league/${leagueId}` : '/leagues'} className="flex items-center gap-2 font-bold text-lg min-w-0">
             {leagueLogoUrl ? (
-              <img src={leagueLogoUrl} alt={brandName} className="h-8 w-8 rounded-lg object-cover shrink-0" />
+              <img src={leagueLogoUrl} alt={brandName} className="h-9 w-9 rounded-lg object-cover shrink-0" />
             ) : (
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
-                <Trophy className="h-4 w-4 text-primary-foreground" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shrink-0">
+                <Trophy className="h-5 w-5 text-primary-foreground" />
               </div>
             )}
             <span className="truncate">{brandName}</span>
           </Link>
 
-          {filteredNavItems.length > 0 && (
-            <nav className="flex items-center gap-0.5 shrink-0">
-              {filteredNavItems.map(item => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`px-2.5 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                    isActive(item.path)
-                      ? 'bg-primary text-primary-foreground'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          )}
-
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-1">
             <ThemeToggle />
             <AuthSection />
           </div>
         </div>
-      </div>
+      </header>
 
-      {/* Mobile & Tablet: Header bar */}
-      <div 
-        className={`lg:hidden flex h-14 items-center justify-between px-4 transition-all duration-300 ${
-          isScrolled 
-            ? 'bg-card/80 backdrop-blur-md border-b border-border/50' 
-            : 'bg-card/60 backdrop-blur-sm'
-        }`}
-      >
-        <Link to={leagueId ? `/league/${leagueId}` : '/leagues'} className="flex items-center gap-2 font-bold text-lg min-w-0">
-          {leagueLogoUrl ? (
-            <img src={leagueLogoUrl} alt={brandName} className="h-9 w-9 rounded-lg object-cover shrink-0" />
-          ) : (
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary shrink-0">
-              <Trophy className="h-5 w-5 text-primary-foreground" />
-            </div>
-          )}
-          <span className="truncate">{brandName}</span>
-        </Link>
-
-        <div className="flex items-center gap-1">
-          <ThemeToggle />
-          <AuthSection />
-        </div>
-      </div>
-
-      {/* Mobile & Tablet: Horizontal scrollable navigation */}
+      {/* Mobile & Tablet: Sticky tab navigation — outside header for proper sticky behavior */}
       {filteredNavItems.length > 0 && (
         <nav
           ref={navScrollRef}
@@ -215,6 +217,6 @@ export function Header({ leagueId }: HeaderProps) {
           </div>
         </nav>
       )}
-    </header>
+    </>
   );
 }
