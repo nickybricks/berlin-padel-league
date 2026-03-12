@@ -23,6 +23,7 @@ import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
 import LeagueAdmin from "./pages/LeagueAdmin";
 import NotFound from "./pages/NotFound";
+import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
