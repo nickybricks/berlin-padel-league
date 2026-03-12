@@ -1,6 +1,7 @@
 import { useState, useEffect, useLayoutEffect, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Trophy, User, LogOut } from 'lucide-react';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import { useLeagueById } from '@/hooks/useLeagues';
@@ -158,7 +159,10 @@ export function Header({ leagueId }: HeaderProps) {
             </nav>
           )}
 
-          <AuthSection />
+          <div className="flex items-center gap-1 shrink-0">
+            <ThemeToggle />
+            <AuthSection />
+          </div>
         </div>
       </div>
 
@@ -181,7 +185,10 @@ export function Header({ leagueId }: HeaderProps) {
           <span className="truncate">{brandName}</span>
         </Link>
 
-        <AuthSection />
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <AuthSection />
+        </div>
       </div>
 
       {/* Mobile & Tablet: Horizontal scrollable navigation */}
