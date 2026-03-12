@@ -23,6 +23,7 @@ import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
 import LeagueAdmin from "./pages/LeagueAdmin";
 import NotFound from "./pages/NotFound";
+import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
           <Route path="/create-league" element={<CreateLeague />} />
           <Route path="/join/:code" element={<JoinLeague />} />
           <Route path="/demo" element={<DemoPage />} />
+          <Route path="/design" element={<DesignSystem />} />
 
           {/* League-specific routes (persistent layout) */}
           <Route path="/league/:leagueId" element={<LeagueLayout />}>
