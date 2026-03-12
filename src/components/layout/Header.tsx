@@ -122,7 +122,7 @@ export function Header({ leagueId }: HeaderProps) {
   return (
     <header className="w-full z-50">
       {/* Desktop: Notch-style header */}
-      <div className="hidden lg:block py-3 px-4">
+      <div className="hidden lg:block lg:sticky lg:top-0 lg:z-50 py-3 px-4">
         <div 
           className={`mx-auto max-w-[992px] flex h-14 items-center justify-between px-4 rounded-full transition-all duration-300 ${
             isScrolled 
