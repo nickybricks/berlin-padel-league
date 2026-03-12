@@ -206,3 +206,11 @@
 - Booking-Export per Liga scopen
 - Spielplan-Generierung für Hin-/Rückrunde testen
 - Demo-Seite auf Mobile testen und optimieren
+
+### 2026-03-12
+**Erledigt:**
+- **Dark Mode** implementiert — `ThemeProvider` mit System-Erkennung, `ThemeToggle` im Header
+  - Unterstützt `light`, `dark`, `system` Modi
+  - Speichert Präferenz in `localStorage`
+  - iOS/Android Dark Mode wird automatisch erkannt
+- Demo-Liga in Plan.md dokumentiert
