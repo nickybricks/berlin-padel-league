@@ -159,7 +159,10 @@ export function Header({ leagueId }: HeaderProps) {
             </nav>
           )}
 
-          <AuthSection />
+          <div className="flex items-center gap-1 shrink-0">
+            <ThemeToggle />
+            <AuthSection />
+          </div>
         </div>
       </div>
 
