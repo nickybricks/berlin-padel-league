@@ -120,9 +120,9 @@ export function Header({ leagueId }: HeaderProps) {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="w-full z-50">
       {/* Desktop: Notch-style header */}
-      <div className="hidden lg:block py-3 px-4">
+      <div className="hidden lg:block lg:sticky lg:top-0 lg:z-50 py-3 px-4">
         <div 
           className={`mx-auto max-w-[992px] flex h-14 items-center justify-between px-4 rounded-full transition-all duration-300 ${
             isScrolled 
@@ -195,7 +195,7 @@ export function Header({ leagueId }: HeaderProps) {
       {filteredNavItems.length > 0 && (
         <nav
           ref={navScrollRef}
-          className="lg:hidden overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md"
+          className="lg:hidden sticky top-0 z-50 overflow-x-auto scrollbar-hide border-b border-border/50 bg-card/80 backdrop-blur-md"
         >
           <div className="flex items-center gap-1 px-3 py-2 w-max">
             {filteredNavItems.map(item => (
