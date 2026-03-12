@@ -270,3 +270,92 @@
   .stagger-4 { animation-delay: 200ms; }
   .stagger-5 { animation-delay: 250ms; }
 }
+
+/* ── Print / PDF Export ── */
+@media print {
+  /* Reset page */
+  @page {
+    size: A4;
+    margin: 20mm 15mm;
+  }
+
+  /* Hide non-content elements */
+  header, footer, nav,
+  .print\\:hidden,
+  button:not(.print-keep) {
+    display: none !important;
+  }
+
+  /* Reset layout */
+  body {
+    background: white !important;
+    color: black !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  #design-system-content {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Section page breaks */
+  .design-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding-top: 8px;
+  }
+
+  /* Cards should not break */
+  .rounded-lg[class*="bg-card"],
+  [class*="CardContent"] {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  /* Force color rendering */
+  div[class*="bg-primary"],
+  div[class*="bg-accent"],
+  div[class*="bg-destructive"],
+  div[class*="bg-success"],
+  div[class*="bg-warning"],
+  div[class*="bg-playoff"],
+  div[class*="bg-muted"],
+  div[class*="bg-foreground"],
+  div[class*="bg-secondary"],
+  div[class*="bg-sidebar"],
+  div[class*="bg-border"],
+  div[class*="bg-ring"],
+  div[class*="bg-input"],
+  div[class*="bg-card"] {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* Shadows render as borders in print */
+  .shadow-sm, .shadow-md, .shadow-lg {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
+  }
+
+  /* Reduce spacing for print */
+  #design-system-content {
+    gap: 24px !important;
+  }
+
+  #design-system-content > .space-y-12 > * + * {
+    margin-top: 24px !important;
+  }
+
+  /* Ensure animations show static state */
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
