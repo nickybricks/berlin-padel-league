@@ -185,7 +185,10 @@ export function Header({ leagueId }: HeaderProps) {
           <span className="truncate">{brandName}</span>
         </Link>
 
-        <AuthSection />
+        <div className="flex items-center gap-1">
+          <ThemeToggle />
+          <AuthSection />
+        </div>
       </div>
 
       {/* Mobile & Tablet: Horizontal scrollable navigation */}
