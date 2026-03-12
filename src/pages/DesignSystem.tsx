@@ -33,11 +33,22 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 export default function DesignSystem() {
   return (
     <Layout>
-      <div className="space-y-12 pb-16">
+      <div className="space-y-12 pb-16" id="design-system-content">
         {/* Page Header */}
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Design System</h1>
-          <p className="text-muted-foreground mt-1">Komplette Übersicht aller Design-Tokens, Komponenten und Styles.</p>
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Design System</h1>
+            <p className="text-muted-foreground mt-1">Komplette Übersicht aller Design-Tokens, Komponenten und Styles.</p>
+          </div>
+          <Button
+            onClick={() => window.print()}
+            variant="outline"
+            size="sm"
+            className="shrink-0 print:hidden"
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            PDF Export
+          </Button>
         </div>
 
         {/* ── Typography ── */}
