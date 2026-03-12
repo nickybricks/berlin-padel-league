@@ -22,7 +22,7 @@ function ColorSwatch({ name, variable, className }: { name: string; variable: st
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-4">
+    <div className="design-section space-y-4">
       <h2 className="text-xl font-semibold text-foreground">{title}</h2>
       <Separator />
       {children}
