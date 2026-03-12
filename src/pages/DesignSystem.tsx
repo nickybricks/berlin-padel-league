@@ -31,13 +31,6 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 }
 
 export default function DesignSystem() {
-  const [dark, setDark] = useState(() => document.documentElement.classList.contains('dark'));
-
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', dark);
-    return () => { document.documentElement.classList.remove('dark'); };
-  }, [dark]);
-
   return (
     <Layout>
       <div className="space-y-12 pb-16" id="design-system-content">
@@ -47,25 +40,15 @@ export default function DesignSystem() {
             <h1 className="text-3xl font-bold text-foreground">Design System</h1>
             <p className="text-muted-foreground mt-1">Komplette Übersicht aller Design-Tokens, Komponenten und Styles.</p>
           </div>
-          <div className="flex items-center gap-2 shrink-0 print:hidden">
-            <Button
-              onClick={() => setDark(d => !d)}
-              variant="outline"
-              size="sm"
-              className="gap-1.5"
-            >
-              {dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-              {dark ? 'Light' : 'Dark'}
-            </Button>
-            <Button
-              onClick={() => window.print()}
-              variant="outline"
-              size="sm"
-            >
-              <Download className="h-4 w-4 mr-1.5" />
-              PDF
-            </Button>
-          </div>
+          <Button
+            onClick={() => window.print()}
+            variant="outline"
+            size="sm"
+            className="shrink-0 print:hidden"
+          >
+            <Download className="h-4 w-4 mr-1.5" />
+            PDF
+          </Button>
         </div>
 
         {/* ── Typography ── */}
