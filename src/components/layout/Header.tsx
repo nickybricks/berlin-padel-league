@@ -120,7 +120,7 @@ export function Header({ leagueId }: HeaderProps) {
   );
 
   return (
-    <header className="sticky top-0 z-50 w-full">
+    <header className="w-full z-50">
       {/* Desktop: Notch-style header */}
       <div className="hidden lg:block py-3 px-4">
         <div 
