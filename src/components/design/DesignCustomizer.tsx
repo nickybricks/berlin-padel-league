@@ -1,7 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Slider } from '@/components/ui/slider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -76,6 +75,7 @@ const COLOR_TOKENS: ColorToken[] = [
   { variable: '--background', label: 'Background', defaultValue: '220 25% 97%' },
   { variable: '--foreground', label: 'Foreground', defaultValue: '220 40% 13%' },
   { variable: '--card', label: 'Card', defaultValue: '0 0% 100%' },
+  { variable: '--card-foreground', label: 'Card FG', defaultValue: '220 40% 13%' },
   { variable: '--muted', label: 'Muted', defaultValue: '210 25% 92%' },
   { variable: '--muted-foreground', label: 'Muted FG', defaultValue: '220 15% 45%' },
   { variable: '--border', label: 'Border', defaultValue: '220 20% 88%' },
@@ -129,6 +129,19 @@ const DEMO_TABS = [
   { key: 'spielplan', label: 'Spielplan' },
 ];
 
+/** Build inline style object with all CSS variables for scoped preview */
+function buildPreviewStyle(colors: Record<string, HSL>, radius: string, font: string): React.CSSProperties {
+  const style: Record<string, string> = {};
+  Object.entries(colors).forEach(([variable, hsl]) => {
+    style[variable] = formatHSL(hsl);
+  });
+  style['--radius'] = radius;
+  style['fontFamily'] = font;
+  // Ensure the preview always renders in "light mode" context
+  style['colorScheme'] = 'light';
+  return style as React.CSSProperties;
+}
+
 export default function DesignCustomizer() {
   const { toast } = useToast();
   const [colors, setColors] = useState<Record<string, HSL>>(() => {
@@ -140,23 +153,9 @@ export default function DesignCustomizer() {
   const [font, setFont] = useState('Inter, system-ui, sans-serif');
   const [demoTab, setDemoTab] = useState('tabelle');
 
-  // Apply CSS variables live
-  useEffect(() => {
-    const root = document.documentElement;
-    Object.entries(colors).forEach(([variable, hsl]) => {
-      root.style.setProperty(variable, formatHSL(hsl));
-    });
-    root.style.setProperty('--radius', radius);
-    root.style.setProperty('font-family', font);
-
-    return () => {
-      // Cleanup is handled by reset
-    };
-  }, [colors, radius, font]);
-
   // Load font if needed
-  useEffect(() => {
-    const opt = FONT_OPTIONS.find(f => f.value === font);
+  const loadFont = useCallback((fontValue: string) => {
+    const opt = FONT_OPTIONS.find(f => f.value === fontValue);
     if (opt?.import) {
       const existing = document.querySelector(`link[href="${opt.import}"]`);
       if (!existing) {
@@ -166,17 +165,13 @@ export default function DesignCustomizer() {
         document.head.appendChild(link);
       }
     }
-  }, [font]);
+  }, []);
 
   const updateColor = useCallback((variable: string, hsl: HSL) => {
     setColors(prev => ({ ...prev, [variable]: hsl }));
   }, []);
 
   const resetAll = useCallback(() => {
-    const root = document.documentElement;
-    COLOR_TOKENS.forEach(t => { root.style.removeProperty(t.variable); });
-    root.style.removeProperty('--radius');
-    root.style.removeProperty('font-family');
     const initial: Record<string, HSL> = {};
     COLOR_TOKENS.forEach(t => { initial[t.variable] = parseHSL(t.defaultValue); });
     setColors(initial);
@@ -197,9 +192,17 @@ export default function DesignCustomizer() {
     toast({ title: 'CSS kopiert!', description: 'Design-Tokens in die Zwischenablage kopiert.' });
   }, [colors, radius, toast]);
 
+  const handleFontChange = useCallback((value: string) => {
+    setFont(value);
+    loadFont(value);
+  }, [loadFont]);
+
+  // Build scoped style for preview container
+  const previewStyle = buildPreviewStyle(colors, radius, font);
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-6">
-      {/* Controls */}
+      {/* Controls — uses page theme (light/dark) */}
       <div className="space-y-4 lg:max-h-[80vh] lg:overflow-y-auto lg:pr-2">
         <Card>
           <CardHeader className="pb-3">
@@ -221,7 +224,7 @@ export default function DesignCustomizer() {
             {/* Font */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">Schriftart</Label>
-              <Select value={font} onValueChange={setFont}>
+              <Select value={font} onValueChange={handleFontChange}>
                 <SelectTrigger className="h-9 text-xs">
                   <SelectValue />
                 </SelectTrigger>
@@ -266,45 +269,63 @@ export default function DesignCustomizer() {
         </Card>
       </div>
 
-      {/* Live Preview */}
+      {/* Live Preview — scoped CSS variables via inline style */}
       <div className="space-y-4">
-        <Card>
-          <CardHeader className="pb-2">
+        <div
+          className="rounded-xl border border-border overflow-hidden"
+          style={{
+            ...previewStyle,
+            backgroundColor: `hsl(${formatHSL(colors['--background'])})`,
+            color: `hsl(${formatHSL(colors['--foreground'])})`,
+          }}
+        >
+          <div className="p-4 border-b" style={{ borderColor: `hsl(${formatHSL(colors['--border'])})` }}>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Live-Vorschau</CardTitle>
+              <p className="text-base font-semibold">Live-Vorschau</p>
               <div className="flex gap-1">
                 {DEMO_TABS.map(t => (
                   <button
                     key={t.key}
                     onClick={() => setDemoTab(t.key)}
-                    className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                      demoTab === t.key
-                        ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:bg-muted'
-                    }`}
+                    className="px-3 py-1 rounded-full text-xs font-medium transition-colors"
+                    style={{
+                      backgroundColor: demoTab === t.key
+                        ? `hsl(${formatHSL(colors['--primary'])})`
+                        : 'transparent',
+                      color: demoTab === t.key
+                        ? `hsl(${formatHSL(colors['--primary-foreground'])})`
+                        : `hsl(${formatHSL(colors['--muted-foreground'])})`,
+                    }}
                   >
                     {t.label}
                   </button>
                 ))}
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="p-4">
             <DemoLeagueProvider>
               <div className="space-y-4">
                 {demoTab === 'tabelle' && <DemoStandings />}
                 {demoTab === 'spielplan' && <DemoSchedule />}
               </div>
             </DemoLeagueProvider>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
-        {/* Component samples */}
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base">Komponenten</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        {/* Component samples — also scoped */}
+        <div
+          className="rounded-xl border border-border overflow-hidden"
+          style={{
+            ...previewStyle,
+            backgroundColor: `hsl(${formatHSL(colors['--background'])})`,
+            color: `hsl(${formatHSL(colors['--foreground'])})`,
+          }}
+        >
+          <div className="p-4 border-b" style={{ borderColor: `hsl(${formatHSL(colors['--border'])})` }}>
+            <p className="text-base font-semibold">Komponenten</p>
+          </div>
+          <div className="p-4 space-y-4">
             <div className="flex flex-wrap gap-2">
               <Button>Primary</Button>
               <Button variant="secondary">Secondary</Button>
@@ -313,10 +334,10 @@ export default function DesignCustomizer() {
               <Button variant="ghost">Ghost</Button>
             </div>
             <div className="flex flex-wrap gap-2">
-              <div className="px-3 py-1.5 rounded-full text-xs font-medium bg-accent text-accent-foreground">Accent Badge</div>
-              <div className="px-3 py-1.5 rounded-full text-xs font-medium bg-success text-success-foreground">Success</div>
-              <div className="px-3 py-1.5 rounded-full text-xs font-medium bg-warning text-warning-foreground">Warning</div>
-              <div className="px-3 py-1.5 rounded-full text-xs font-medium bg-destructive text-destructive-foreground">Error</div>
+              <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: `hsl(${formatHSL(colors['--accent'])})`, color: `hsl(${formatHSL(colors['--accent-foreground'])})` }}>Accent Badge</div>
+              <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: `hsl(${formatHSL(colors['--success'])})`, color: '#fff' }}>Success</div>
+              <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: `hsl(${formatHSL(colors['--warning'])})`, color: '#fff' }}>Warning</div>
+              <div className="px-3 py-1.5 rounded-full text-xs font-medium" style={{ backgroundColor: `hsl(${formatHSL(colors['--destructive'])})`, color: '#fff' }}>Error</div>
             </div>
             <div className="flex gap-3">
               <Input placeholder="Input Beispiel" className="max-w-xs" />
@@ -324,14 +345,22 @@ export default function DesignCustomizer() {
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               {['Card 1', 'Card 2', 'Card 3'].map(c => (
-                <Card key={c} className="p-4">
+                <div
+                  key={c}
+                  className="p-4 rounded-lg"
+                  style={{
+                    backgroundColor: `hsl(${formatHSL(colors['--card'])})`,
+                    color: `hsl(${formatHSL(colors['--card-foreground'])})`,
+                    border: `1px solid hsl(${formatHSL(colors['--border'])})`,
+                  }}
+                >
                   <p className="text-sm font-medium">{c}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Beispiel-Inhalt</p>
-                </Card>
+                  <p className="text-xs mt-1" style={{ color: `hsl(${formatHSL(colors['--muted-foreground'])})` }}>Beispiel-Inhalt</p>
+                </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
