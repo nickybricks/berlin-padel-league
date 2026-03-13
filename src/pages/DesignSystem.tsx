@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Users, Calendar, Star, ChevronRight, Check, X, AlertTriangle, Info, Download } from 'lucide-react';
+import DesignCustomizer from '@/components/design/DesignCustomizer';
 
 function ColorSwatch({ name, variable, className }: { name: string; variable: string; className: string }) {
   return (
