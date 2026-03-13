@@ -14,7 +14,11 @@ import { useToast } from '@/hooks/use-toast';
 type HSL = [number, number, number];
 
 function parseHSL(value: string): HSL {
-  const parts = value.trim().split(/\s+/).map(Number);
+  const parts = value
+    .trim()
+    .split(/\s+/)
+    .map((part) => Number.parseFloat(part.replace('%', '')));
+
   return [parts[0] || 0, parts[1] || 0, parts[2] || 0];
 }
 
