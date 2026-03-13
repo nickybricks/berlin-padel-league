@@ -52,6 +52,11 @@ export default function DesignSystem() {
           </Button>
         </div>
 
+        {/* ── Live Design Customizer ── */}
+        <Section title="🎨 Live Design Editor">
+          <DesignCustomizer />
+        </Section>
+
         {/* ── Typography ── */}
         <Section title="Typografie">
           <Card>
