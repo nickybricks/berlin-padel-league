@@ -1,68 +1,48 @@
-# Plan: Berlin Padel Liga
 
-## Zusammenfassung
-Eine vollständige Padel-Liga-Verwaltung mit Multi-Liga-Architektur, Team-Verwaltung, Spielplan-Generierung, Ergebniseingabe, Tabellenberechnung, Platzbuchungssystem und interaktiver Demo.
 
-## ✅ Implementierte Features
+## Making the Landing Page More Special — UI/UX Upgrade Ideas
 
-### Phase 1: MVP
-- [x] Authentifizierung (Login, Register, E-Mail-Verifizierung)
-- [x] Liga beitreten via Einladungslink
-- [x] Team-Zuordnung (E-Mail-Match + manuelle Auswahl)
-- [x] Spielplan-Generierung (Round Robin + Gruppen)
-- [x] Ergebnis-Eintragung (Best-of-3)
-- [x] Tabelle mit Punkte-/Satzverhältnis
-- [x] Platzbuchungssystem (Venues, Courts, Slots)
-- [x] Admin-Bereich (Mitglieder, Rollen, Teams)
-- [x] RLS-Policies für alle Tabellen
+The current page has a solid foundation (floating nav, bento grid, scroll reveals, demo embed). Here are high-impact upgrades to push it into truly premium territory:
 
-### Phase 2: Erweiterungen
-- [x] Liga erstellen (3-Schritt-Wizard)
-- [x] Multi-Liga-Architektur (alle Daten per `league_id` isoliert)
-- [x] Liga-spezifische Platzbuchungen
-- [x] Liga löschen
-- [x] Turnierformat nachträglich ändern (Admin)
-- [x] Gruppenzuteilung (manuell + zufällig)
-- [x] Hin- und Rückrunde Toggle
-- [x] Bis zu 8 Gruppen
-- [x] **Dark Mode** — System-Erkennung + manueller Toggle
-- [x] **Interaktive Demo-Liga** — `/demo` mit 8 Teams, 2 Gruppen, Playoffs
+### 1. Animated Hero Mockup (replace static list)
+The hero mockup currently shows a static standings list. Replace it with a **live-updating animation** — rows that shuffle positions, scores that tick up, a playoff badge that appears. This creates immediate "wow" and demonstrates the product without a click.
 
-### Phase 3: Offene Features
-- [ ] Playoffs / Bracket-Ansicht (echte Liga)
-- [ ] Max-Teams-Prüfung im Join-Flow
-- [ ] Push-Notifications für neue Ergebnisse
-- [ ] Realtime-Updates
-- [ ] Statistik-Dashboard mit Charts
-- [ ] PWA-Support
-- [ ] Export-Funktionen (CSV, PDF)
+### 2. Parallax Depth Layers in Hero
+Add subtle `useScroll` + `useTransform` from Framer Motion so the hero headline, badge, and mockup card move at different scroll speeds. The glow blob already there would shift too. Creates a 3D depth illusion Apple frequently uses.
 
-## Architektur
+### 3. Bento Cards with Mini Visual Previews
+Currently bento cards are icon + text only. Add a small **visual preview** inside each card — a mini standings table, a tiny bracket diagram, a calendar grid, a court map. These would be lightweight SVG/div compositions, not images. Makes each card feel like a product screenshot.
 
-### Tech Stack
-- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
-- **UI**: shadcn/ui mit HSL-Farbvariablen
-- **Backend**: Lovable Cloud (PostgreSQL, Auth, Storage)
-- **State**: TanStack React Query für Server-State
+### 4. Marquee Testimonial / Logo Strip
+Add a horizontally scrolling marquee strip (infinite scroll, CSS-only or Framer Motion) between the social proof and bento sections. Could show partner logos, club names, or short testimonial quotes. Adds social proof with motion.
 
-### Design-System
-- Mobile-First, daumen-optimiert
-- Apple-like Clean & Minimalist
-- Konsistente Tokens: `--background`, `--primary`, `--muted`, `--accent`
-- Keine Hex-Codes in Komponenten
+### 5. Sticky Section Transitions
+As the user scrolls from hero to features, use a subtle **background color shift** (e.g., from slightly warm to neutral) via Framer Motion's `useScroll`. Apple's product pages do this — each section has its own atmosphere.
 
-## Nächste Schritte
+### 6. "How it Works" with Connected Timeline
+Replace the 3 separate cards with a **horizontal connected timeline** — a line connecting the 3 steps with animated dots that fill as they scroll into view. More visual storytelling than isolated cards.
 
-### Priorität Hoch
-1. **Playoff-System für echte Ligen** — Aktuell nur in Demo verfügbar
-2. **Max-Teams-Prüfung** — Verhindere Überschreitung bei Join-Flow
+### 7. CTA with Micro-interaction
+The final CTA button could have a subtle **shimmer/pulse animation** on hover — a gradient sweep across the button surface. Draws the eye without being distracting.
 
-### Priorität Mittel
-3. **Statistik-Dashboard** — Charts für Team-Performance
-4. **Push-Notifications** — Neue Ergebnisse, anstehende Spiele
-5. **Export-Funktionen** — CSV-Export für Admins
+### 8. Footer Upgrade
+Add a proper multi-column footer with links (Impressum, Datenschutz, Kontakt), social icons, and the logo. A single copyright line feels unfinished for a premium page.
 
-### Priorität Niedrig
-6. **PWA-Support** — Offline-Fähigkeit
-7. **Liga-übergreifende Profile** — Spieler-Statistiken über alle Ligen
+---
+
+### Recommended Priority (biggest visual impact first)
+
+| # | Enhancement | Effort |
+|---|-------------|--------|
+| 1 | Bento cards with mini visual previews | Medium |
+| 2 | Animated hero mockup (shuffling rows) | Medium |
+| 3 | CTA shimmer button + hover effects | Small |
+| 4 | "How it Works" connected timeline | Small |
+| 5 | Parallax depth in hero | Small |
+| 6 | Marquee strip | Small |
+| 7 | Background color transitions | Small |
+| 8 | Full footer | Small |
+
+### Technical approach
+All changes stay within `Home.tsx` plus potentially one new `AnimatedMockup` component. Uses existing Framer Motion dependency — no new libraries needed. The mini bento previews would be pure Tailwind div compositions (no images).
 
