@@ -2,6 +2,16 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import DemoEmbed from '@/demo/DemoEmbed';
 import { Trophy, CalendarDays, ClipboardEdit, MapPin, Swords, Users, Plus, Send, Play } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+const reveal = {
+  hidden: { opacity: 0, y: 32 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.25, 0.1, 0.25, 1], delay: i * 0.1 },
+  }),
+};
 
 export default function Home() {
   return (
@@ -29,7 +39,6 @@ export default function Home() {
 
       {/* ── HERO ── */}
       <section className="relative flex flex-col items-center justify-center min-h-[90vh] pt-24 pb-16 px-4">
-        {/* Subtle glow behind hero */}
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-accent/10 blur-[120px] pointer-events-none" />
 
         <div className="relative z-10 text-center max-w-3xl mx-auto animate-fade-in">
@@ -65,7 +74,6 @@ export default function Home() {
         {/* Floating mockup preview card */}
         <div className="relative z-10 mt-14 w-full max-w-2xl mx-auto animate-slide-up">
           <div className="rounded-3xl border border-border/50 bg-card shadow-lg overflow-hidden">
-            {/* Fake browser bar */}
             <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 border-b border-border/30">
               <div className="flex gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
@@ -78,7 +86,6 @@ export default function Home() {
                 </div>
               </div>
             </div>
-            {/* Placeholder content mimicking a standings table */}
             <div className="p-4 space-y-2">
               {['Team Alpha', 'Smash Bros', 'Net Ninjas', 'Court Kings'].map((name, i) => (
                 <div key={name} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/40">
@@ -92,7 +99,6 @@ export default function Home() {
               ))}
             </div>
           </div>
-          {/* Glow effect */}
           <div className="absolute -inset-4 rounded-[2rem] bg-accent/5 blur-2xl -z-10 pointer-events-none" />
         </div>
       </section>
@@ -104,11 +110,19 @@ export default function Home() {
             { value: '500+', label: 'Spieler' },
             { value: '50+', label: 'Ligen' },
             { value: '2.000+', label: 'Matches' },
-          ].map((stat) => (
-            <div key={stat.label} className="text-center">
+          ].map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              className="text-center"
+              variants={reveal}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-50px' }}
+              custom={i}
+            >
               <div className="text-3xl sm:text-4xl font-extrabold text-foreground">{stat.value}</div>
               <div className="text-sm text-muted-foreground mt-1">{stat.label}</div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -116,58 +130,75 @@ export default function Home() {
       {/* ── BENTO FEATURE GRID ── */}
       <section className="py-16 px-4">
         <div className="max-w-[991px] mx-auto">
-          <div className="text-center mb-10">
+          <motion.div
+            className="text-center mb-10"
+            variants={reveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            custom={0}
+          >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Alles was du brauchst</h2>
             <p className="text-muted-foreground max-w-md mx-auto">Von der Tabelle bis zur Platzbuchung — eine Plattform für deine komplette Liga.</p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Card 1 — wide */}
-            <div className="sm:col-span-2 rounded-3xl border border-border/50 bg-card p-6 sm:p-8 flex flex-col sm:flex-row items-start gap-6 shadow-sm">
-              <div className="h-14 w-14 rounded-2xl bg-accent/10 flex items-center justify-center shrink-0">
-                <Trophy className="h-7 w-7 text-accent" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-foreground mb-1">Live-Tabelle</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">Punkte, Satzverhältnis und Platzierungen aktualisieren sich sofort nach Ergebniseingabe. Playoff-Qualifikation wird farblich markiert.</p>
-              </div>
-            </div>
-
-            {/* Card 2 */}
-            <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-sm">
-              <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                <CalendarDays className="h-6 w-6 text-primary" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">Spielplan</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">Automatisch generierter Round-Robin-Spielplan mit Hin- & Rückrunde und Gruppenphase.</p>
-            </div>
-
-            {/* Card 3 */}
-            <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-sm">
-              <div className="h-12 w-12 rounded-2xl bg-accent/10 flex items-center justify-center mb-4">
-                <ClipboardEdit className="h-6 w-6 text-accent" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">Ergebnisse</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">Best-of-3 Sätze eintragen — die Tabelle aktualisiert sich automatisch in Echtzeit.</p>
-            </div>
-
-            {/* Card 4 */}
-            <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-sm">
-              <div className="h-12 w-12 rounded-2xl bg-warning/10 flex items-center justify-center mb-4">
-                <MapPin className="h-6 w-6 text-warning" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">Platzbuchung</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">Venues, Courts und Zeitslots verwalten — Teams buchen direkt innerhalb der Liga.</p>
-            </div>
-
-            {/* Card 5 */}
-            <div className="rounded-3xl border border-border/50 bg-card p-6 shadow-sm">
-              <div className="h-12 w-12 rounded-2xl bg-playoff/10 flex items-center justify-center mb-4">
-                <Swords className="h-6 w-6 text-playoff" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground mb-1">Playoffs</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">K.O.-Bracket mit Halbfinale und Finale — automatisch aus der Gruppenphase generiert.</p>
-            </div>
+            {[
+              {
+                wide: true,
+                icon: Trophy,
+                iconBg: 'bg-accent/10',
+                iconColor: 'text-accent',
+                title: 'Live-Tabelle',
+                desc: 'Punkte, Satzverhältnis und Platzierungen aktualisieren sich sofort nach Ergebniseingabe. Playoff-Qualifikation wird farblich markiert.',
+              },
+              {
+                icon: CalendarDays,
+                iconBg: 'bg-primary/10',
+                iconColor: 'text-primary',
+                title: 'Spielplan',
+                desc: 'Automatisch generierter Round-Robin-Spielplan mit Hin- & Rückrunde und Gruppenphase.',
+              },
+              {
+                icon: ClipboardEdit,
+                iconBg: 'bg-accent/10',
+                iconColor: 'text-accent',
+                title: 'Ergebnisse',
+                desc: 'Best-of-3 Sätze eintragen — die Tabelle aktualisiert sich automatisch in Echtzeit.',
+              },
+              {
+                icon: MapPin,
+                iconBg: 'bg-warning/10',
+                iconColor: 'text-warning',
+                title: 'Platzbuchung',
+                desc: 'Venues, Courts und Zeitslots verwalten — Teams buchen direkt innerhalb der Liga.',
+              },
+              {
+                icon: Swords,
+                iconBg: 'bg-playoff/10',
+                iconColor: 'text-playoff',
+                title: 'Playoffs',
+                desc: 'K.O.-Bracket mit Halbfinale und Finale — automatisch aus der Gruppenphase generiert.',
+              },
+            ].map((card, i) => (
+              <motion.div
+                key={card.title}
+                className={`${card.wide ? 'sm:col-span-2 flex flex-col sm:flex-row items-start gap-6 p-6 sm:p-8' : 'p-6'} rounded-3xl border border-border/50 bg-card shadow-sm`}
+                variants={reveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-50px' }}
+                custom={i}
+              >
+                <div className={`${card.wide ? 'h-14 w-14' : 'h-12 w-12 mb-4'} rounded-2xl ${card.iconBg} flex items-center justify-center shrink-0`}>
+                  <card.icon className={`${card.wide ? 'h-7 w-7' : 'h-6 w-6'} ${card.iconColor}`} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-1">{card.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -180,24 +211,39 @@ export default function Home() {
       {/* ── HOW IT WORKS ── */}
       <section className="py-16 px-4">
         <div className="max-w-[991px] mx-auto">
-          <div className="text-center mb-10">
+          <motion.div
+            className="text-center mb-10"
+            variants={reveal}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: '-50px' }}
+            custom={0}
+          >
             <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">So einfach geht's</h2>
             <p className="text-muted-foreground">In drei Schritten zur eigenen Liga.</p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
               { step: '1', icon: Plus, title: 'Liga erstellen', desc: 'Name, Format und Gruppenzahl wählen — fertig in 30 Sekunden.' },
               { step: '2', icon: Send, title: 'Teams einladen', desc: 'Teile den Einladungslink — Spieler treten mit einem Klick bei.' },
               { step: '3', icon: Play, title: 'Spielen & tracken', desc: 'Ergebnisse eintragen, Tabelle verfolgen und Playoffs genießen.' },
-            ].map((item) => (
-              <div key={item.step} className="relative rounded-3xl border border-border/50 bg-card p-6 shadow-sm text-center">
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                className="relative rounded-3xl border border-border/50 bg-card p-6 shadow-sm text-center"
+                variants={reveal}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-50px' }}
+                custom={i}
+              >
                 <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-accent text-accent-foreground text-sm font-bold mb-4">
                   {item.step}
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>
@@ -205,9 +251,15 @@ export default function Home() {
 
       {/* ── FINAL CTA ── */}
       <section className="py-16 px-4">
-        <div className="max-w-[991px] mx-auto">
+        <motion.div
+          className="max-w-[991px] mx-auto"
+          variants={reveal}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          custom={0}
+        >
           <div className="rounded-3xl bg-primary p-10 sm:p-14 text-center shadow-lg relative overflow-hidden">
-            {/* Decorative glow */}
             <div className="absolute top-0 right-0 w-64 h-64 rounded-full bg-accent/20 blur-[100px] pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-48 h-48 rounded-full bg-accent/10 blur-[80px] pointer-events-none" />
 
@@ -226,7 +278,7 @@ export default function Home() {
               </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </section>
 
       {/* ── FOOTER ── */}
