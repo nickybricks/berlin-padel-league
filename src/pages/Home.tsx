@@ -1,8 +1,14 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import DemoEmbed from '@/demo/DemoEmbed';
-import { Trophy, CalendarDays, ClipboardEdit, MapPin, Swords, Users, Plus, Send, Play } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Swords, Users, Play } from 'lucide-react';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import AnimatedHeroMockup from '@/components/landing/AnimatedHeroMockup';
+import BentoGrid from '@/components/landing/BentoGrid';
+import MarqueeStrip from '@/components/landing/MarqueeStrip';
+import HowItWorks from '@/components/landing/HowItWorks';
+import LandingFooter from '@/components/landing/LandingFooter';
 
 const reveal = {
   hidden: { opacity: 0, y: 40 },
@@ -14,6 +20,17 @@ const reveal = {
 };
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, -60]);
+  const mockupY = useTransform(scrollYProgress, [0, 1], [0, 40]);
+  const glowScale = useTransform(scrollYProgress, [0, 1], [1, 1.4]);
+  const glowOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col overflow-x-hidden">
       {/* ── Floating Nav Island ── */}
@@ -37,26 +54,32 @@ export default function Home() {
         </div>
       </header>
 
-      {/* ── HERO ── */}
-      <section className="relative flex flex-col items-center justify-center min-h-[90vh] pt-24 pb-16 px-4">
-        <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-accent/10 blur-[120px] pointer-events-none" />
+      {/* ── HERO with Parallax ── */}
+      <section ref={heroRef} className="relative flex flex-col items-center justify-center min-h-[90vh] pt-24 pb-16 px-4">
+        <motion.div
+          className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[400px] rounded-full bg-accent/10 blur-[120px] pointer-events-none"
+          style={{ scale: glowScale, opacity: glowOpacity }}
+        />
 
-        <div className="relative z-10 text-center max-w-3xl mx-auto animate-fade-in">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-xs font-semibold tracking-wide mb-6">
+        <motion.div
+          className="relative z-10 text-center max-w-3xl mx-auto"
+          style={{ y: heroY }}
+        >
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 text-accent text-xs font-semibold tracking-wide mb-6 animate-fade-in">
             <Swords className="h-3.5 w-3.5" />
             Freizeit-Liga Management
           </div>
 
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-5">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-foreground leading-[1.05] mb-5 animate-fade-in">
             Deine Liga.{' '}
             <span className="gradient-text">Dein Spiel.</span>
           </h1>
 
-          <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed">
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-xl mx-auto mb-8 leading-relaxed animate-fade-in">
             Erstelle und verwalte deine Padel-Liga in Sekunden — Tabellen, Spielpläne, Ergebnisse und Platzbuchungen an einem Ort.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 animate-fade-in">
             <Link to="/register">
               <Button size="lg" className="rounded-full px-8 text-base h-12 shadow-md hover:shadow-lg transition-shadow">
                 Kostenlos starten
@@ -69,38 +92,12 @@ export default function Home() {
               </Button>
             </Link>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Floating mockup preview card */}
-        <div className="relative z-10 mt-14 w-full max-w-2xl mx-auto animate-slide-up">
-          <div className="rounded-3xl border border-border/50 bg-card shadow-lg overflow-hidden">
-            <div className="flex items-center gap-2 px-4 py-2 bg-muted/50 border-b border-border/30">
-              <div className="flex gap-1.5">
-                <div className="h-2.5 w-2.5 rounded-full bg-destructive/50" />
-                <div className="h-2.5 w-2.5 rounded-full bg-warning/50" />
-                <div className="h-2.5 w-2.5 rounded-full bg-accent/50" />
-              </div>
-              <div className="flex-1 flex justify-center">
-                <div className="bg-background rounded-md px-4 py-0.5 text-[10px] text-muted-foreground font-mono">
-                  app.padelleagues.de
-                </div>
-              </div>
-            </div>
-            <div className="p-4 space-y-2">
-              {['Team Alpha', 'Smash Bros', 'Net Ninjas', 'Court Kings'].map((name, i) => (
-                <div key={name} className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-muted/40">
-                  <span className="text-xs font-bold text-muted-foreground w-5 text-center">{i + 1}</span>
-                  <div className="h-7 w-7 rounded-full bg-accent/20 flex items-center justify-center text-[10px] font-bold text-accent">
-                    {name[0]}
-                  </div>
-                  <span className="text-sm font-medium text-foreground flex-1">{name}</span>
-                  <span className="text-xs font-semibold text-accent">{12 - i * 2} Pkt</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="absolute -inset-4 rounded-[2rem] bg-accent/5 blur-2xl -z-10 pointer-events-none" />
-        </div>
+        {/* Animated mockup with parallax */}
+        <motion.div style={{ y: mockupY }}>
+          <AnimatedHeroMockup />
+        </motion.div>
       </section>
 
       {/* ── SOCIAL PROOF BAR ── */}
@@ -127,81 +124,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── BENTO FEATURE GRID ── */}
-      <section className="py-16 px-4">
-        <div className="max-w-[991px] mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            variants={reveal}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            custom={0}
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">Alles was du brauchst</h2>
-            <p className="text-muted-foreground max-w-md mx-auto">Von der Tabelle bis zur Platzbuchung — eine Plattform für deine komplette Liga.</p>
-          </motion.div>
+      {/* ── MARQUEE STRIP ── */}
+      <MarqueeStrip />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              {
-                wide: true,
-                icon: Trophy,
-                iconBg: 'bg-accent/10',
-                iconColor: 'text-accent',
-                title: 'Live-Tabelle',
-                desc: 'Punkte, Satzverhältnis und Platzierungen aktualisieren sich sofort nach Ergebniseingabe. Playoff-Qualifikation wird farblich markiert.',
-              },
-              {
-                icon: CalendarDays,
-                iconBg: 'bg-primary/10',
-                iconColor: 'text-primary',
-                title: 'Spielplan',
-                desc: 'Automatisch generierter Round-Robin-Spielplan mit Hin- & Rückrunde und Gruppenphase.',
-              },
-              {
-                icon: ClipboardEdit,
-                iconBg: 'bg-accent/10',
-                iconColor: 'text-accent',
-                title: 'Ergebnisse',
-                desc: 'Best-of-3 Sätze eintragen — die Tabelle aktualisiert sich automatisch in Echtzeit.',
-              },
-              {
-                icon: MapPin,
-                iconBg: 'bg-warning/10',
-                iconColor: 'text-warning',
-                title: 'Platzbuchung',
-                desc: 'Venues, Courts und Zeitslots verwalten — Teams buchen direkt innerhalb der Liga.',
-              },
-              {
-                icon: Swords,
-                iconBg: 'bg-playoff/10',
-                iconColor: 'text-playoff',
-                title: 'Playoffs',
-                desc: 'K.O.-Bracket mit Halbfinale und Finale — automatisch aus der Gruppenphase generiert.',
-              },
-            ].map((card, i) => (
-              <motion.div
-                key={card.title}
-                className={`${card.wide ? 'sm:col-span-2 flex flex-col sm:flex-row items-start gap-6 p-6 sm:p-8' : 'p-6'} rounded-3xl border border-border/50 bg-card shadow-sm`}
-                variants={reveal}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-50px' }}
-                custom={i}
-              >
-                <div className={`${card.wide ? 'h-14 w-14' : 'h-12 w-12 mb-4'} rounded-2xl ${card.iconBg} flex items-center justify-center shrink-0`}>
-                  <card.icon className={`${card.wide ? 'h-7 w-7' : 'h-6 w-6'} ${card.iconColor}`} />
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-foreground mb-1">{card.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{card.desc}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* ── BENTO FEATURE GRID ── */}
+      <BentoGrid />
 
       {/* ── INTERACTIVE DEMO ── */}
       <main>
@@ -209,45 +136,7 @@ export default function Home() {
       </main>
 
       {/* ── HOW IT WORKS ── */}
-      <section className="py-16 px-4">
-        <div className="max-w-[991px] mx-auto">
-          <motion.div
-            className="text-center mb-10"
-            variants={reveal}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-50px' }}
-            custom={0}
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-3">So einfach geht's</h2>
-            <p className="text-muted-foreground">In drei Schritten zur eigenen Liga.</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {[
-              { step: '1', icon: Plus, title: 'Liga erstellen', desc: 'Name, Format und Gruppenzahl wählen — fertig in 30 Sekunden.' },
-              { step: '2', icon: Send, title: 'Teams einladen', desc: 'Teile den Einladungslink — Spieler treten mit einem Klick bei.' },
-              { step: '3', icon: Play, title: 'Spielen & tracken', desc: 'Ergebnisse eintragen, Tabelle verfolgen und Playoffs genießen.' },
-            ].map((item, i) => (
-              <motion.div
-                key={item.step}
-                className="relative rounded-3xl border border-border/50 bg-card p-6 shadow-sm text-center"
-                variants={reveal}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true, margin: '-50px' }}
-                custom={i}
-              >
-                <div className="inline-flex items-center justify-center h-10 w-10 rounded-full bg-accent text-accent-foreground text-sm font-bold mb-4">
-                  {item.step}
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">{item.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* ── FINAL CTA ── */}
       <section className="py-16 px-4">
@@ -272,8 +161,13 @@ export default function Home() {
                 Kostenlos registrieren, Liga erstellen und dein erstes Match planen — in unter einer Minute.
               </p>
               <Link to="/register">
-                <Button size="lg" className="rounded-full px-10 h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 shadow-md">
-                  Jetzt registrieren
+                <Button
+                  size="lg"
+                  className="rounded-full px-10 h-12 text-base bg-accent text-accent-foreground hover:bg-accent/90 shadow-md relative overflow-hidden group"
+                >
+                  <span className="relative z-10">Jetzt registrieren</span>
+                  {/* Shimmer effect */}
+                  <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                 </Button>
               </Link>
             </div>
@@ -282,11 +176,7 @@ export default function Home() {
       </section>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-border/40 py-6">
-        <div className="max-w-[991px] mx-auto px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Padel Freizeit-Liga
-        </div>
-      </footer>
+      <LandingFooter />
     </div>
   );
 }
