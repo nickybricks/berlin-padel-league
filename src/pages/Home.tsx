@@ -168,13 +168,7 @@ export default function Home() {
         </motion.div>
 
         {/* Animated mockup with zoom-out reveal */}
-        <motion.div
-          style={{
-            scale: mockupScale,
-            filter: useTransform(mockupBlur, (v) => `blur(${v}px)`),
-            opacity: mockupOpacity,
-          }}
-        >
+        <motion.div style={{ y: mockupY }}>
           <AnimatedHeroMockup />
         </motion.div>
       </section>
