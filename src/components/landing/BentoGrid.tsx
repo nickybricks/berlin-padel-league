@@ -207,6 +207,8 @@ export default function BentoGrid() {
               whileInView="visible"
               viewport={{ once: true, margin: '-50px' }}
               custom={i}
+              whileHover={{ scale: 1.02, boxShadow: '0 0 20px hsl(160 70% 40% / 0.15)' }}
+              transition={{ type: 'spring', stiffness: 300, damping: 20 }}
             >
               <div>
                 <div
