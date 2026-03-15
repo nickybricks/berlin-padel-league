@@ -65,11 +65,7 @@ export default function Home() {
   // Parallax
   const heroY = useTransform(scrollYProgress, [0, 1], [0, -60]);
 
-  // Zoom-out reveal for mockup
-  const mockupScale = useTransform(scrollYProgress, [0, 0.5], [1.15, 1]);
-  const mockupBlur = useTransform(scrollYProgress, [0, 0.35], [4, 0]);
-  const mockupOpacity = useTransform(scrollYProgress, [0, 0.2], [0.7, 1]);
-
+  const mockupY = useTransform(scrollYProgress, [0, 1], [0, 40]);
   // Gradient mesh animation (glow blobs)
   const glowOpacity = useTransform(scrollYProgress, [0, 1], [1, 0]);
 
@@ -172,13 +168,7 @@ export default function Home() {
         </motion.div>
 
         {/* Animated mockup with zoom-out reveal */}
-        <motion.div
-          style={{
-            scale: mockupScale,
-            filter: useTransform(mockupBlur, (v) => `blur(${v}px)`),
-            opacity: mockupOpacity,
-          }}
-        >
+        <motion.div style={{ y: mockupY }}>
           <AnimatedHeroMockup />
         </motion.div>
       </section>
