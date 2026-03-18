@@ -269,55 +269,6 @@
   .stagger-3 { animation-delay: 150ms; }
   .stagger-4 { animation-delay: 200ms; }
   .stagger-5 { animation-delay: 250ms; }
-
-  /* Gradient mesh blobs */
-  .gradient-blob {
-    @apply absolute rounded-full pointer-events-none;
-    filter: blur(120px);
-    will-change: transform;
-  }
-
-  .gradient-blob-1 {
-    width: 500px;
-    height: 400px;
-    top: 10%;
-    left: 20%;
-    background: hsl(var(--accent) / 0.12);
-    animation: blobDrift1 12s ease-in-out infinite alternate;
-  }
-
-  .gradient-blob-2 {
-    width: 400px;
-    height: 350px;
-    top: 30%;
-    right: 15%;
-    background: hsl(var(--primary) / 0.08);
-    animation: blobDrift2 14s ease-in-out infinite alternate;
-  }
-
-  .gradient-blob-3 {
-    width: 300px;
-    height: 300px;
-    bottom: 15%;
-    left: 40%;
-    background: hsl(var(--accent) / 0.08);
-    animation: blobDrift3 10s ease-in-out infinite alternate;
-  }
-
-  @keyframes blobDrift1 {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(60px, -40px) scale(1.15); }
-  }
-
-  @keyframes blobDrift2 {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(-50px, 30px) scale(1.1); }
-  }
-
-  @keyframes blobDrift3 {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(40px, -20px) scale(1.2); }
-  }
 }
 
 /* ── Print / PDF Export ── */
