@@ -99,17 +99,7 @@ export default function TeamPage() {
               size="lg"
             />
           ) : (
-            <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-xl bg-muted overflow-hidden">
-              {logoUrl ? (
-                <img
-                  src={logoUrl}
-                  alt={`${team.name} Logo`}
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <Users className="h-12 w-12 text-muted-foreground" />
-              )}
-            </div>
+            <TeamLogoLightbox logoUrl={logoUrl} teamName={team.name} />
           )}
 
           {/* Team Info */}
