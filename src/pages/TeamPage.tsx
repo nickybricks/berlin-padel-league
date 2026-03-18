@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { MatchResult } from '@/types/database';
 import { TeamLogoUpload } from '@/components/teams/TeamLogoUpload';
 import { TeamEditDialog } from '@/components/teams/TeamEditDialog';
+import { TeamLogoLightbox } from '@/components/teams/TeamLogoLightbox';
 
 export default function TeamPage() {
   const { leagueId, teamId } = useParams<{ leagueId: string; teamId: string }>();
