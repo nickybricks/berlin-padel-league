@@ -112,11 +112,9 @@ export function Header({ leagueId }: HeaderProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Link to="/login">
-          <Button variant="default" size="sm" className="rounded-full">
-            Anmelden
-          </Button>
-        </Link>
+        <Button variant="default" size="sm" className="rounded-full" onClick={() => setLoginOpen(true)}>
+          Anmelden
+        </Button>
       )}
     </>
   );
