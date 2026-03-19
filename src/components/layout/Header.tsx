@@ -68,6 +68,7 @@ export function Header({ leagueId }: HeaderProps) {
     { label: 'Teams', path: `/league/${leagueId}/teams` },
     { label: 'Spielplan', path: `/league/${leagueId}/schedule` },
     { label: 'Platzbuchungen', path: `/league/${leagueId}/bookings` },
+    { label: 'Plätze finden', path: `/league/${leagueId}/playtomic` },
     { label: 'Playoffs', path: `/league/${leagueId}/playoffs` },
     { label: 'Ergebnis eintragen', path: `/league/${leagueId}/enter-result`, requiresAuth: true },
     { label: 'Admin', path: `/league/${leagueId}/admin`, requiresAdmin: true },

@@ -144,6 +144,9 @@ export default function LeagueAdmin() {
         />
       )}
 
+      {/* Playtomic Venues */}
+      <AdminPlaytomicVenues leagueId={leagueId} />
+
       {/* Header */}
       <div>
         <h2 className="text-xl font-bold flex items-center gap-2">

@@ -57,6 +57,7 @@ const App = () => (
             <Route path="bookings" element={<Bookings />} />
             <Route path="playoffs" element={<Playoffs />} />
             <Route path="enter-result" element={<EnterResult />} />
+            <Route path="playtomic" element={<PlaytomicSearch />} />
             <Route path="admin" element={<LeagueAdmin />} />
           </Route>
 
