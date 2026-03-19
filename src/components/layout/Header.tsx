@@ -215,6 +215,8 @@ export function Header({ leagueId }: HeaderProps) {
           </div>
         </nav>
       )}
+
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </header>
   );
 }
