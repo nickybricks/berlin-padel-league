@@ -20,17 +20,28 @@ Deno.serve(async (req) => {
 
     const url = `https://api.playtomic.io/v1/availability?sport_id=PADEL&tenant_id=${encodeURIComponent(tenant_id)}&start_min=${date}T00:00:00&start_max=${date}T23:59:59`;
 
+    console.log('Fetching Playtomic URL:', url);
+
     const response = await fetch(url, {
-      headers: { 'Accept': 'application/json' },
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'com.playtomic.app 6.13.0',
+        'User-Agent': 'iOS 18.3.1',
+      },
     });
 
     const data = await response.text();
+    
+    console.log('Playtomic response status:', response.status);
+    console.log('Playtomic response body preview:', data.substring(0, 300));
 
     return new Response(data, {
       status: response.status,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    console.error('Edge function error:', error.message);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
