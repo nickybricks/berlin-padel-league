@@ -67,7 +67,10 @@ export function StandingsTable({ standings, loading, formatType, groupCount, pla
                   </div>
                 </td>
                 <td className="py-3 sm:py-4">
-                  <div className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-muted overflow-hidden">
+                  <Link
+                    to={leagueId ? `/league/${leagueId}/teams/${standing.team.id}` : `/teams/${standing.team.id}`}
+                    className="flex h-6 w-6 sm:h-8 sm:w-8 items-center justify-center rounded-md bg-muted overflow-hidden"
+                  >
                     {logoUrl ? (
                       <img
                         src={logoUrl}
@@ -77,7 +80,7 @@ export function StandingsTable({ standings, loading, formatType, groupCount, pla
                     ) : (
                       <Users className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                     )}
-                  </div>
+                  </Link>
                 </td>
                 <td className="py-3 sm:py-4">
                   <Link 
