@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Mail, Clock, X, Loader2, Info, Check } from 'lucide-react';
+import { Mail, Clock, X, Loader2, Info, Check, Send } from 'lucide-react';
 import { useBookingExportSettings, useUpdateBookingExportSettings } from '@/hooks/useBookingExportSettings';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export function AutoExportSettings() {
   const { data: settings, isLoading } = useBookingExportSettings();
