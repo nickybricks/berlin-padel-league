@@ -141,7 +141,7 @@ export default function TeamPage() {
                         {team.player1_email}
                       </a>
                     )}
-                    {authState.user && team.player1_phone && (
+                    {user && team.player1_phone && (
                       <a
                         href={`tel:${team.player1_phone}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
