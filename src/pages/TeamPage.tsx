@@ -132,7 +132,7 @@ export default function TeamPage() {
                       <span className="font-medium">{team.player1_name}</span>
                       <Badge variant="secondary" className="text-xs">Spieler 1</Badge>
                     </div>
-                    {authState.user && team.player1_email && (
+                    {user && team.player1_email && (
                       <a
                         href={`mailto:${team.player1_email}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
