@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Phone, Users, Crown } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface TeamDetailProps {
   team: Team | null;
