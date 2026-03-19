@@ -23,7 +23,6 @@ import Bookings from "./pages/Bookings";
 import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
 import LeagueAdmin from "./pages/LeagueAdmin";
-import PlaytomicSearch from "./pages/PlaytomicSearch";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
 
@@ -57,7 +56,6 @@ const App = () => (
             <Route path="bookings" element={<Bookings />} />
             <Route path="playoffs" element={<Playoffs />} />
             <Route path="enter-result" element={<EnterResult />} />
-            <Route path="playtomic" element={<PlaytomicSearch />} />
             <Route path="admin" element={<LeagueAdmin />} />
           </Route>
 

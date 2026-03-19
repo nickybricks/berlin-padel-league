@@ -390,47 +390,6 @@ export type Database = {
           },
         ]
       }
-      playtomic_venues: {
-        Row: {
-          city: string | null
-          country: string | null
-          created_at: string | null
-          id: string
-          league_id: string
-          name: string
-          playtomic_url: string | null
-          tenant_id: string
-        }
-        Insert: {
-          city?: string | null
-          country?: string | null
-          created_at?: string | null
-          id?: string
-          league_id: string
-          name: string
-          playtomic_url?: string | null
-          tenant_id: string
-        }
-        Update: {
-          city?: string | null
-          country?: string | null
-          created_at?: string | null
-          id?: string
-          league_id?: string
-          name?: string
-          playtomic_url?: string | null
-          tenant_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "playtomic_venues_league_id_fkey"
-            columns: ["league_id"]
-            isOneToOne: false
-            referencedRelation: "leagues"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           created_at: string
