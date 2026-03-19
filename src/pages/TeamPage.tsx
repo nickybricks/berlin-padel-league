@@ -162,7 +162,7 @@ export default function TeamPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="font-medium">{team.player2_name}</span>
-                    {authState.user && team.player2_email && (
+                    {user && team.player2_email && (
                       <a
                         href={`mailto:${team.player2_email}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
