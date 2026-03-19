@@ -214,3 +214,13 @@
   - Speichert Präferenz in `localStorage`
   - iOS/Android Dark Mode wird automatisch erkannt
 - Demo-Liga in Plan.md dokumentiert
+
+### 2026-03-19
+**Erledigt:**
+- **Team-Logo Lightbox** — `TeamLogoLightbox` Komponente (`src/components/teams/TeamLogoLightbox.tsx`)
+  - Klick auf Team-Logo öffnet Vollbild-Overlay mit sanfter Zoom-Animation (`animate-in zoom-in-90`)
+  - Backdrop-Blur + 60% Schwarz-Overlay
+  - Schließen per Klick auf Bild oder Hintergrund
+  - Desktop: zentriert, max `md`/`lg` Breite; Mobile: 90vw / 80vh
+  - Integriert auf `TeamPage.tsx`
+- **Standings-Tabelle: Logo klickbar** — Logo in der Tabelle ist jetzt ein `<Link>` zur Team-Detailseite (gleich wie Teamname)
