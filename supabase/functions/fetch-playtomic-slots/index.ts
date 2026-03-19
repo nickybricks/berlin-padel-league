@@ -23,7 +23,12 @@ Deno.serve(async (req) => {
     console.log('Fetching Playtomic URL:', url);
 
     const response = await fetch(url, {
-      headers: { 'Accept': 'application/json' },
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'X-Requested-With': 'com.playtomic.app 6.13.0',
+        'User-Agent': 'iOS 18.3.1',
+      },
     });
 
     const data = await response.text();
