@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Phone, Users, Crown } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 interface TeamDetailProps {
   team: Team | null;
@@ -15,6 +16,7 @@ interface TeamDetailProps {
 }
 
 export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
+  const { user } = useAuth();
   if (!team) return null;
 
   const logoUrl = team.logo_url 
@@ -69,7 +71,7 @@ export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
                     <span className="font-medium">{team.player1_name}</span>
                     <Badge variant="secondary" className="text-xs">Spieler 1</Badge>
                   </div>
-                  {team.player1_phone && (
+                    {user && team.player1_phone && (
                     <a 
                       href={`tel:${team.player1_phone}`}
                       className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
@@ -90,7 +92,7 @@ export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="font-medium">{team.player2_name}</span>
-                  {team.player2_phone && (
+                    {user && team.player2_phone && (
                     <a 
                       href={`tel:${team.player2_phone}`}
                       className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"

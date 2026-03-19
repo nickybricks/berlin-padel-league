@@ -15,7 +15,7 @@ import { TeamLogoLightbox } from '@/components/teams/TeamLogoLightbox';
 
 export default function TeamPage() {
   const { leagueId, teamId } = useParams<{ leagueId: string; teamId: string }>();
-  const { isAdmin, teamId: userTeamId } = useAuth();
+  const { isAdmin, teamId: userTeamId, user } = useAuth();
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
@@ -132,7 +132,7 @@ export default function TeamPage() {
                       <span className="font-medium">{team.player1_name}</span>
                       <Badge variant="secondary" className="text-xs">Spieler 1</Badge>
                     </div>
-                    {team.player1_email && (
+                    {user && team.player1_email && (
                       <a
                         href={`mailto:${team.player1_email}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
@@ -141,7 +141,7 @@ export default function TeamPage() {
                         {team.player1_email}
                       </a>
                     )}
-                    {team.player1_phone && (
+                    {user && team.player1_phone && (
                       <a
                         href={`tel:${team.player1_phone}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
@@ -162,7 +162,7 @@ export default function TeamPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <span className="font-medium">{team.player2_name}</span>
-                    {team.player2_email && (
+                    {user && team.player2_email && (
                       <a
                         href={`mailto:${team.player2_email}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
@@ -171,7 +171,7 @@ export default function TeamPage() {
                         {team.player2_email}
                       </a>
                     )}
-                    {team.player2_phone && (
+                    {user && team.player2_phone && (
                       <a
                         href={`tel:${team.player2_phone}`}
                         className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
