@@ -23,6 +23,7 @@ import Bookings from "./pages/Bookings";
 import Playoffs from "./pages/Playoffs";
 import EnterResult from "./pages/EnterResult";
 import LeagueAdmin from "./pages/LeagueAdmin";
+import PlaytomicSearch from "./pages/PlaytomicSearch";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
 
