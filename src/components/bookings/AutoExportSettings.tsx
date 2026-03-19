@@ -197,6 +197,21 @@ export function AutoExportSettings() {
         <span>Nächster Export: Freitag 00:05 Uhr</span>
       </div>
 
+      {/* Manual Send Button */}
+      <Button 
+        variant="outline"
+        onClick={handleManualSend} 
+        disabled={isSending || emails.length === 0 || !isActive}
+        className="w-full"
+      >
+        {isSending ? (
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+        ) : (
+          <Send className="h-4 w-4 mr-2" />
+        )}
+        Jetzt manuell versenden
+      </Button>
+
       {/* Save Button */}
       {hasChanges && (
         <Button 
