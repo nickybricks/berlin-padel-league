@@ -19,6 +19,41 @@ export function AutoExportSettings() {
   const [emails, setEmails] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  const handleManualSend = async () => {
+    if (emails.length === 0) {
+      toast({ title: 'Keine Empfänger konfiguriert', variant: 'destructive' });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-booking-export');
+      if (error) throw error;
+      
+      if (data?.success) {
+        toast({ 
+          title: 'Export versendet', 
+          description: data.message 
+        });
+      } else {
+        toast({ 
+          title: 'Export nicht gesendet', 
+          description: data?.message || 'Unbekannter Fehler',
+          variant: 'destructive' 
+        });
+      }
+    } catch (error: any) {
+      toast({ 
+        title: 'Fehler beim Versenden', 
+        description: error.message,
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   // Initialize from fetched settings
   useEffect(() => {
