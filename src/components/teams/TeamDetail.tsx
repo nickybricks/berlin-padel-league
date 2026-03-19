@@ -16,6 +16,7 @@ interface TeamDetailProps {
 }
 
 export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
+  const { user } = useAuth();
   if (!team) return null;
 
   const logoUrl = team.logo_url 
