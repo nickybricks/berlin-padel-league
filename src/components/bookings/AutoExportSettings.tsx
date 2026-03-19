@@ -6,9 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Mail, Clock, X, Loader2, Info, Check } from 'lucide-react';
+import { Mail, Clock, X, Loader2, Info, Check, Send } from 'lucide-react';
 import { useBookingExportSettings, useUpdateBookingExportSettings } from '@/hooks/useBookingExportSettings';
 import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export function AutoExportSettings() {
   const { data: settings, isLoading } = useBookingExportSettings();
@@ -18,6 +19,41 @@ export function AutoExportSettings() {
   const [emails, setEmails] = useState<string[]>([]);
   const [newEmail, setNewEmail] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
+  const [isSending, setIsSending] = useState(false);
+
+  const handleManualSend = async () => {
+    if (emails.length === 0) {
+      toast({ title: 'Keine Empfänger konfiguriert', variant: 'destructive' });
+      return;
+    }
+
+    setIsSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-booking-export');
+      if (error) throw error;
+      
+      if (data?.success) {
+        toast({ 
+          title: 'Export versendet', 
+          description: data.message 
+        });
+      } else {
+        toast({ 
+          title: 'Export nicht gesendet', 
+          description: data?.message || 'Unbekannter Fehler',
+          variant: 'destructive' 
+        });
+      }
+    } catch (error: any) {
+      toast({ 
+        title: 'Fehler beim Versenden', 
+        description: error.message,
+        variant: 'destructive' 
+      });
+    } finally {
+      setIsSending(false);
+    }
+  };
 
   // Initialize from fetched settings
   useEffect(() => {
@@ -160,6 +196,21 @@ export function AutoExportSettings() {
         <Clock className="h-4 w-4" />
         <span>Nächster Export: Freitag 00:05 Uhr</span>
       </div>
+
+      {/* Manual Send Button */}
+      <Button 
+        variant="outline"
+        onClick={handleManualSend} 
+        disabled={isSending || emails.length === 0 || !isActive}
+        className="w-full"
+      >
+        {isSending ? (
+          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+        ) : (
+          <Send className="h-4 w-4 mr-2" />
+        )}
+        Jetzt manuell versenden
+      </Button>
 
       {/* Save Button */}
       {hasChanges && (
