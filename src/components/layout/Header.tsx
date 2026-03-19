@@ -4,6 +4,7 @@ import { Trophy, User, LogOut } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 import { useLeagueById } from '@/hooks/useLeagues';
 import {
   DropdownMenu,
@@ -20,6 +21,7 @@ const getScrollState = () => typeof window !== 'undefined' && window.scrollY > 1
 
 export function Header({ leagueId }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(getScrollState);
+  const [loginOpen, setLoginOpen] = useState(false);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
   const { data: league } = useLeagueById(leagueId);
@@ -110,11 +112,9 @@ export function Header({ leagueId }: HeaderProps) {
           </DropdownMenuContent>
         </DropdownMenu>
       ) : (
-        <Link to="/login">
-          <Button variant="default" size="sm" className="rounded-full">
-            Anmelden
-          </Button>
-        </Link>
+        <Button variant="default" size="sm" className="rounded-full" onClick={() => setLoginOpen(true)}>
+          Anmelden
+        </Button>
       )}
     </>
   );
@@ -215,6 +215,8 @@ export function Header({ leagueId }: HeaderProps) {
           </div>
         </nav>
       )}
+
+      <LoginDialog open={loginOpen} onOpenChange={setLoginOpen} />
     </header>
   );
 }
