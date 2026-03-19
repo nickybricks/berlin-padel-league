@@ -92,7 +92,7 @@ export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <span className="font-medium">{team.player2_name}</span>
-                  {team.player2_phone && (
+                    {user && team.player2_phone && (
                     <a 
                       href={`tel:${team.player2_phone}`}
                       className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
