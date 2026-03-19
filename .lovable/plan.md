@@ -1,104 +1,68 @@
+# Plan: Berlin Padel Liga
 
+## Zusammenfassung
+Eine vollständige Padel-Liga-Verwaltung mit Multi-Liga-Architektur, Team-Verwaltung, Spielplan-Generierung, Ergebniseingabe, Tabellenberechnung, Platzbuchungssystem und interaktiver Demo.
 
-# Playtomic Integration Plan
+## ✅ Implementierte Features
 
-## Overview
-Add a Playtomic court availability feature: admins configure Playtomic venues, an edge function proxies the API, and a new page shows available slots with filters. Users book via external Playtomic link.
+### Phase 1: MVP
+- [x] Authentifizierung (Login, Register, E-Mail-Verifizierung)
+- [x] Liga beitreten via Einladungslink
+- [x] Team-Zuordnung (E-Mail-Match + manuelle Auswahl)
+- [x] Spielplan-Generierung (Round Robin + Gruppen)
+- [x] Ergebnis-Eintragung (Best-of-3)
+- [x] Tabelle mit Punkte-/Satzverhältnis
+- [x] Platzbuchungssystem (Venues, Courts, Slots)
+- [x] Admin-Bereich (Mitglieder, Rollen, Teams)
+- [x] RLS-Policies für alle Tabellen
 
-## Step 1: Database table `playtomic_venues`
+### Phase 2: Erweiterungen
+- [x] Liga erstellen (3-Schritt-Wizard)
+- [x] Multi-Liga-Architektur (alle Daten per `league_id` isoliert)
+- [x] Liga-spezifische Platzbuchungen
+- [x] Liga löschen
+- [x] Turnierformat nachträglich ändern (Admin)
+- [x] Gruppenzuteilung (manuell + zufällig)
+- [x] Hin- und Rückrunde Toggle
+- [x] Bis zu 8 Gruppen
+- [x] **Dark Mode** — System-Erkennung + manueller Toggle
+- [x] **Interaktive Demo-Liga** — `/demo` mit 8 Teams, 2 Gruppen, Playoffs
 
-Create migration:
-```sql
-CREATE TABLE playtomic_venues (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  league_id UUID NOT NULL REFERENCES leagues(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
-  tenant_id TEXT NOT NULL,
-  city TEXT DEFAULT 'Berlin',
-  country TEXT DEFAULT 'Deutschland',
-  playtomic_url TEXT,
-  created_at TIMESTAMPTZ DEFAULT now()
-);
+### Phase 3: Offene Features
+- [ ] Playoffs / Bracket-Ansicht (echte Liga)
+- [ ] Max-Teams-Prüfung im Join-Flow
+- [ ] Push-Notifications für neue Ergebnisse
+- [ ] Realtime-Updates
+- [ ] Statistik-Dashboard mit Charts
+- [ ] PWA-Support
+- [ ] Export-Funktionen (CSV, PDF)
 
-ALTER TABLE playtomic_venues ENABLE ROW LEVEL SECURITY;
+## Architektur
 
--- Read: league members
-CREATE POLICY "League members can view playtomic venues"
-  ON playtomic_venues FOR SELECT TO authenticated
-  USING (is_league_member(auth.uid(), league_id));
+### Tech Stack
+- **Frontend**: React 18 + TypeScript + Vite + Tailwind CSS
+- **UI**: shadcn/ui mit HSL-Farbvariablen
+- **Backend**: Lovable Cloud (PostgreSQL, Auth, Storage)
+- **State**: TanStack React Query für Server-State
 
--- Write: league admins only
-CREATE POLICY "League admins can insert playtomic venues"
-  ON playtomic_venues FOR INSERT TO authenticated
-  WITH CHECK (is_league_admin(auth.uid(), league_id));
+### Design-System
+- Mobile-First, daumen-optimiert
+- Apple-like Clean & Minimalist
+- Konsistente Tokens: `--background`, `--primary`, `--muted`, `--accent`
+- Keine Hex-Codes in Komponenten
 
-CREATE POLICY "League admins can update playtomic venues"
-  ON playtomic_venues FOR UPDATE TO authenticated
-  USING (is_league_admin(auth.uid(), league_id));
+## Nächste Schritte
 
-CREATE POLICY "League admins can delete playtomic venues"
-  ON playtomic_venues FOR DELETE TO authenticated
-  USING (is_league_admin(auth.uid(), league_id));
-```
+### Priorität Hoch
+1. **Playoff-System für echte Ligen** — Aktuell nur in Demo verfügbar
+2. **Max-Teams-Prüfung** — Verhindere Überschreitung bei Join-Flow
 
-## Step 2: Admin UI for Playtomic Venues
+### Priorität Mittel
+3. **Statistik-Dashboard** — Charts für Team-Performance
+4. **Push-Notifications** — Neue Ergebnisse, anstehende Spiele
+5. **Export-Funktionen** — CSV-Export für Admins
 
-Create `src/components/playtomic/AdminPlaytomicVenues.tsx` -- CRUD component modeled after `AdminVenueManager.tsx`:
-- List of configured Playtomic venues (name, tenant_id, city, URL)
-- Add/Edit dialog with fields: Name, Tenant-ID, Stadt, Land, Playtomic-URL
-- Delete with confirmation
-
-Create `src/hooks/usePlaytomicVenues.ts` -- TanStack Query hooks for the `playtomic_venues` table.
-
-Add the component to `LeagueAdmin.tsx` below the existing settings cards.
-
-## Step 3: Edge Function `fetch-playtomic-slots`
-
-Create `supabase/functions/fetch-playtomic-slots/index.ts`:
-- CORS headers as required
-- Accept POST with `{ tenant_id, date }`
-- Fetch `GET https://api.playtomic.io/v1/availability?sport_id=PADEL&tenant_id={tenant_id}&start_min={date}T00:00:00&start_max={date}T23:59:59`
-- Return the JSON response directly
-- Add `verify_jwt = false` to `config.toml`
-
-## Step 4: New Page `/league/:id/playtomic`
-
-Create `src/pages/PlaytomicSearch.tsx`:
-
-**Filter bar (top):**
-- Club dropdown (from `playtomic_venues` of the league)
-- Date picker (default: today, max 14 days ahead) using shadcn Calendar in Popover
-- Optional time range filter (von/bis inputs)
-
-**Results area:**
-- Call edge function when club + date selected
-- Display slots as shadcn Cards grouped by court (resource_id)
-- Each slot shows: time, duration, price
-- "Bei Playtomic buchen" button opens venue's `playtomic_url` in new tab
-- Loading spinner during fetch
-- Empty state: "Keine freien Plätze gefunden"
-
-Add route in `App.tsx`: `<Route path="playtomic" element={<PlaytomicSearch />} />`
-
-## Step 5: Navigation
-
-Add nav item in `Header.tsx` navItems array:
-```typescript
-{ label: 'Plätze finden', path: `/league/${leagueId}/playtomic` }
-```
-Positioned after "Platzbuchungen".
-
-## Files to create/modify
-
-| Action | File |
-|--------|------|
-| Create | `src/hooks/usePlaytomicVenues.ts` |
-| Create | `src/components/playtomic/AdminPlaytomicVenues.tsx` |
-| Create | `supabase/functions/fetch-playtomic-slots/index.ts` |
-| Create | `src/pages/PlaytomicSearch.tsx` |
-| Modify | `src/pages/LeagueAdmin.tsx` (add AdminPlaytomicVenues) |
-| Modify | `src/App.tsx` (add route) |
-| Modify | `src/components/layout/Header.tsx` (add nav item) |
-| Modify | `DECISIONS.md` (document feature) |
-| Migration | `playtomic_venues` table + RLS |
+### Priorität Niedrig
+6. **PWA-Support** — Offline-Fähigkeit
+7. **Liga-übergreifende Profile** — Spieler-Statistiken über alle Ligen
 

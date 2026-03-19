@@ -13,6 +13,7 @@ import {
 import { LeagueSettingsCard } from '@/components/leagues/LeagueSettingsCard';
 import { TournamentFormatCard } from '@/components/leagues/TournamentFormatCard';
 import { GroupAssignment } from '@/components/leagues/GroupAssignment';
+import { AdminPlaytomicVenues } from '@/components/playtomic/AdminPlaytomicVenues';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -142,6 +143,9 @@ export default function LeagueAdmin() {
           results={results}
         />
       )}
+
+      {/* Playtomic Venues */}
+      <AdminPlaytomicVenues leagueId={leagueId} />
 
       {/* Header */}
       <div>

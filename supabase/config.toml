@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.delete-users]
 verify_jwt = false
+
+[functions.fetch-playtomic-slots]
+verify_jwt = false
