@@ -71,7 +71,7 @@ export function TeamDetail({ team, open, onClose }: TeamDetailProps) {
                     <span className="font-medium">{team.player1_name}</span>
                     <Badge variant="secondary" className="text-xs">Spieler 1</Badge>
                   </div>
-                  {team.player1_phone && (
+                    {user && team.player1_phone && (
                     <a 
                       href={`tel:${team.player1_phone}`}
                       className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
