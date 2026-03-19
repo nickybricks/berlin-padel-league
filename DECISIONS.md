@@ -232,3 +232,7 @@
   - Login + Registrierung im gleichen Dialog (Toggle)
   - Nach erfolgreichem Login bleibt der Nutzer auf der aktuellen Seite (kein Redirect zu `/leagues`)
   - Hinweis-Box im Dialog: E-Mail-Match-Erklärung für neue Spieler
+- **Manueller Export-Versand** — Button in `AutoExportSettings.tsx`
+  - „Jetzt manuell versenden" ruft die `send-booking-export` Edge Function auf
+  - Deaktiviert wenn keine Empfänger konfiguriert oder Auto-Export inaktiv
+  - Ladeanimation + Toast-Feedback bei Erfolg/Fehler
