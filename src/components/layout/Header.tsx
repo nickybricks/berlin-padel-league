@@ -21,6 +21,7 @@ const getScrollState = () => typeof window !== 'undefined' && window.scrollY > 1
 
 export function Header({ leagueId }: HeaderProps) {
   const [isScrolled, setIsScrolled] = useState(getScrollState);
+  const [loginOpen, setLoginOpen] = useState(false);
   const location = useLocation();
   const { user, role, signOut, canEnterResults } = useAuth();
   const { data: league } = useLeagueById(leagueId);
