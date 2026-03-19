@@ -15,7 +15,7 @@ import { TeamLogoLightbox } from '@/components/teams/TeamLogoLightbox';
 
 export default function TeamPage() {
   const { leagueId, teamId } = useParams<{ leagueId: string; teamId: string }>();
-  const { isAdmin, teamId: userTeamId } = useAuth();
+  const { isAdmin, teamId: userTeamId, user } = useAuth();
   const { data: teams, isLoading: teamsLoading } = useTeams();
   const { data: matches, isLoading: matchesLoading } = useMatches('group');
   const { data: results, isLoading: resultsLoading } = useMatchResults();
