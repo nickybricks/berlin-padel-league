@@ -4,6 +4,7 @@ import { Trophy, User, LogOut } from 'lucide-react';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import { LoginDialog } from '@/components/auth/LoginDialog';
 import { useLeagueById } from '@/hooks/useLeagues';
 import {
   DropdownMenu,
