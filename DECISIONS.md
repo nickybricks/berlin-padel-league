@@ -224,3 +224,11 @@
   - Desktop: zentriert, max `md`/`lg` Breite; Mobile: 90vw / 80vh
   - Integriert auf `TeamPage.tsx`
 - **Standings-Tabelle: Logo klickbar** — Logo in der Tabelle ist jetzt ein `<Link>` zur Team-Detailseite (gleich wie Teamname)
+- **Kontaktdaten-Schutz** — E-Mail und Telefonnummer auf `TeamPage.tsx` und `TeamDetail.tsx` nur für eingeloggte Nutzer sichtbar
+  - `useAuth()` prüft `user`-Objekt, Kontaktdaten werden conditional gerendert
+  - Verhindert, dass nicht eingeloggte Besucher persönliche Daten einsehen können
+- **Login als Dialog** — `LoginDialog` Komponente (`src/components/auth/LoginDialog.tsx`)
+  - Anmelden-Button im Header öffnet Popup-Dialog statt separate Login-Seite
+  - Login + Registrierung im gleichen Dialog (Toggle)
+  - Nach erfolgreichem Login bleibt der Nutzer auf der aktuellen Seite (kein Redirect zu `/leagues`)
+  - Hinweis-Box im Dialog: E-Mail-Match-Erklärung für neue Spieler
