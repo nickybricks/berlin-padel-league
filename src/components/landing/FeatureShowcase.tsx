@@ -58,145 +58,173 @@ const features = [
   },
 ];
 
+function interpolatePosition(value: number, input: number[], output: number[]) {
+  if (!input.length || !output.length) return 0;
+  if (input.length === 1 || output.length === 1) return output[0] ?? 0;
+  if (value <= input[0]) return output[0];
+
+  for (let i = 1; i < input.length; i += 1) {
+    if (value <= input[i]) {
+      const inputSpan = input[i] - input[i - 1] || 1;
+      const progress = (value - input[i - 1]) / inputSpan;
+      return output[i - 1] + (output[i] - output[i - 1]) * progress;
+    }
+  }
+
+  return output[output.length - 1];
+}
+
 export default function FeatureShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [nodeOffsets, setNodeOffsets] = useState<number[]>([]);
+  const [activationScrollPoints, setActivationScrollPoints] = useState<number[]>([]);
+  const { scrollY } = useScroll();
 
-  // Measure vertical center of each card relative to container
   useEffect(() => {
     function measure() {
       const container = containerRef.current;
       if (!container) return;
-      const containerTop = container.getBoundingClientRect().top + window.scrollY;
-      const offsets = cardRefs.current.map((el) => {
+
+      const containerRect = container.getBoundingClientRect();
+      const containerTopOnPage = containerRect.top + window.scrollY;
+      const viewportCenter = window.innerHeight / 2;
+
+      const nextNodeOffsets = cardRefs.current.map((el) => {
         if (!el) return 0;
         const rect = el.getBoundingClientRect();
-        return rect.top + window.scrollY + rect.height / 2 - containerTop;
+        return rect.top + window.scrollY + rect.height / 2 - containerTopOnPage;
       });
-      setNodeOffsets(offsets);
+
+      const nextActivationPoints = cardRefs.current.map((el) => {
+        if (!el) return 0;
+        const rect = el.getBoundingClientRect();
+        const cardCenterOnPage = rect.top + window.scrollY + rect.height / 2;
+        return cardCenterOnPage - viewportCenter;
+      });
+
+      setNodeOffsets(nextNodeOffsets);
+      setActivationScrollPoints(nextActivationPoints);
     }
-    measure();
+
+    const frame = window.requestAnimationFrame(measure);
     window.addEventListener('resize', measure);
-    return () => window.removeEventListener('resize', measure);
+    window.addEventListener('load', measure);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener('resize', measure);
+      window.removeEventListener('load', measure);
+    };
   }, []);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start center', 'end center'],
-  });
+  const firstOffset = nodeOffsets[0] ?? 0;
+  const lastOffset = nodeOffsets[nodeOffsets.length - 1] ?? 0;
+  const beamRange = Math.max(0, lastOffset - firstOffset);
 
-  const firstOffset = nodeOffsets[0] || 0;
-  const lastOffset = nodeOffsets[nodeOffsets.length - 1] || 0;
-  const beamRange = lastOffset - firstOffset;
+  const ballTop = useTransform(scrollY, (latest: number) =>
+    interpolatePosition(latest, activationScrollPoints, nodeOffsets)
+  );
 
-  // Ball top in px relative to container, mapped from scroll progress
-  const ballTop = useTransform(scrollYProgress, [0, 1], [firstOffset, lastOffset]);
-  const trailHeight = useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset));
+  const trailHeight = useTransform(ballTop, (latest: number) => Math.max(0, latest - firstOffset));
 
   return (
-    <section id="feature-showcase" className="relative bg-primary text-primary-foreground" ref={containerRef}>
-      <div className="max-w-6xl mx-auto flex">
-        {/* Beam column — desktop only */}
-        <div className="hidden lg:flex w-16 shrink-0 relative">
-          {/* Vertical line from first to last node */}
-          {firstOffset > 0 && (
+    <section id="feature-showcase" ref={containerRef} className="relative bg-primary text-primary-foreground">
+      <div className="mx-auto flex max-w-6xl">
+        <div className="relative hidden w-16 shrink-0 lg:flex">
+          {beamRange > 0 && (
             <div
-              className="absolute left-1/2 -translate-x-1/2 w-[2px] bg-primary-foreground/10"
+              className="absolute left-1/2 w-[2px] -translate-x-1/2 bg-primary-foreground/10"
               style={{ top: firstOffset, height: beamRange }}
             />
           )}
 
-          {/* Node dots at each card center */}
-          {nodeOffsets.map((offset, i) => (
-            <BeamNode
-              key={features[i].id}
-              topPx={offset}
-              ballTop={ballTop}
-            />
+          {nodeOffsets.map((offset, index) => (
+            <BeamNode key={features[index].id} topPx={offset} ballTop={ballTop} />
           ))}
 
-          {/* Glowing ball */}
-          <motion.div
-            className="absolute left-1/2 w-3 h-3 rounded-full z-10 pointer-events-none"
-            style={{
-              top: ballTop,
-              x: '-50%',
-              y: '-50%',
-              backgroundColor: 'hsl(var(--accent))',
-              boxShadow:
-                '0 0 8px hsl(var(--accent)), 0 0 20px hsl(var(--accent) / 0.5), 0 0 40px hsl(var(--accent) / 0.2)',
-            }}
-          />
-
-          {/* Lit trail from first node to ball */}
-          {firstOffset > 0 && (
+          {beamRange > 0 && (
             <motion.div
-              className="absolute left-1/2 -translate-x-1/2 w-[2px] origin-top"
+              className="pointer-events-none absolute left-1/2 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent"
+              style={{
+                top: ballTop,
+                boxShadow:
+                  '0 0 8px hsl(var(--accent)), 0 0 20px hsl(var(--accent) / 0.5), 0 0 40px hsl(var(--accent) / 0.2)',
+              }}
+            />
+          )}
+
+          {beamRange > 0 && (
+            <motion.div
+              className="absolute left-1/2 z-[1] w-[2px] -translate-x-1/2 origin-top"
               style={{
                 top: firstOffset,
                 height: trailHeight,
                 background:
-                  'linear-gradient(to bottom, hsl(var(--accent) / 0.4), hsl(var(--accent) / 0.15))',
+                  'linear-gradient(to bottom, hsl(var(--accent) / 0.45), hsl(var(--accent) / 0.12))',
               }}
             />
           )}
         </div>
 
-        {/* Feature blocks */}
         <div className="flex-1 py-16 lg:py-20">
-          {features.map((f, i) => {
-            const Icon = f.icon;
+          {features.map((feature, index) => {
+            const Icon = feature.icon;
+
             return (
               <div
-                key={f.id}
-                ref={(el) => { cardRefs.current[i] = el; }}
-                className="px-6 lg:px-12 py-14 lg:py-16"
+                key={feature.id}
+                ref={(el) => {
+                  cardRefs.current[index] = el;
+                }}
+                className="px-6 py-14 lg:px-12 lg:py-16"
               >
                 <motion.div
-                  className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
+                  className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-16"
                   initial={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
                   whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                   viewport={{ once: true, amount: 0.2 }}
                   transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
                 >
-                  {/* Text */}
                   <div>
-                    <div className="flex items-center gap-2 mb-4">
+                    <div className="mb-4 flex items-center gap-2">
                       <Icon className="h-5 w-5 text-accent" />
                       <span className="text-xs font-semibold uppercase tracking-wider text-accent">
-                        {f.label}
+                        {feature.label}
                       </span>
                     </div>
-                    <h3 className="text-2xl sm:text-3xl font-bold leading-tight mb-4">
-                      {f.headline}
+
+                    <h3 className="mb-4 text-2xl font-bold leading-tight sm:text-3xl">
+                      {feature.headline}
                     </h3>
-                    <p className="text-primary-foreground/70 mb-5 leading-relaxed">
-                      {f.description}
+
+                    <p className="mb-5 leading-relaxed text-primary-foreground/70">
+                      {feature.description}
                     </p>
-                    <ul className="space-y-2 mb-6">
-                      {f.bullets.map((b) => (
+
+                    <ul className="mb-6 space-y-2">
+                      {feature.bullets.map((bullet) => (
                         <li
-                          key={b}
+                          key={bullet}
                           className="flex items-start gap-2 text-sm text-primary-foreground/60"
                         >
-                          <span className="mt-1.5 w-1 h-1 rounded-full bg-accent shrink-0" />
-                          {b}
+                          <span className="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-accent" />
+                          {bullet}
                         </li>
                       ))}
                     </ul>
+
                     <Button
                       variant="ghost"
-                      className="rounded-full text-accent hover:text-accent hover:bg-primary-foreground/5 gap-1 px-0"
+                      className="gap-1 rounded-full px-0 text-accent hover:bg-primary-foreground/5 hover:text-accent"
                     >
                       Mehr erfahren <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
 
-                  {/* Placeholder screenshot */}
-                  <div className="aspect-video rounded-2xl bg-primary-foreground/5 border border-primary-foreground/10 flex items-center justify-center">
-                    <span className="text-primary-foreground/20 text-sm font-medium">
-                      Screenshot — {f.label}
+                  <div className="flex aspect-video items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5">
+                    <span className="text-sm font-medium text-primary-foreground/20">
+                      Screenshot — {feature.label}
                     </span>
                   </div>
                 </motion.div>
@@ -209,7 +237,6 @@ export default function FeatureShowcase() {
   );
 }
 
-/* ── Beam Node ── */
 function BeamNode({
   topPx,
   ballTop,
@@ -217,23 +244,19 @@ function BeamNode({
   topPx: number;
   ballTop: ReturnType<typeof useTransform>;
 }) {
-  const isActive = useTransform(ballTop, (v: number) => v >= topPx - 10);
-
+  const isActive = useTransform(ballTop, (latest: number) => latest >= topPx - 10);
   const dotBg = useTransform(isActive, (active: boolean) =>
     active ? 'hsl(var(--accent))' : 'hsl(var(--primary-foreground) / 0.2)'
   );
-
   const dotShadow = useTransform(isActive, (active: boolean) =>
     active ? '0 0 8px hsl(var(--accent)), 0 0 16px hsl(var(--accent) / 0.3)' : 'none'
   );
 
   return (
     <motion.div
-      className="absolute left-1/2 w-2.5 h-2.5 rounded-full z-10"
+      className="absolute left-1/2 z-10 h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full"
       style={{
         top: topPx,
-        x: '-50%',
-        y: '-50%',
         backgroundColor: dotBg,
         boxShadow: dotShadow,
       }}
