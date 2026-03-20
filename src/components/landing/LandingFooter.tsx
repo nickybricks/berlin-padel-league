@@ -33,7 +33,7 @@ export default function LandingFooter() {
                   <li key={link}>
                     <a
                       href="#"
-                      className="text-sm text-background/50 hover:text-background transition-colors"
+                      className="text-sm text-primary-foreground/50 hover:text-primary-foreground transition-colors"
                     >
                       {link}
                     </a>
