@@ -72,7 +72,7 @@ export default function FeatureShowcase() {
           }
         });
       },
-      { threshold: 0.4 }
+      { threshold: 0.2 }
     );
 
     sectionRefs.current.forEach((el) => el && observer.observe(el));
