@@ -187,7 +187,6 @@ function BeamNode({
   threshold,
 }: {
   index: number;
-  label: string;
   topPercent: number;
   scrollProgress: ReturnType<typeof useTransform>;
   threshold: number;
@@ -201,8 +200,6 @@ function BeamNode({
   const dotShadow = useTransform(isActive, (active) =>
     active ? '0 0 8px hsl(var(--accent)), 0 0 16px hsl(var(--accent) / 0.3)' : 'none'
   );
-
-  const labelOpacity = useTransform(isActive, (active) => (active ? 1 : 0.3));
 
   return (
     <div
