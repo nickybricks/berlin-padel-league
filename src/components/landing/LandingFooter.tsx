@@ -61,7 +61,7 @@ export default function LandingFooter() {
                 placeholder="deine@email.de"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-9 rounded-full bg-background/10 border-background/10 text-background placeholder:text-background/30 text-sm"
+                className="h-9 rounded-full bg-primary-foreground/10 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/30 text-sm"
               />
               <Button
                 type="submit"
