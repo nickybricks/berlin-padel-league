@@ -231,10 +231,13 @@ export default function FeatureShowcase() {
                     </Button>
                   </div>
 
-                  <div className="flex aspect-video items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5">
-                    <span className="text-sm font-medium text-primary-foreground/20">
-                      Screenshot — {feature.label}
-                    </span>
+                  <div className="overflow-hidden rounded-2xl border border-primary-foreground/10">
+                    <img
+                      src={feature.image}
+                      alt={feature.label}
+                      className="w-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
                 </motion.div>
               </div>
