@@ -181,7 +181,7 @@ export default function FeatureShowcase() {
 
 /* ── Beam Node ── */
 function BeamNode({
-  label,
+  
   topPercent,
   scrollProgress,
   threshold,
