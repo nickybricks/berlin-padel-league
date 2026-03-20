@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +37,7 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
         toast({ title: 'Erfolgreich angemeldet!' });
         onOpenChange(false);
         resetForm();
+        navigate('/leagues', { replace: true });
       } else {
         const { error } = await signUp(email, password);
         if (error) throw error;
