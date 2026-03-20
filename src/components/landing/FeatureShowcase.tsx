@@ -72,7 +72,7 @@ export default function FeatureShowcase() {
           }
         });
       },
-      { threshold: 0.4 }
+      { threshold: 0.2 }
     );
 
     sectionRefs.current.forEach((el) => el && observer.observe(el));
@@ -83,7 +83,7 @@ export default function FeatureShowcase() {
     <section id="feature-showcase" className="bg-primary text-primary-foreground">
       <div className="max-w-6xl mx-auto flex">
         {/* Sticky side nav — desktop only */}
-        <div className="hidden lg:flex flex-col justify-center w-56 shrink-0 sticky top-0 h-screen pl-6">
+        <div className="hidden lg:flex flex-col justify-center w-56 shrink-0 sticky top-20 self-start pl-6 pt-20">
           <div className="space-y-1">
             {features.map((f, i) => (
               <button
@@ -109,14 +109,14 @@ export default function FeatureShowcase() {
         </div>
 
         {/* Feature blocks */}
-        <div className="flex-1 py-20 lg:py-0">
+        <div className="flex-1 py-16 lg:py-20">
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
               <div
                 key={f.id}
                 ref={(el) => { sectionRefs.current[i] = el; }}
-                className="min-h-screen flex items-center px-6 lg:px-12 py-20 lg:py-0"
+                className="px-6 lg:px-12 py-16 lg:py-20"
               >
                 <motion.div
                   className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
