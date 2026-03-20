@@ -86,10 +86,10 @@ export default function LandingFooter() {
           </div>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="text-background/40 hover:text-background transition-colors">
+            <a href="#" className="text-primary-foreground/40 hover:text-primary-foreground transition-colors">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href="#" className="text-background/40 hover:text-background transition-colors">
+            <a href="#" className="text-primary-foreground/40 hover:text-primary-foreground transition-colors">
               <Linkedin className="h-5 w-5" />
             </a>
           </div>
