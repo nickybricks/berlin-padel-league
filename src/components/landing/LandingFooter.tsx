@@ -22,18 +22,18 @@ export default function LandingFooter() {
   const [email, setEmail] = useState('');
 
   return (
-    <footer className="bg-foreground text-background/80">
+    <footer className="bg-primary text-primary-foreground/80">
       <div className="max-w-6xl mx-auto px-6 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           {columns.map((col) => (
             <div key={col.title}>
-              <h4 className="text-sm font-semibold text-background mb-4">{col.title}</h4>
+              <h4 className="text-sm font-semibold text-primary-foreground mb-4">{col.title}</h4>
               <ul className="space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link}>
                     <a
                       href="#"
-                      className="text-sm text-background/50 hover:text-background transition-colors"
+                      className="text-sm text-primary-foreground/50 hover:text-primary-foreground transition-colors"
                     >
                       {link}
                     </a>
@@ -45,8 +45,8 @@ export default function LandingFooter() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-sm font-semibold text-background mb-4">Newsletter</h4>
-            <p className="text-sm text-background/50 mb-3">
+            <h4 className="text-sm font-semibold text-primary-foreground mb-4">Newsletter</h4>
+            <p className="text-sm text-primary-foreground/50 mb-3">
               Updates zu neuen Features erhalten.
             </p>
             <form
@@ -61,7 +61,7 @@ export default function LandingFooter() {
                 placeholder="deine@email.de"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="h-9 rounded-full bg-background/10 border-background/10 text-background placeholder:text-background/30 text-sm"
+                className="h-9 rounded-full bg-primary-foreground/10 border-primary-foreground/10 text-primary-foreground placeholder:text-primary-foreground/30 text-sm"
               />
               <Button
                 type="submit"
@@ -75,28 +75,28 @@ export default function LandingFooter() {
         </div>
 
         {/* Social + Logo */}
-        <div className="mt-14 pt-8 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="mt-14 pt-8 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background/10">
-              <Trophy className="h-4 w-4 text-background" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-foreground/10">
+              <Trophy className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-bold text-background tracking-tight">
+            <span className="text-lg font-bold text-primary-foreground tracking-tight">
               Berlin Padel Liga
             </span>
           </div>
 
           <div className="flex items-center gap-4">
-            <a href="#" className="text-background/40 hover:text-background transition-colors">
+            <a href="#" className="text-primary-foreground/40 hover:text-primary-foreground transition-colors">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href="#" className="text-background/40 hover:text-background transition-colors">
+            <a href="#" className="text-primary-foreground/40 hover:text-primary-foreground transition-colors">
               <Linkedin className="h-5 w-5" />
             </a>
           </div>
         </div>
 
         {/* Bottom bar */}
-        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-background/30">
+        <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-primary-foreground/30">
           <div className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
             Alle Systeme aktiv
