@@ -37,6 +37,7 @@ export function LoginDialog({ open, onOpenChange }: LoginDialogProps) {
         toast({ title: 'Erfolgreich angemeldet!' });
         onOpenChange(false);
         resetForm();
+        navigate('/leagues', { replace: true });
       } else {
         const { error } = await signUp(email, password);
         if (error) throw error;
