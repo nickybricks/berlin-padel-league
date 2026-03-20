@@ -92,9 +92,10 @@ export default function FeatureShowcase() {
 
   // Ball top in px relative to container, mapped from scroll progress
   const ballTop = useTransform(scrollYProgress, [0, 1], [firstOffset, lastOffset]);
+  const trailHeight = useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset));
 
   return (
-    <section id="feature-showcase" className="bg-primary text-primary-foreground" ref={containerRef}>
+    <section id="feature-showcase" className="relative bg-primary text-primary-foreground" ref={containerRef}>
       <div className="max-w-6xl mx-auto flex">
         {/* Beam column — desktop only */}
         <div className="hidden lg:flex w-16 shrink-0 relative">
@@ -134,7 +135,7 @@ export default function FeatureShowcase() {
               className="absolute left-1/2 -translate-x-1/2 w-[2px] origin-top"
               style={{
                 top: firstOffset,
-                height: useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset)),
+                height: trailHeight,
                 background:
                   'linear-gradient(to bottom, hsl(var(--accent) / 0.4), hsl(var(--accent) / 0.15))',
               }}
