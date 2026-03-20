@@ -83,7 +83,7 @@ export default function FeatureShowcase() {
     <section id="feature-showcase" className="bg-primary text-primary-foreground">
       <div className="max-w-6xl mx-auto flex">
         {/* Sticky side nav — desktop only */}
-        <div className="hidden lg:flex flex-col justify-center w-56 shrink-0 sticky top-0 h-screen pl-6">
+        <div className="hidden lg:flex flex-col justify-center w-56 shrink-0 sticky top-20 self-start pl-6 pt-20">
           <div className="space-y-1">
             {features.map((f, i) => (
               <button
