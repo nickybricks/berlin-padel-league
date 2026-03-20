@@ -92,6 +92,7 @@ export default function FeatureShowcase() {
 
   // Ball top in px relative to container, mapped from scroll progress
   const ballTop = useTransform(scrollYProgress, [0, 1], [firstOffset, lastOffset]);
+  const trailHeight = useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset));
 
   return (
     <section id="feature-showcase" className="bg-primary text-primary-foreground" ref={containerRef}>
