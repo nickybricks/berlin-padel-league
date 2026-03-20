@@ -95,7 +95,7 @@ export default function FeatureShowcase() {
   const trailHeight = useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset));
 
   return (
-    <section id="feature-showcase" className="bg-primary text-primary-foreground" ref={containerRef}>
+    <section id="feature-showcase" className="relative bg-primary text-primary-foreground" ref={containerRef}>
       <div className="max-w-6xl mx-auto flex">
         {/* Beam column — desktop only */}
         <div className="hidden lg:flex w-16 shrink-0 relative">
