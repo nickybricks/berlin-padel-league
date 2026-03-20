@@ -3,6 +3,11 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Wand2, CalendarDays, Trophy, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+import setupImg from '@/assets/features/setup.png';
+import scheduleImg from '@/assets/features/schedule.png';
+import standingsImg from '@/assets/features/standings.png';
+import bookingsImg from '@/assets/features/bookings.png';
+
 const features = [
   {
     id: 'setup',
@@ -16,6 +21,7 @@ const features = [
       'Teams anlegen & Spieler einladen',
       'Gruppen automatisch oder manuell zuweisen',
     ],
+    image: setupImg,
   },
   {
     id: 'schedule',
@@ -29,6 +35,7 @@ const features = [
       'Hin- und Rückrunde optional',
       'Wochenweise Übersicht',
     ],
+    image: scheduleImg,
   },
   {
     id: 'standings',
@@ -42,6 +49,7 @@ const features = [
       'Gruppen-Tabellen parallel',
       'Ergebnisse sofort sichtbar',
     ],
+    image: standingsImg,
   },
   {
     id: 'booking',
@@ -55,6 +63,7 @@ const features = [
       'Zeitslots mit einem Klick buchen',
       'Automatischer E-Mail-Export',
     ],
+    image: bookingsImg,
   },
 ];
 
@@ -222,10 +231,13 @@ export default function FeatureShowcase() {
                     </Button>
                   </div>
 
-                  <div className="flex aspect-video items-center justify-center rounded-2xl border border-primary-foreground/10 bg-primary-foreground/5">
-                    <span className="text-sm font-medium text-primary-foreground/20">
-                      Screenshot — {feature.label}
-                    </span>
+                  <div className="overflow-hidden rounded-2xl border border-primary-foreground/10">
+                    <img
+                      src={feature.image}
+                      alt={feature.label}
+                      className="w-full object-cover"
+                      loading="lazy"
+                    />
                   </div>
                 </motion.div>
               </div>
