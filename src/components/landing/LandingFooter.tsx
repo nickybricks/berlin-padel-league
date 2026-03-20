@@ -45,8 +45,8 @@ export default function LandingFooter() {
 
           {/* Newsletter */}
           <div>
-            <h4 className="text-sm font-semibold text-background mb-4">Newsletter</h4>
-            <p className="text-sm text-background/50 mb-3">
+            <h4 className="text-sm font-semibold text-primary-foreground mb-4">Newsletter</h4>
+            <p className="text-sm text-primary-foreground/50 mb-3">
               Updates zu neuen Features erhalten.
             </p>
             <form
