@@ -75,12 +75,12 @@ export default function LandingFooter() {
         </div>
 
         {/* Social + Logo */}
-        <div className="mt-14 pt-8 border-t border-background/10 flex flex-col sm:flex-row items-center justify-between gap-6">
+        <div className="mt-14 pt-8 border-t border-primary-foreground/10 flex flex-col sm:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-background/10">
-              <Trophy className="h-4 w-4 text-background" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary-foreground/10">
+              <Trophy className="h-4 w-4 text-primary-foreground" />
             </div>
-            <span className="text-lg font-bold text-background tracking-tight">
+            <span className="text-lg font-bold text-primary-foreground tracking-tight">
               Berlin Padel Liga
             </span>
           </div>
