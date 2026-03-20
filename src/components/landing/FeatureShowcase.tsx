@@ -138,7 +138,15 @@ export default function FeatureShowcase() {
   const trailHeight = useTransform(ballTop, (latest: number) => Math.max(0, latest - firstOffset));
 
   return (
-    <section id="feature-showcase" ref={containerRef} className="relative bg-primary text-primary-foreground">
+    <section
+      id="feature-showcase"
+      ref={containerRef}
+      className="relative bg-primary text-primary-foreground"
+      style={{
+        maskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 8%, black 92%, transparent 100%)',
+      }}
+    >
       <div className="mx-auto flex max-w-6xl">
         <div className="relative hidden w-16 shrink-0 lg:flex">
           {beamRange > 0 && (
