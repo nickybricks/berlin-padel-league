@@ -49,6 +49,7 @@ const features = [
       'Gruppen-Tabellen parallel',
       'Ergebnisse sofort sichtbar',
     ],
+    image: standingsImg,
   },
   {
     id: 'booking',
