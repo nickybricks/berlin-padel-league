@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Wand2, CalendarDays, Trophy, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -60,61 +60,86 @@ const features = [
 
 export default function FeatureShowcase() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [nodeOffsets, setNodeOffsets] = useState<number[]>([]);
+
+  // Measure vertical center of each card relative to container
+  useEffect(() => {
+    function measure() {
+      const container = containerRef.current;
+      if (!container) return;
+      const containerTop = container.getBoundingClientRect().top + window.scrollY;
+      const offsets = cardRefs.current.map((el) => {
+        if (!el) return 0;
+        const rect = el.getBoundingClientRect();
+        return rect.top + window.scrollY + rect.height / 2 - containerTop;
+      });
+      setNodeOffsets(offsets);
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ['start center', 'end center'],
   });
 
-  // Ball moves from first node (0%) to last node (100%)
-  const ballProgress = useTransform(scrollYProgress, [0, 1], [0, 100]);
+  const firstOffset = nodeOffsets[0] || 0;
+  const lastOffset = nodeOffsets[nodeOffsets.length - 1] || 0;
+  const beamRange = lastOffset - firstOffset;
 
-  // Derive which nodes are "passed" — each node at 0%, 33%, 66%, 100%
-  const nodeThresholds = features.map((_, i) => i / (features.length - 1));
+  // Ball top in px relative to container, mapped from scroll progress
+  const ballTop = useTransform(scrollYProgress, [0, 1], [firstOffset, lastOffset]);
 
   return (
     <section id="feature-showcase" className="bg-primary text-primary-foreground" ref={containerRef}>
       <div className="max-w-6xl mx-auto flex">
         {/* Beam column — desktop only */}
         <div className="hidden lg:flex w-16 shrink-0 relative">
-          {/* Vertical line */}
-          <div className="absolute left-1/2 -translate-x-1/2 top-20 bottom-20 w-[2px] bg-primary-foreground/10" />
+          {/* Vertical line from first to last node */}
+          {firstOffset > 0 && (
+            <div
+              className="absolute left-1/2 -translate-x-1/2 w-[2px] bg-primary-foreground/10"
+              style={{ top: firstOffset, height: beamRange }}
+            />
+          )}
 
-          {/* Node dots — positioned at each feature card center */}
-          {features.map((f, i) => {
-            const topPercent = 20 + (i / (features.length - 1)) * 60; // spread from 20% to 80% matching padding
-            return (
-              <BeamNode
-                key={f.id}
-                index={i}
-                
-                topPercent={topPercent}
-                scrollProgress={ballProgress}
-                threshold={nodeThresholds[i] * 100}
-              />
-            );
-          })}
+          {/* Node dots at each card center */}
+          {nodeOffsets.map((offset, i) => (
+            <BeamNode
+              key={features[i].id}
+              topPx={offset}
+              ballTop={ballTop}
+            />
+          ))}
 
           {/* Glowing ball */}
           <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full z-10 pointer-events-none"
+            className="absolute left-1/2 w-3 h-3 rounded-full z-10 pointer-events-none"
             style={{
-              top: useTransform(ballProgress, (v) => `calc(20% + ${v * 0.6}%)`),
+              top: ballTop,
+              x: '-50%',
+              y: '-50%',
               backgroundColor: 'hsl(var(--accent))',
               boxShadow:
                 '0 0 8px hsl(var(--accent)), 0 0 20px hsl(var(--accent) / 0.5), 0 0 40px hsl(var(--accent) / 0.2)',
             }}
           />
 
-          {/* Lit trail behind ball */}
-          <motion.div
-            className="absolute left-1/2 -translate-x-1/2 w-[2px] top-[20%] origin-top"
-            style={{
-              height: '60%',
-              scaleY: useTransform(ballProgress, [0, 100], [0, 1]),
-              background: 'linear-gradient(to bottom, hsl(var(--accent) / 0.4), hsl(var(--accent) / 0.1))',
-            }}
-          />
+          {/* Lit trail from first node to ball */}
+          {firstOffset > 0 && (
+            <motion.div
+              className="absolute left-1/2 -translate-x-1/2 w-[2px] origin-top"
+              style={{
+                top: firstOffset,
+                height: useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset)),
+                background:
+                  'linear-gradient(to bottom, hsl(var(--accent) / 0.4), hsl(var(--accent) / 0.15))',
+              }}
+            />
+          )}
         </div>
 
         {/* Feature blocks */}
@@ -122,7 +147,11 @@ export default function FeatureShowcase() {
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
-              <div key={f.id} className="px-6 lg:px-12 py-14 lg:py-16">
+              <div
+                key={f.id}
+                ref={(el) => { cardRefs.current[i] = el; }}
+                className="px-6 lg:px-12 py-14 lg:py-16"
+              >
                 <motion.div
                   className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
                   initial={{ opacity: 0, y: 24, filter: 'blur(4px)' }}
@@ -181,38 +210,32 @@ export default function FeatureShowcase() {
 
 /* ── Beam Node ── */
 function BeamNode({
-  
-  topPercent,
-  scrollProgress,
-  threshold,
+  topPx,
+  ballTop,
 }: {
-  index: number;
-  topPercent: number;
-  scrollProgress: ReturnType<typeof useTransform>;
-  threshold: number;
+  topPx: number;
+  ballTop: ReturnType<typeof useTransform>;
 }) {
-  const isActive = useTransform(scrollProgress, (v: number) => v >= threshold - 5);
+  const isActive = useTransform(ballTop, (v: number) => v >= topPx - 10);
 
-  const dotBg = useTransform(isActive, (active) =>
+  const dotBg = useTransform(isActive, (active: boolean) =>
     active ? 'hsl(var(--accent))' : 'hsl(var(--primary-foreground) / 0.2)'
   );
 
-  const dotShadow = useTransform(isActive, (active) =>
+  const dotShadow = useTransform(isActive, (active: boolean) =>
     active ? '0 0 8px hsl(var(--accent)), 0 0 16px hsl(var(--accent) / 0.3)' : 'none'
   );
 
   return (
-    <div
-      className="absolute left-1/2 -translate-x-1/2 flex items-center gap-3"
-      style={{ top: `${topPercent}%`, transform: 'translate(-50%, -50%)' }}
-    >
-      <motion.div
-        className="w-2 h-2 rounded-full shrink-0 z-10"
-        style={{
-          backgroundColor: dotBg,
-          boxShadow: dotShadow,
-        }}
-      />
-    </div>
+    <motion.div
+      className="absolute left-1/2 w-2.5 h-2.5 rounded-full z-10"
+      style={{
+        top: topPx,
+        x: '-50%',
+        y: '-50%',
+        backgroundColor: dotBg,
+        boxShadow: dotShadow,
+      }}
+    />
   );
 }
