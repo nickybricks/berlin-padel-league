@@ -135,7 +135,7 @@ export default function FeatureShowcase() {
               className="absolute left-1/2 -translate-x-1/2 w-[2px] origin-top"
               style={{
                 top: firstOffset,
-                height: useTransform(ballTop, (v: number) => Math.max(0, v - firstOffset)),
+                height: trailHeight,
                 background:
                   'linear-gradient(to bottom, hsl(var(--accent) / 0.4), hsl(var(--accent) / 0.15))',
               }}
