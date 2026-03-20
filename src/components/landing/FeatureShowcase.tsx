@@ -192,7 +192,7 @@ function BeamNode({
   scrollProgress: ReturnType<typeof useTransform>;
   threshold: number;
 }) {
-  const isActive = useTransform(scrollProgress, (v) => v >= threshold - 5);
+  const isActive = useTransform(scrollProgress, (v: number) => v >= threshold - 5);
 
   const dotBg = useTransform(isActive, (active) =>
     active ? 'hsl(var(--accent))' : 'hsl(var(--primary-foreground) / 0.2)'
