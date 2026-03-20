@@ -35,6 +35,7 @@ const features = [
       'Hin- und Rückrunde optional',
       'Wochenweise Übersicht',
     ],
+    image: scheduleImg,
   },
   {
     id: 'standings',
