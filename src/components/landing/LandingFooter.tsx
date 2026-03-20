@@ -27,7 +27,7 @@ export default function LandingFooter() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
           {columns.map((col) => (
             <div key={col.title}>
-              <h4 className="text-sm font-semibold text-background mb-4">{col.title}</h4>
+              <h4 className="text-sm font-semibold text-primary-foreground mb-4">{col.title}</h4>
               <ul className="space-y-2.5">
                 {col.links.map((link) => (
                   <li key={link}>
