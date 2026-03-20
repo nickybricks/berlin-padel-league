@@ -139,6 +139,18 @@ export default function FeatureShowcase() {
 
   return (
     <section id="feature-showcase" ref={containerRef} className="relative bg-primary text-primary-foreground">
+      {/* Top blur overlay — fixed within section via sticky */}
+      <div className="pointer-events-none sticky top-0 z-20 h-[30vh]"
+        style={{
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
+          background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.35) 0%, transparent 100%)',
+          marginBottom: '-30vh',
+        }}
+      />
+
       <div className="mx-auto flex max-w-6xl">
         <div className="relative hidden w-16 shrink-0 lg:flex">
           {beamRange > 0 && (
@@ -245,6 +257,18 @@ export default function FeatureShowcase() {
           })}
         </div>
       </div>
+
+      {/* Bottom blur overlay — sticky to bottom */}
+      <div className="pointer-events-none sticky bottom-0 z-20 h-[30vh]"
+        style={{
+          backdropFilter: 'blur(8px)',
+          WebkitBackdropFilter: 'blur(8px)',
+          maskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
+          WebkitMaskImage: 'linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
+          background: 'linear-gradient(to top, hsl(var(--primary) / 0.35) 0%, transparent 100%)',
+          marginTop: '-30vh',
+        }}
+      />
     </section>
   );
 }
