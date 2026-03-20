@@ -21,6 +21,7 @@ const features = [
       'Teams anlegen & Spieler einladen',
       'Gruppen automatisch oder manuell zuweisen',
     ],
+    image: setupImg,
   },
   {
     id: 'schedule',
