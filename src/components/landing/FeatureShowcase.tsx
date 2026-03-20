@@ -109,14 +109,14 @@ export default function FeatureShowcase() {
         </div>
 
         {/* Feature blocks */}
-        <div className="flex-1 py-20 lg:py-0">
+        <div className="flex-1 py-16 lg:py-20">
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
               <div
                 key={f.id}
                 ref={(el) => { sectionRefs.current[i] = el; }}
-                className="min-h-screen flex items-center px-6 lg:px-12 py-20 lg:py-0"
+                className="px-6 lg:px-12 py-16 lg:py-20"
               >
                 <motion.div
                   className="w-full grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center"
