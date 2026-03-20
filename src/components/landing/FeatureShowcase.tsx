@@ -63,11 +63,11 @@ export default function FeatureShowcase() {
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start end', 'end start'],
+    offset: ['start center', 'end center'],
   });
 
-  // Map scroll progress to ball position (0% to 100% of beam height)
-  const ballProgress = useTransform(scrollYProgress, [0.15, 0.85], [0, 100]);
+  // Ball moves from first node (0%) to last node (100%)
+  const ballProgress = useTransform(scrollYProgress, [0, 1], [0, 100]);
 
   // Derive which nodes are "passed" — each node at 0%, 33%, 66%, 100%
   const nodeThresholds = features.map((_, i) => i / (features.length - 1));
