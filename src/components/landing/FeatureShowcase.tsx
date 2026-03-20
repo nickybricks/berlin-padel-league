@@ -87,7 +87,7 @@ export default function FeatureShowcase() {
               <BeamNode
                 key={f.id}
                 index={i}
-                label={f.label}
+                
                 topPercent={topPercent}
                 scrollProgress={ballProgress}
                 threshold={nodeThresholds[i] * 100}
