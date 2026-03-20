@@ -63,6 +63,7 @@ const features = [
       'Zeitslots mit einem Klick buchen',
       'Automatischer E-Mail-Export',
     ],
+    image: bookingsImg,
   },
 ];
 
