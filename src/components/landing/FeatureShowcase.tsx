@@ -3,6 +3,11 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Wand2, CalendarDays, Trophy, MapPin, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
+import setupImg from '@/assets/features/setup.png';
+import scheduleImg from '@/assets/features/schedule.png';
+import standingsImg from '@/assets/features/standings.png';
+import bookingsImg from '@/assets/features/bookings.png';
+
 const features = [
   {
     id: 'setup',
