@@ -216,12 +216,6 @@ function BeamNode({
           boxShadow: dotShadow,
         }}
       />
-      <motion.span
-        className="text-xs font-medium whitespace-nowrap text-primary-foreground absolute left-6"
-        style={{ opacity: labelOpacity }}
-      >
-        {label}
-      </motion.span>
     </div>
   );
 }
