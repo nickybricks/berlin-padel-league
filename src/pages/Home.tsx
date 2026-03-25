@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import LandingNav from '@/components/landing/LandingNav';
 import HeroSection from '@/components/landing/HeroSection';
-import LogoBar from '@/components/landing/LogoBar';
+
 import FeatureShowcase from '@/components/landing/FeatureShowcase';
 
 import AboutSection from '@/components/landing/AboutSection';
@@ -27,7 +27,7 @@ export default function Home() {
     <div className="min-h-screen bg-background flex flex-col">
       <LandingNav />
       <HeroSection />
-      <LogoBar />
+      
       <FeatureShowcase />
       <AboutSection />
       <FAQSection />
