@@ -1,5 +1,5 @@
 import { Trophy } from 'lucide-react';
-
+import { useNavigate, useLocation } from 'react-router-dom';
 const links = [
   { label: 'Features', href: '/#features' },
   { label: 'Preise', href: '#' },
