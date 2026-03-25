@@ -29,11 +29,11 @@ export default function CTASection() {
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
-          <a href="mailto:kontakt@berlinpadelliga.de">
+          <a href="mailto:nick@algner.de">
             <Button
               variant="outline"
               size="lg"
-              className="rounded-full px-7 text-base border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/10"
+              className="rounded-full px-7 text-base border-primary-foreground/40 bg-primary-foreground text-primary hover:bg-primary-foreground/90"
             >
               Kontakt
             </Button>
