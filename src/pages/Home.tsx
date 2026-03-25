@@ -15,6 +15,7 @@ export default function Home() {
       <LogoBar />
       <FeatureShowcase />
       
+      <FAQSection />
       <CTASection />
       <LandingFooter />
     </div>
