@@ -3,7 +3,7 @@ import { Trophy } from 'lucide-react';
 const links = [
   { label: 'Features', href: '#features' },
   { label: 'Preise', href: '#' },
-  { label: 'Über uns', href: '#' },
+  { label: 'Über uns', href: '#about' },
   { label: 'Kontakt', href: 'mailto:nick@algner.de' },
   { label: 'Impressum', href: '#' },
   { label: 'Datenschutz', href: '#' },
