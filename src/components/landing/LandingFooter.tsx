@@ -10,6 +10,21 @@ const links = [
 ];
 
 export default function LandingFooter() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href.startsWith('/#')) {
+      e.preventDefault();
+      const id = href.slice(2);
+      if (location.pathname === '/') {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        navigate('/', { state: { scrollTo: id } });
+      }
+    }
+  };
+
   return (
     <footer className="bg-primary text-primary-foreground/80">
       <div className="max-w-6xl mx-auto px-6 py-16">
@@ -30,6 +45,7 @@ export default function LandingFooter() {
               <a
                 key={link.label}
                 href={link.href}
+                onClick={(e) => handleClick(e, link.href)}
                 className="text-sm text-primary-foreground/50 hover:text-primary-foreground transition-colors"
               >
                 {link.label}
