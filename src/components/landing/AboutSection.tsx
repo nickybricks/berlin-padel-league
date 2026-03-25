@@ -1,4 +1,4 @@
-import { Quote } from 'lucide-react';
+
 
 export default function AboutSection() {
   return (
@@ -37,19 +37,6 @@ export default function AboutSection() {
             Jetzt möchte ich, dass jeder seine eigene Liga genauso einfach 
             starten kann – egal wo, egal wie viele Teams.
           </p>
-        </div>
-
-        {/* Quote */}
-        <div className="mt-12 rounded-2xl bg-background border border-border p-8 text-left flex gap-4">
-          <Quote className="h-6 w-6 text-primary shrink-0 mt-0.5" />
-          <div>
-            <p className="text-foreground font-medium text-[16px] leading-relaxed italic">
-              „Ich habe dieses Tool gebaut, weil ich es selbst gebraucht habe."
-            </p>
-            <p className="mt-3 text-sm text-muted-foreground">
-              Nick Algner · Gründer, Berlin Padel Liga
-            </p>
-          </div>
         </div>
       </div>
     </section>
