@@ -5,8 +5,8 @@ const links = [
   { label: 'Preise', href: '#' },
   { label: 'Über uns', href: '#about' },
   { label: 'Kontakt', href: 'mailto:nick@algner.de' },
-  { label: 'Impressum', href: '#' },
-  { label: 'Datenschutz', href: '#' },
+  { label: 'Impressum', href: '/impressum' },
+  { label: 'Datenschutz', href: '/datenschutz' },
 ];
 
 export default function LandingFooter() {

@@ -25,6 +25,8 @@ import EnterResult from "./pages/EnterResult";
 import LeagueAdmin from "./pages/LeagueAdmin";
 import NotFound from "./pages/NotFound";
 import DesignSystem from "./pages/DesignSystem";
+import Impressum from "./pages/Impressum";
+import Datenschutz from "./pages/Datenschutz";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +47,8 @@ const App = () => (
           <Route path="/create-league" element={<CreateLeague />} />
           <Route path="/join/:code" element={<JoinLeague />} />
           <Route path="/demo" element={<DemoPage />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/datenschutz" element={<Datenschutz />} />
           <Route path="/design" element={<DesignSystem />} />
 
           {/* League-specific routes (persistent layout) */}
