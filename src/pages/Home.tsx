@@ -3,6 +3,7 @@ import HeroSection from '@/components/landing/HeroSection';
 import LogoBar from '@/components/landing/LogoBar';
 import FeatureShowcase from '@/components/landing/FeatureShowcase';
 
+import AboutSection from '@/components/landing/AboutSection';
 import FAQSection from '@/components/landing/FAQSection';
 import CTASection from '@/components/landing/CTASection';
 import LandingFooter from '@/components/landing/LandingFooter';
@@ -14,7 +15,7 @@ export default function Home() {
       <HeroSection />
       <LogoBar />
       <FeatureShowcase />
-      
+      <AboutSection />
       <FAQSection />
       <CTASection />
       <LandingFooter />
