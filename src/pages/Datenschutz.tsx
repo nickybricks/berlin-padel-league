@@ -1,7 +1,5 @@
 import LandingNav from '@/components/landing/LandingNav';
 import LandingFooter from '@/components/landing/LandingFooter';
-import { ArrowLeft } from 'lucide-react';
-import { Link } from 'react-router-dom';
 
 export default function Datenschutz() {
   return (
@@ -9,14 +7,6 @@ export default function Datenschutz() {
       <LandingNav />
       <main className="flex-1">
         <div className="mx-auto max-w-2xl px-6 py-16 pt-24">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-10"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Zurück
-          </Link>
-
           <h1 className="text-3xl font-bold tracking-tight text-foreground mb-8">Datenschutzerklärung</h1>
 
           <div className="space-y-6 text-[15px] leading-relaxed text-muted-foreground">
