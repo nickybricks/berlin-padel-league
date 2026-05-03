@@ -231,7 +231,7 @@ export default function Schedule() {
       ) : (
         <div className="space-y-8">
           {weeks.map((week) => (
-            <WeekSection key={week} week={week} matches={matchesByWeek.get(week) || []} results={resultsMap} />
+            <WeekSection key={week} week={week} matches={matchesByWeek.get(week) || []} results={resultsMap} teams={teams} />
           ))}
         </div>
       )}
