@@ -1,13 +1,14 @@
-import { MatchWithTeams, MatchResult } from '@/types/database';
+import { MatchWithTeams, MatchResult, Team } from '@/types/database';
 import { MatchCard } from './MatchCard';
 
 interface WeekSectionProps {
   week: number;
   matches: MatchWithTeams[];
   results: Map<string, MatchResult>;
+  teams?: Team[];
 }
 
-export function WeekSection({ week, matches, results }: WeekSectionProps) {
+export function WeekSection({ week, matches, results, teams }: WeekSectionProps) {
   const playedCount = matches.filter(m => results.has(m.id)).length;
 
   return (
@@ -25,6 +26,7 @@ export function WeekSection({ week, matches, results }: WeekSectionProps) {
             key={match.id}
             match={match}
             result={results.get(match.id)}
+            teams={teams}
           />
         ))}
       </div>
