@@ -1,10 +1,15 @@
-import { MatchWithTeams, MatchResult } from '@/types/database';
+import { useState } from 'react';
+import { MatchWithTeams, MatchResult, Team } from '@/types/database';
 import { formatSetResult, getSetScore } from '@/lib/standings';
-import { CheckCircle2, Clock, Users } from 'lucide-react';
+import { CheckCircle2, Clock, Users, Pencil } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
+import { EditMatchDialog } from './EditMatchDialog';
 
 interface MatchCardProps {
   match: MatchWithTeams;
   result?: MatchResult;
+  teams?: Team[];
 }
 
 function TeamLogo({ logoUrl, name }: { logoUrl: string | null; name: string }) {
@@ -27,7 +32,9 @@ function TeamLogo({ logoUrl, name }: { logoUrl: string | null; name: string }) {
   );
 }
 
-export function MatchCard({ match, result }: MatchCardProps) {
+export function MatchCard({ match, result, teams }: MatchCardProps) {
+  const { isAdmin } = useAuth();
+  const [editOpen, setEditOpen] = useState(false);
   const isPlayed = !!result;
   const teamAWon = result?.winner_id === match.team_a_id;
   const teamBWon = result?.winner_id === match.team_b_id;
@@ -53,11 +60,24 @@ export function MatchCard({ match, result }: MatchCardProps) {
             </>
           )}
         </span>
-        {result && (
-          <span className="text-sm font-bold text-accent">
-            {getSetScore(result)}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {result && (
+            <span className="text-sm font-bold text-accent">
+              {getSetScore(result)}
+            </span>
+          )}
+          {isAdmin && teams && (
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-7 w-7"
+              onClick={() => setEditOpen(true)}
+              aria-label="Spiel bearbeiten"
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Teams */}
@@ -106,6 +126,16 @@ export function MatchCard({ match, result }: MatchCardProps) {
         <div className="mt-3 pt-3 border-t text-center text-sm text-muted-foreground">
           {formatSetResult(result)}
         </div>
+      )}
+
+      {isAdmin && teams && (
+        <EditMatchDialog
+          open={editOpen}
+          onOpenChange={setEditOpen}
+          match={match}
+          result={result}
+          teams={teams}
+        />
       )}
     </div>
   );
