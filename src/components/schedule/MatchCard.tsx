@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { MatchWithTeams, MatchResult, Team } from '@/types/database';
 import { formatSetResult, getSetScore } from '@/lib/standings';
 import { CheckCircle2, Clock, Users, Pencil } from 'lucide-react';
@@ -34,6 +35,7 @@ function TeamLogo({ logoUrl, name }: { logoUrl: string | null; name: string }) {
 
 export function MatchCard({ match, result, teams }: MatchCardProps) {
   const { isAdmin } = useAuth();
+  const { leagueId } = useParams<{ leagueId: string }>();
   const [editOpen, setEditOpen] = useState(false);
   const isPlayed = !!result;
   const teamAWon = result?.winner_id === match.team_a_id;
@@ -85,12 +87,15 @@ export function MatchCard({ match, result, teams }: MatchCardProps) {
         <div className={`flex items-center justify-between p-2 rounded-lg ${
           teamAWon ? 'bg-success/10' : ''
         }`}>
-          <div className="flex items-center gap-2">
+          <Link
+            to={`/league/${leagueId}/teams/${match.team_a_id}`}
+            className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity"
+          >
             <TeamLogo logoUrl={match.team_a.logo_url} name={match.team_a.name} />
-            <span className={`font-medium ${teamAWon ? 'text-success' : ''}`}>
+            <span className={`font-medium truncate ${teamAWon ? 'text-success' : ''}`}>
               {match.team_a.name}
             </span>
-          </div>
+          </Link>
           {result && (
             <span className="text-sm text-muted-foreground">
               {result.set1_a} | {result.set2_a}
@@ -106,12 +111,15 @@ export function MatchCard({ match, result, teams }: MatchCardProps) {
         <div className={`flex items-center justify-between p-2 rounded-lg ${
           teamBWon ? 'bg-success/10' : ''
         }`}>
-          <div className="flex items-center gap-2">
+          <Link
+            to={`/league/${leagueId}/teams/${match.team_b_id}`}
+            className="flex items-center gap-2 min-w-0 hover:opacity-80 transition-opacity"
+          >
             <TeamLogo logoUrl={match.team_b.logo_url} name={match.team_b.name} />
-            <span className={`font-medium ${teamBWon ? 'text-success' : ''}`}>
+            <span className={`font-medium truncate ${teamBWon ? 'text-success' : ''}`}>
               {match.team_b.name}
             </span>
-          </div>
+          </Link>
           {result && (
             <span className="text-sm text-muted-foreground">
               {result.set1_b} | {result.set2_b}
