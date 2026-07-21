@@ -14,10 +14,27 @@ import { toast } from "@/hooks/use-toast";
 
 export default function Schedule() {
   const { leagueId } = useParams<{ leagueId: string }>();
-  const [weekFilter, setWeekFilter] = useState<string>("all");
-  const [teamFilter, setTeamFilter] = useState<string>("all");
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-  const [groupFilter, setGroupFilter] = useState<string>("all");
+  const storageKey = `schedule-filters:${leagueId ?? "default"}`;
+  const initialFilters = (() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) return JSON.parse(raw) as { week: string; team: string; status: string; group: string };
+    } catch {}
+    return { week: "all", team: "all", status: "all", group: "all" };
+  })();
+  const [weekFilter, setWeekFilter] = useState<string>(initialFilters.week);
+  const [teamFilter, setTeamFilter] = useState<string>(initialFilters.team);
+  const [statusFilter, setStatusFilter] = useState<string>(initialFilters.status);
+  const [groupFilter, setGroupFilter] = useState<string>(initialFilters.group);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({ week: weekFilter, team: teamFilter, status: statusFilter, group: groupFilter }),
+      );
+    } catch {}
+  }, [storageKey, weekFilter, teamFilter, statusFilter, groupFilter]);
 
   const { data: league } = useLeagueById(leagueId);
   const { data: teams } = useLeagueTeams(leagueId);
